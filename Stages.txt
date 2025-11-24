@@ -1,0 +1,87 @@
+Stage 1:
+//- instal the spatie permission & translatio package
+//- create a seed for roles and permissions
+//- handling auth in the api and dashboard (passport/sanctum) and regester the right guards for the api and dashboard
+//- create a login system for the api and dashboard
+//- create a register system for the api
+//- get and update user information for the api
+- create a location system for the api and list for dashboard (city, area, street, house number, lat, lng)
+    - store the locations from users side in the database
+    - able to update the locations from users side in the database
+    - able to delete the locations from users side in the database
+    - able to get the locations from the database (support pagination, sort, search, filter)
+    - create a location list for the locations in the dashboard (support pagination, sort, search, filter) [city, area, lat, lng, user name]
+    we should use
+    - api resources
+    - query scopes
+    - policies
+    - service layer
+    - form request
+
+
+    //////////////////////////////////////////////////////////////////////
+
+    Stage 2 requirments:
+
+1. System Roles
+* Admin
+* Regular User
+
+---
+2. Admin Requirements
+2.1 Manage Design Options
+Admin can create design options, each with:
+* Name (translatable)
+* Type: Color, Dome type, Fabric type, Sleeve type
+Admin can add unlimited options (e.g., Color → Red, Blue, Green).
+
+2.2 Manage Sizes (measurement )
+Sizes are fixed and pre-created:
+XS, S, M, L, XL, XXL
+Admin doesn’t edit or change them.
+
+2.3 View All Designs
+Admin can view all user designs with:
+* Search: design name, user name
+* Filters: size, price range, design option (bonus)
+
+---
+3. User Requirements
+3.1 Create Designs
+Each design must have:
+* Name (translatable)
+* Description (translatable)
+* Price
+* At least one image
+* At least one size
+* Optional: multiple design options (including multiple of same type)
+
+3.2 Manage My Designs
+Users can:
+* View their designs
+* Edit their own designs
+* Delete their own designs
+
+---
+4. Design Rules
+* Every design belongs to one user.
+* Users can only manage their own designs.
+* Selected design options must be created by the admin.
+
+---
+5. Design Listing, Search & Filters
+5.1 For Users
+* My Designs: list only the user’s designs
+* Browse Others: view designs by other users
+* Search: name, description
+* Filters: size, price range, design option (bonus), creator (bonus)
+
+5.2 For Admin
+* Search: design name, user name
+* Filters: size, price range, design option (bonus)
+
+---
+6. Images
+* Each design must have at least one image.
+* Multiple images allowed.
+* Images must display clearly in design details.
