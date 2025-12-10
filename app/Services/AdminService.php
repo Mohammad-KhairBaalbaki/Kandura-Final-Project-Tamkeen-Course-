@@ -18,7 +18,7 @@ class AdminService
 
     public function storeAdmin(array $data)
     {
-        if(!Gate::allows('addAdmin', User::class))
+        if(!Gate::allows('add-admin', User::class))
             return false;
         $user = User::create($data);
         $user->assignRole('admin');
@@ -26,7 +26,7 @@ class AdminService
     }
     public function updateAdmin(array $data,User $user)
     {
-        if(!Gate::allows('editAdmin', User::class))
+        if(!Gate::allows('edit-admin', User::class))
             return false;
         $user->update($data);
         $user = User::findOrFail($user->id);
@@ -35,7 +35,7 @@ class AdminService
 
     public function deleteAdmin(User $user)
     {
-        if(!(Gate::allows('deleteAdmin', User::class)&&$user->hasRole('admin')))
+        if(!(Gate::allows('delete-admin', User::class)&&$user->hasRole('admin')))
             return false;
         $user->delete();
         return true;

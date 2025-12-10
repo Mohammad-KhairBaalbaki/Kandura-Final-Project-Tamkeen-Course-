@@ -22,4 +22,18 @@ class DesignPolicy
         }
         return false;
     }
+    public function editDesign(){
+        $user = User::findOrFail(Auth::id());
+        if($user->hasPermissionTo('edit-design')){
+            return true;
+        }
+        return false;
+    }
+    public function deleteDesign(){
+        $user = User::findOrFail(Auth::id());
+        if($user->hasPermissionTo('delete-design')){
+            return true;
+        }
+        return false;
+    }
 }

@@ -22,4 +22,18 @@ class DesignOptionPolicy
         }
         return false;
     }
+    public function editDesignOption(){
+        $user =User::findOrFail(Auth::id());
+        if($user->hasPermissionTo('edit-design-option')){
+            return true;
+        }
+        return false;
+    }
+    public function deleteDesignOption(){
+        $user =User::findOrFail(Auth::id());
+        if($user->hasPermissionTo('delete-design-option')){
+            return true;
+        }
+        return false;
+    }
 }

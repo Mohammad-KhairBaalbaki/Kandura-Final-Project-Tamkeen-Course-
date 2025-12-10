@@ -19,6 +19,7 @@ class Design extends Model
         'name',
         'description',
         'price',
+        'status'
     ];
 
     public function user()
@@ -39,5 +40,13 @@ class Design extends Model
     public function measurements()
     {
         return $this->belongsToMany(Measurement::class,'design_measurement')->withTimestamps();
+    }
+
+    public function itemsCart(){
+        return $this->hasMany(ItemCart::class);
+    }
+
+    public function carts(){
+        return $this->hasMany(Cart::class);
     }
 }

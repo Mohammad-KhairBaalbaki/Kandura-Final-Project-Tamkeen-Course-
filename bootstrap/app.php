@@ -13,9 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-        //
-    })
+    ->withMiddleware(function (Middleware $middleware) {
+    $middleware->web(append: [
+        \App\Http\Middleware\SetLocaleMiddleware::class,
+    ]);
+})
     ->withExceptions(function (Exceptions $exceptions) {
         // Handle NotFoundHttpException
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {

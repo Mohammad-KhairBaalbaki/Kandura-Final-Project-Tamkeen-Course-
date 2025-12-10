@@ -85,3 +85,18 @@ Users can:
 * Each design must have at least one image.
 * Multiple images allowed.
 * Images must display clearly in design details.
+
+
+///////////////////
+
+مهمّتنا في Stage 3 هي تحسين نظام إنشاء الـ orders بحيث نقدر نضيف أكتر من item داخل نفس الطلب، مع إمكانية اختيار خصائص كل item تماماً مثل ما اشتغلنا في Stage 2.
+
+وكمان بدنا نضيف ميزة عرض جميع الطلبات من طرف الأدمن مع إمكانية تغيير حالة كل طلب بكل و البحث و الفلترة و عرض تفاصيل الطلب
+
+/////////////////
+  ف لح تكون متل ما اتفقنا بتخص ال wallet / payment
+    وكيف ممكن ندفع الاوردر ب ٣ طرق مختلفة يلي هي
+- pay with stripe
+- ⁠pay from wallet
+- ⁠pay after delivery
+  و تعبئة ال wallet حاليا بس من طرف الادمن

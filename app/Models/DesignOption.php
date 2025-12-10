@@ -13,12 +13,21 @@ class DesignOption extends Model
     protected $translatable = ['name'];
     protected $fillable = [
         'name',
-        'type'
+        'type',
+        'is_active'
     ];
 
+    public function itemsSelected(){
+        return $this->hasMany(ItemOptionSelected::class);
+    }
+    
     public function designs()
     {
         return $this->belongsToMany(Design::class,'design_design_option');
+    }
+
+    public function itemsCart(){
+        return $this->hasMany(ItemCart::class);
     }
 
 

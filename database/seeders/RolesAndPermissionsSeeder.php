@@ -28,7 +28,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'add-review',
         ];
         foreach ($userPermissions as $per) {
-            Permission::create(['name' => $per, 'guard_name' => 'api']);
+            Permission::insert(['name' => $per, 'guard_name' => 'api']);
         }
 
         $user->givePermissionTo($userPermissions);
@@ -54,11 +54,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'approuve-and-reject-reviews',
             'send-notifications',
             'add-balance',
-
         ];
 
         foreach ($adminPermissions as $per) {
-            Permission::create(['name' => $per, 'guard_name' => 'api']);
+            Permission::insert(['name' => $per, 'guard_name' => 'api']);
         }
 
         $admin->givePermissionTo($adminPermissions);
@@ -77,7 +76,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'delete-role'
         ];
         foreach ($superAdminPermissions as $per) {
-            Permission::create(['name' => $per, 'guard_name' => 'api']);
+            Permission::insert(['name' => $per, 'guard_name' => 'api']);
         }
         $superAdmin->givePermissionTo($adminPermissions);
         $superAdmin->givePermissionTo($superAdminPermissions);

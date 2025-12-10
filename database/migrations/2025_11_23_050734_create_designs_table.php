@@ -17,6 +17,7 @@ return new class extends Migration
             $table->json('name');
             $table->json('description')->nullable();
             $table->float('price');
+            $table->enum('status',['active','inactive','blocked'])->default('active');
             $table->timestamps();
         });
     }

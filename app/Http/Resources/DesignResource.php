@@ -19,6 +19,7 @@ class DesignResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
+            'status'=>$this->status,
             'images' => $this->whenLoaded('images', ImageResource::collection($this->images)),
             'designOptions' => $this->whenLoaded('designOptions', DesignOptionResource::collection($this->designOptions)),
             'measurements' => $this->whenLoaded('measurements', MeasurementResource::collection($this->measurements)),

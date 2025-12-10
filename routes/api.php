@@ -3,6 +3,7 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\DesignOptionController;
 use App\Http\Controllers\UserController;
@@ -51,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{designOption}', 'destroy');
     });
 
+    //designs
     Route::prefix('designs')->controller(DesignController::class)->group(function () {
         Route::get('/', 'index')->withoutMiddleware('auth:sanctum');
         Route::get('/my-designs', 'myDesigns');
@@ -58,4 +60,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{design}', 'update');
         Route::delete('/{design}', 'destroy');
     });
+
+
+    //add to cart
+    Route::prefix('cart')->group(function(){
+        Route::post('/add', [CartController::class, 'store']);
+    });
+
 });

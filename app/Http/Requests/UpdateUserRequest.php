@@ -16,7 +16,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return (Auth::id() == $this->user->id)||((Gate::allows('editAdmin', User::class))&& (User::findOrFail($this->user->id)->hasRole('admin')));
+        return (Auth::id() == $this->user->id)||((Gate::allows('edit-admin', User::class))&& (User::findOrFail($this->user->id)->hasRole('admin')));
     }
 
     /**

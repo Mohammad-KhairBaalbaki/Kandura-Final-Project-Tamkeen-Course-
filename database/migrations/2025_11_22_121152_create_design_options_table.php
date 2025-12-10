@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->json('name');
             $table->enum('type',[MeasurementTypeEnum::Color,MeasurementTypeEnum::Sleeve,MeasurementTypeEnum::Dome,MeasurementTypeEnum::Fabric]);
+            $table->boolean('is_active')->default(true);
             $table->unique(['name','type']);
             $table->timestamps();
         });

@@ -28,7 +28,7 @@ class AuthController extends Controller
         $user = $this->authService->apiLogin($request->validated());
         if (!$user) {
             $message = "Invalid Credntials";
-            return $this->success(null, $message, 402);
+            return $this->success(null, $message, 400);
         }
         return $this->success(LoginResource::make($user), $message, 200);
     }
@@ -37,24 +37,18 @@ class AuthController extends Controller
 
     }
 
-
-    
-
     public function webRegister()
     {
 
     }
-    public function webLogin(LoginRequest $request)
-    {
-        $user = $this->authService->webLogin($request->validated());
-        if (!$user) {
-            $message = "Invalid Credntials";
-            return $message;
-        }
-        // return redirect()->route('dashboared');
-    }
+
     public function webLogout()
     {
+        $this->authService->webLogout();
+        return redirect()->route('login');
+    }
 
+    public function showLoginForm(){
+        return view('auth.login');
     }
 }

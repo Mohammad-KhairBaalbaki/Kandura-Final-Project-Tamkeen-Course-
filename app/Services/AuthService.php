@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 
@@ -24,6 +25,7 @@ class AuthService
         $user->access_token = $token;
         return $user;
     }
+
     public function apiLogin(array $data)
     {
         if (isset($data['email'])) {
@@ -46,12 +48,9 @@ class AuthService
 
     }
 
-    
 
-    public function webRegister()
-    {
 
-    }
+
     public function webLogin(array $data)
     {
         if (isset($data['email'])) {
@@ -65,11 +64,16 @@ class AuthService
             return false;
         }
         $user = Auth::user();
+        if ($user->hasRole('user')) {
+            return false;
+        }
         Auth::login($user);
         return $user;
     }
     public function webLogout()
     {
+        Auth::guard('web')->logout();
+
 
     }
 }

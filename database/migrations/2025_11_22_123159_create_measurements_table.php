@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('measurements', function (Blueprint $table) {
             $table->id();
             $table->string('size');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
