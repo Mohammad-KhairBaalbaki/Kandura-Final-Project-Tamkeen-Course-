@@ -32,12 +32,19 @@ class User extends Authenticatable
         'is_active',
     ];
 
-    public function addresses(){
+    public function addresses()
+    {
         return $this->hasMany(Address::class);
     }
 
-    public function image(){
+    public function image()
+    {
         return $this->morphOne(Image::class, 'model');
+    }
+
+    public function getOrdersCountAttribute()
+    {
+        return $this->orders->count();
     }
 
     /**
@@ -63,11 +70,40 @@ class User extends Authenticatable
         ];
     }
 
-    public function designs(){
+    public function designs()
+    {
         return $this->hasMany(Design::class);
     }
 
-    public function cart(){
+    public function cart()
+    {
         return $this->hasOne(Cart::class);
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function deviceTokens()
+    {
+        return $this->hasMany(DeviceToken::class);
+    }
+
+
 }

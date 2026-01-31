@@ -24,6 +24,7 @@
     "Total Revenue": "Total Revenue",
     "Total Users": "Total Users",
     "Total Designs": "Total Designs",
+    "Total Disounts":"Total Disounts",
     "Active": "Active",
     "Latest Operations": "Latest Operations",
     "View All": "View All",
@@ -50,5 +51,31 @@
     "Shipped": "Shipped",
     "Delivered": "Delivered",
     "Cancelled": "Cancelled",
-    "New Coupon": "New Coupon"
+    "New Coupon": "New Coupon",
+    "Subtotal": "Subtotal",
+    "Discount":"Discount",
+    "Currency":"Currency",
+    "Order":"Order",
+    "Order Items":"Order Items",
+    "Size":"Size",
+    "Color":"Color",
+    "Dome": "Dome",
+    "Sleeve":"Sleeve",
+    "Fabric":"Fabric",
+    "Quantity":"Quantity",
+    "each":"each",
+    "Order Summary":"Order Summary",
+    "Customer Information":"Customer Information",
+    "Payment Information":"Payment Information",
+    "Placed on":"Placed on",
+    "Print":"Print",
+    "Back to Orders":"Back to Orders",
+    "Order Details":"Order Details",
+    "Method":"Method",
+    "View Profile":"View Profile",
+
+    "Invoices": "Invoices",
+    "orders.download_pdf": "Download PDF"
+
+
 }

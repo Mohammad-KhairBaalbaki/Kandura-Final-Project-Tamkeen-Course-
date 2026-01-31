@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\DesignOption;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StoreDesignRequest extends FormRequest
 {
@@ -33,8 +36,43 @@ class StoreDesignRequest extends FormRequest
             'measurements.*' => 'required|exists:measurements,id',
             'images' => 'required|array',
             'images.*' => 'required|image|mimes:png,jpg,jpeg',
-            'design_options' => 'required|array',
-            'design_options.*' => 'required|exists:design_options,id',
+            'design_options' => ['required', 'array', 'min:1'],
+            'design_options.*' => ['required', 'integer', 'distinct', Rule::exists('design_options', 'id')]
+        ];
+    }
+
+    public function after(): array
+    {
+        return [
+            function (Validator $validator) {
+                $ids = $this->input('design_options', []);
+                if (!is_array($ids) || empty($ids)) {
+                    return;
+                }
+
+                // Option 1 (dynamic): require at least one from EVERY type that exists in DB (you said there are 4)
+                $requiredTypes = DesignOption::query()
+                    ->distinct()
+                    ->orderBy('type')
+                    ->pluck('type')
+                    ->all();
+
+                // Get types for selected IDs
+                $selectedTypes = DesignOption::whereIn('id', $ids)
+                    ->pluck('type')
+                    ->unique()
+                    ->values()
+                    ->all();
+
+                $missing = array_values(array_diff($requiredTypes, $selectedTypes));
+
+                if (!empty($missing)) {
+                    $validator->errors()->add(
+                        'design_options',
+                        'You must select at least one design option from each type. Missing: ' . implode(', ', $missing)
+                    );
+                }
+            },
         ];
     }
 
@@ -74,8 +112,9 @@ class StoreDesignRequest extends FormRequest
             // designOptions
             'design_options.required' => 'Design options are required.',
             'design_options.array' => 'Design options must be an array.',
-            'design_options.*.required' => 'Each design option is required.',
-            'design_options.*.exists' => 'One or more selected design options do not exist.',
+            'design_options.min' => 'You must select at least :min options (one per type).',
+            'design_options.*.exists' => 'One or more selected design options are invalid.',
+            'design_options.*.distinct' => 'Duplicate design options are not allowed.',
         ];
     }
 }

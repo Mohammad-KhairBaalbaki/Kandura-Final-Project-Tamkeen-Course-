@@ -13,81 +13,110 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
+        $guard = 'api';
 
-        //////////////////////////////
+        $superAdmin = Role::firstOrCreate(['name' => 'super-admin', 'guard_name' => $guard]);
 
-        //User      (Registered user who makes purchases and designs)
-        $user = Role::create(['name' => 'user', 'guard_name' => 'api']);
-        $userPermissions = [
+        $admin = Role::firstOrCreate(['name' => 'admin', 'guard_name' => $guard]);
 
-            'create-design',
-            'edit-design',
-            'delete-design',
+        $user = Role::firstOrCreate(['name' => 'user', 'guard_name' => $guard]);
 
+
+
+        $allPermissions = [
+            // Orders & invoices
+            'view-orders',
+            'view-invoices',
             'create-orders',
-            'add-review',
+            // Users
+            'view-users',
+            'disable-accounts',
+            // Admins (web + api)
+            'view-admins',
+            'add-admins',
+            'edit-admins',
+            'delete-admins',
+            // Roles
+            'view-roles',
+            'add-roles',
+            'edit-roles',
+            'delete-roles',
+            // Designs
+            'create-designs',
+            'edit-designs',
+            'delete-designs',
+            'disable-designs',
+            // Design options
+            'view-design-options',
+            'create-design-options',
+            'edit-design-options',
+            'delete-design-options',
+            // Coupons
+            'view-coupons',
+            'create-coupons',
+            'edit-coupons',
+            // Reviews
+            'add-reviews',
+            // Wallets
+            'add-balance',
         ];
-        foreach ($userPermissions as $per) {
-            Permission::insert(['name' => $per, 'guard_name' => 'api']);
+
+        foreach ($allPermissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission, 'guard_name' => $guard]);
         }
 
-        $user->givePermissionTo($userPermissions);
-
-        //////////////////////////////////////////
-        // Admin     (Staff member managing orders and content)
-
-        $admin = Role::create(['name' => 'admin','guard_name' => 'api']);
+        $userPermissions = [
+            'create-orders',
+            'view-invoices',
+            'create-designs',
+            'edit-designs',
+            'delete-designs',
+            'add-reviews',
+        ];
 
         $adminPermissions = [
             'view-users',
             'disable-accounts',
-
-            'create-coupon',
-            'edit-coupon',
-            'delete-coupon',
-
-            'create-design-option',
-            'edit-design-option',
-            'delete-design-option',
-
-            'view-reviews',
-            'approuve-and-reject-reviews',
-            'send-notifications',
+            'view-orders',
+            'view-invoices',
+            'view-design-options',
+            'create-design-options',
+            'edit-design-options',
+            'delete-design-options',
+            'view-coupons',
+            'create-coupons',
+            'edit-coupons',
             'add-balance',
+            'disable-designs',
         ];
 
-        foreach ($adminPermissions as $per) {
-            Permission::insert(['name' => $per, 'guard_name' => 'api']);
-        }
-
-        $admin->givePermissionTo($adminPermissions);
-        // ////////////////////////////////////////////
-        //Super Admin   ( Top administrator with full system permissions)
-        $superAdmin = Role::create(['name' => 'super-admin', 'guard_name' => 'api']);
-
-        $superAdminPermissions = [
-            'add-admin',
-            'edit-admin',
-            'delete-admin',
-
-            'view-reports-and-statistics',
-            'add-role',
-            'edit-role',
-            'delete-role'
+////////////////////////////////
+        $SuperAdminNotificationPermissions = [
+            'notify.admin.created',
+            'notify.admin.removed',
+            'notify.admin.permissions.updated',
         ];
-        foreach ($superAdminPermissions as $per) {
-            Permission::insert(['name' => $per, 'guard_name' => 'api']);
+
+        $adminNotificationPermissions = [
+            'notify.orders.created',
+            'notify.orders.cancelled',
+            'notify.orders.issue',
+            'notify.users.registered',
+            'notify.users.deactivated',
+            'notify.designs.created',
+            'notify.designs.updated',
+        ];
+
+        foreach ($SuperAdminNotificationPermissions as $p) {
+            Permission::firstOrCreate(['name' => $p, 'guard_name' => 'api']);
         }
-        $superAdmin->givePermissionTo($adminPermissions);
-        $superAdmin->givePermissionTo($superAdminPermissions);
 
-
-
-
-
-
-
-
-
+        foreach ($adminNotificationPermissions as $p) {
+            Permission::firstOrCreate(['name' => $p, 'guard_name' => 'api']);
+        }
+////////////////////////////
+        $user->syncPermissions($userPermissions);
+        $admin->syncPermissions($adminPermissions);
+        $superAdmin->syncPermissions(array_merge($allPermissions, $SuperAdminNotificationPermissions, $adminNotificationPermissions));
     }
 }

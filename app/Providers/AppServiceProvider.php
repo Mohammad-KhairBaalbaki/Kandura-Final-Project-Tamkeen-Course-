@@ -2,12 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\User;
-use App\Policies\AdminPolicy;
-use App\Policies\DesignOptionPolicy;
-use App\Policies\DesignPolicy;
-use App\Policies\UserPolicy;
-use Illuminate\Support\Facades\Gate;
+use App\Models\Order;
+use App\Observers\OrderObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,8 +22,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
-        Gate::policy(User::class, AdminPolicy::class);
-        Gate::policy(User::class, DesignOptionPolicy::class);
-        Gate::policy(User::class, DesignPolicy::class);
+         Order::observe(OrderObserver::class);
     }
 }

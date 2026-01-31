@@ -10,19 +10,23 @@ class Cart extends Model
     protected $fillable = [
         'user_id',
         'subtotal',
+        'coupon_id',
         'discount',
     ];
 
-    public function design(){
-        return $this->belongsTo(Design::class);
+
+
+    public function coupon(){
+        return $this->belongsTo(Coupon::class);
     }
 
-
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function itemsCart(){
+    public function itemsCart()
+    {
         return $this->hasMany(ItemCart::class);
     }
 

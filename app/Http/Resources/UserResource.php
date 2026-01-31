@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,6 +20,7 @@ class UserResource extends JsonResource
             'name'=>$this->name,
             'email'=>$this->email,
             'phone'=>$this->phone,
+            'profile_image'=>$this->whenLoaded('image', fn() => ImageResource::make($this->image)),
             'created_at'=>$this->created_at,
             'updated_at'=>$this->updated_at
         ];

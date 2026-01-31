@@ -20,10 +20,10 @@ class DesignResource extends JsonResource
             'description' => $this->description,
             'price' => $this->price,
             'status'=>$this->status,
-            'images' => $this->whenLoaded('images', ImageResource::collection($this->images)),
-            'designOptions' => $this->whenLoaded('designOptions', DesignOptionResource::collection($this->designOptions)),
-            'measurements' => $this->whenLoaded('measurements', MeasurementResource::collection($this->measurements)),
-            'user' => $this->whenLoaded('user', UserResource::make($this->user)),
+            'images' => $this->whenLoaded('images', fn()=>ImageResource::collection($this->images)),
+            'designOptions' => $this->whenLoaded('designOptions', fn()=>DesignOptionResource::collection($this->designOptions)),
+            'measurements' => $this->whenLoaded('measurements', fn()=>MeasurementResource::collection($this->measurements)),
+            'user' => $this->whenLoaded('user', fn()=>UserResource::make($this->user)),
         ];
     }
 }

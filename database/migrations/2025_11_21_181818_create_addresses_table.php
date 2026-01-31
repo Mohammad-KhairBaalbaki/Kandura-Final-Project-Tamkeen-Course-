@@ -16,8 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('city_id')->constrained('cities')->cascadeOnDelete();
             $table->string('street');
-            $table->integer('latitude')->nullable();
-            $table->integer('longitude')->nullable();
+            $table->float('latitude')->nullable();
+            $table->float('longitude')->nullable();
+            $table->boolean('is_default')->default(false);
             $table->text('details')->nullable();
             $table->timestamps();
         });

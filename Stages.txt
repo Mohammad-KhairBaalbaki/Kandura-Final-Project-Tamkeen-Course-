@@ -100,3 +100,310 @@ Users can:
 - ⁠pay from wallet
 - ⁠pay after delivery
   و تعبئة ال wallet حاليا بس من طرف الادمن
+
+
+
+///////////////////////////////////////////////////////////////
+
+ erDiagram
+
+    perfumes {
+        int id PK
+        json name
+        json category "men|women|unisex"
+        json description
+        string sku UK "ex : Blue Channel Perfume(blc-50-1024)"
+        enum status "active|inactive"
+        timestamp created_at
+        timestamp updated_at
+    }
+    favourites {
+        int id PK
+        int perfume_id FK
+        int user_id FK
+        timestamp created_at
+        unique user_perfume
+    }
+    custom_perfumes_percentage {
+        int id PK
+        int custom_perfume_id FK
+        int perfume_id FK
+        decimal percentage "5.2 - sum to 100 "
+        timestamp created_at
+        timestamp updated_at
+        int created_by FK
+    }
+    custom_perfumes {
+        int id PK
+        int user_id FK
+        int concentration_id FK
+        int volume_ml
+        enum status "pending - in_production - completed - cancelled"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    wallets{
+        int id PK
+        int user_id FK,UK
+        decimal balance "10.2"
+        int currency_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    review_likes{
+        int id PK
+        int review_id FK
+        int user_id FK
+        timestamp created_at
+        unique review_user
+    }
+
+    reviews{
+        int id PK
+        int user_id FK
+        int perfume_id FK
+        int rating "1 - 5 stars"
+        text body
+        timestamp created_at
+        timestamp updated_at
+        unique user_perfume "one review per user per perfume"
+    }
+
+    users{
+        int id PK
+        string first_name
+        string last_name
+        string phone UK
+        enum gender "male - female - other"
+        string password
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    concentrations{
+        int id PK
+        json name "en - ar"
+        string duration_hours
+        decimal min_percentage "2.00%"
+        decimal max_percentage "7.00%"
+        timestamp created_at
+        timestamp updated_at
+        int created_by FK
+
+    }
+
+    perfume_prices{
+        int id PK
+        int perfume_id FK
+        int concentration_id FK
+        int volume_ml
+        decimal old_price "10.2"
+        decimal new_price "8.2"
+        int currency_id FK
+        date valid_from
+        date valid_until
+        unique perfume_concentration_volume
+        timestamp created_at
+        timestamp updated_at
+        int created_by FK
+    }
+
+    addresses{
+        int id PK
+        int user_id FK
+        int city_id FK
+        string street
+        decimal longitude "9.6643681"
+        decimal latitude "9.6643681"
+        string postal_code
+        text extra_details
+        boolean is_default
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    countries{
+        int id PK
+        json name
+        string code UK "ISO 3166"
+        timestamp created_at
+        timestamp updated_at
+        int created_by FK
+    }
+
+    cities{
+        int id PK
+        int country_id FK
+        json name
+        timestamp created_at
+        timestamp updated_at
+        int created_by FK
+    }
+
+    package_prices{
+        int id PK
+        int package_id FK
+        decimal old_price "10.2"
+        decimal new_price "8.2"
+        int currency_id FK
+        date valid_from
+        date valid_until
+        timestamp created_at
+        timestamp updated_at
+        int created_by FK
+    }
+
+    bottles{
+        int id PK
+        string sku UK
+        json name
+        int capacity_ml
+        timestamp created_at
+        timestamp updated_at
+        int created_by FK
+    }
+
+    bottle_prices{
+        int id PK
+        int bottle_id FK
+        decimal price "10.2"
+        int currency_id FK
+        timestamp created_at
+        timestamp updated_at
+        int created_by FK
+    }
+
+    currencies{
+        int id PK
+        json name "en - ar names"
+        string code UK "ISO 4217 SYP,AED"
+        string symbol
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+        int created_by FK
+    }
+
+    payments{
+        int id PK
+        int user_id FK
+        enum status "pending - completed - failed - refunded "
+        enum method "card - wallet - bank_transfer - cash"
+        decimal amount "10.2"
+        int currency_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    orders{
+        int id PK
+        int user_id FK
+        int address_id FK
+        decimal subtotal "10.2"
+        decimal discount "10.2"
+        decimal delivery_fee "10.2"
+        decimal total "10.2"
+        enum status "pending - confirmed - shipped - delivered - cancelled"
+        int payment_id FK
+        timestamp created_at
+        timestamp updated_at
+
+    }
+
+    orders_products{
+        int id PK
+        int order_id FK
+        string model_type "perfume_user - package_user"
+        int model_id
+        int quantity
+        decimal price "10.2"
+        int currency_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    perfume_user{
+        int id PK
+        int perfume_id FK
+        int concentration_id FK
+        int volume_ml
+        decimal price "price = this->volume / perfume->price->volume * new price in prices"
+        int currency_id FK
+        timestamp created_at
+        timestamp updated_at
+
+    }
+
+    carts{
+        int id PK
+        int user_id FK
+        decimal subtotal "10.2"
+        decimal delivery_fee "10.2"
+        decimal discount "10.2"
+        decimal total "10.2"
+        int currency_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    package_user_perfumes{
+        int id PK
+        int package_user_id FK
+        int perfume_user_id FK
+    }
+
+    packages{
+        int id PK
+        json name
+        json description
+        int perfume_quantity
+        timestamp created_at
+        timestamp updated_at
+        int created_by FK
+    }
+
+    package_user{
+        int id PK
+        int user_id FK
+        int package_id FK
+        enum souvenir_type "photo - bag - box flower - other"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    media{
+        int id PK
+        string model_type "user - perfume - package - bottle"
+        int model_id
+        enum type "thumbnail - photo - document"
+        string url
+        timestamp created_at
+        timestamp updated_at
+        int created_by FK
+    }
+
+    cart_products{
+        int id PK
+        int cart_id FK
+        string model_type "perfume_user - package_user"
+        int model_id
+        int quantity
+        decimal price "10.2"
+        int currency_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+
+
+////////////////////
+
+||--o{ (0..many)
+
+||--o| (0..1)
+
+||--|{ (1..many)
+
+||--|| (1..1)

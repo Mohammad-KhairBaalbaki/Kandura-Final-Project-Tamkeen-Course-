@@ -49,4 +49,9 @@ class Design extends Model
     public function carts(){
         return $this->hasMany(Cart::class);
     }
+
+    public function itemsOrder(){
+        return $this->hasMany(ItemOrder::class);
+    }
+
 }

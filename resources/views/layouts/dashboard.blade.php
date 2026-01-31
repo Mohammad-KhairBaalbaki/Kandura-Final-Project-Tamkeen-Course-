@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" >
+<html lang="{{ app()->getLocale() }}">
 
 <head>
     <meta charset="UTF-8">
@@ -80,63 +80,58 @@
                     </a>
 
                     <!-- Users Management -->
-                    <div x-data="{ open: {{ request()->is('users*') ? 'true' : 'false' }} }">
-                        <button @click="open = !open"
-                            class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-purple-50 transition text-gray-700">
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-users text-lg w-5"></i>
-                                <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Users') }}</span>
+                    <a href="{{ route('users.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->routeIs('users*') ? 'sidebar-active' : 'text-gray-700' }}">
+                        <i class="fas fa-users text-lg w-5"></i>
+                        <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Users') }}</span>
+                    </a>
+                    {{-- Admins Management --}}
+                    @if (Auth::user()->roles()->first()->name == 'super-admin')
+                        <div x-data="{ open: {{ request()->is('admins*') ? 'true' : 'false' }} }">
+                            <button @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-purple-50 transition text-gray-700">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-users text-lg w-5"></i>
+                                    <span x-show="sidebarOpen" x-cloak
+                                        class="font-medium">{{ __('admins.users') }}</span>
+                                </div>
+                                <i x-show="sidebarOpen" :class="open ? 'fa-chevron-down' : 'fa-chevron-right'"
+                                    class="fas text-sm"></i>
+                            </button>
+                            <div x-show="open && sidebarOpen" x-cloak class="ml-8 mt-2 space-y-1">
+
+                                <a href="{{ route('admins.index') }}"
+                                    class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50">
+                                    <i class="fas fa-list w-4"></i>
+                                    <span>{{ __('All Admins') }}</span>
+                                </a>
+
+                                <a href="{{ route('admins.create') }}"
+                                    class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50">
+                                    <i class="fas fa-plus w-4"></i>
+                                    <span>{{ __('Add Admin') }}</span>
+                                </a>
                             </div>
-                            <i x-show="sidebarOpen" :class="open ? 'fa-chevron-down' : 'fa-chevron-right'"
-                                class="fas text-sm"></i>
-                        </button>
-                        <div x-show="open && sidebarOpen" x-cloak class="ml-8 mt-2 space-y-1">
-                            <a href="{{ route('users.index') }}"
-                                class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50">
-                                <i class="fas fa-list w-4"></i>
-                                <span>{{ __('All Users') }}</span>
-                            </a>
-                            <a href="{{ route('users.create') }}"
-                                class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50">
-                                <i class="fas fa-plus w-4"></i>
-                                <span>{{ __('Add User') }}</span>
-                            </a>
                         </div>
-                    </div>
+                    @endif
 
                     <!-- Designs -->
-                    <div x-data="{ open: {{ request()->is('designs*') ? 'true' : 'false' }} }">
-                        <button @click="open = !open"
-                            class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-purple-50 transition text-gray-700">
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-palette text-lg w-5"></i>
-                                <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Designs') }}</span>
-                            </div>
-                            <i x-show="sidebarOpen" :class="open ? 'fa-chevron-down' : 'fa-chevron-right'"
-                                class="fas text-sm"></i>
-                        </button>
-                        <div x-show="open && sidebarOpen" x-cloak class="ml-8 mt-2 space-y-1">
-                            {{-- {{ route('designs.index') }} --}}
-                            <a href=""
-                                class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50">
-                                <i class="fas fa-list w-4"></i>
-                                <span>{{ __('All Designs') }}</span>
-                            </a>
-
-                        </div>
-                    </div>
-
+                    <a href="{{ route('designs.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('designs*') ? 'sidebar-active' : 'text-gray-700' }}">
+                        <i class="fas fa-palette text-lg w-5"></i>
+                        <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('designs.designs') }}</span>
+                    </a>
                     <!-- Design Options -->
                     {{-- {{ route('packages.index') }} --}}
-                    <a href=""
+                    <a href="{{ route('design_options.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('design_options*') ? 'sidebar-active' : 'text-gray-700' }}">
                         <i class="fas fa-sliders-h text-lg w-5"></i> <span x-show="sidebarOpen" x-cloak
-                            class="font-medium">{{ __('Design Options') }}</span>
+                            class="font-medium">{{ __('design_options.design_options') }}</span>
                     </a>
 
                     <!-- Orders -->
                     {{-- {{ route('orders.index') }} --}}
-                    <a href=""
+                    <a href="{{ route('orders.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('orders*') ? 'sidebar-active' : 'text-gray-700' }}">
                         <i class="fas fa-shopping-cart text-lg w-5"></i>
                         <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Orders') }}</span>
@@ -144,20 +139,14 @@
 
                     <!-- Coupons -->
                     {{-- {{ route('bottles.index') }} --}}
-                    <a href=""
+                    <a href="{{ route('coupons.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('coupons*') ? 'sidebar-active' : 'text-gray-700' }}">
                         <i class="fas fa-ticket-alt text-lg w-5"></i> <span x-show="sidebarOpen" x-cloak
-                            class="font-medium">{{ __('Coupons') }}</span>
+                            class="font-medium">{{ __('coupons.coupons') }}</span>
                     </a>
 
 
 
-                    <!-- Reviews -->
-                    <a href="{{ route('reviews.index') }}"
-                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('reviews*') ? 'sidebar-active' : 'text-gray-700' }}">
-                        <i class="fas fa-star text-lg w-5"></i>
-                        <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Reviews') }}</span>
-                    </a>
 
                     <!-- Locations -->
                     <div x-data="{ open: {{ request()->is('countries*') || request()->is('cities*') ? 'true' : 'false' }} }">
@@ -171,12 +160,14 @@
                                 class="fas text-sm"></i>
                         </button>
                         <div x-show="open && sidebarOpen" x-cloak class="ml-8 mt-2 space-y-1">
-                            <a href="{{ route('countries.index') }}"
+                            {{-- {{ route('countries.index') }} --}}
+                            <a href=""
                                 class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50">
                                 <i class="fas fa-flag w-4"></i>
                                 <span>{{ __('Countries') }}</span>
                             </a>
-                            <a href="{{ route('cities.index') }}"
+                            {{-- {{ route('cities.index') }} --}}
+                            <a href=""
                                 class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50">
                                 <i class="fas fa-city w-4"></i>
                                 <span>{{ __('Cities') }}</span>
@@ -186,34 +177,29 @@
 
                     <!-- Wallets -->
                     {{-- {{ route('reviews.index') }} --}}
-                    <a href=""
+                    <a href="{{ route('wallets.charge') }}"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('wallets*') ? 'sidebar-active' : 'text-gray-700' }}">
                         <i class="fas fa-wallet text-lg w-5"></i>
-                        <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Wallets') }}</span>
+                        <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('wallets.wallets') }}</span>
                     </a>
 
                     <!-- Roles -->
                     {{-- {{ route('reviews.index') }} --}}
-                    <a href=""
-                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('roles*') ? 'sidebar-active' : 'text-gray-700' }}">
-                        <i class="fas fa-person text-lg w-5"></i>
-                        <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Roles') }}</span>
+                    @if (Auth::user()->roles()->first()->name == 'super-admin')
+                        <a href="{{ route('roles.index') }}"
+                            class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('roles*') ? 'sidebar-active' : 'text-gray-700' }}">
+                            <i class="fas fa-person text-lg w-5"></i>
+                            <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Roles') }}</span>
+                        </a>
+                    @endif
+                    <!-- Payments -->
+                    <a href="{{ route('payments.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('payments*') ? 'sidebar-active' : 'text-gray-700' }}">
+                        <i class="fas fa-credit-card text-lg w-5"></i>
+                        <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('payments.payments') }}</span>
                     </a>
 
-                    <!-- Reports -->
-                    {{-- {{ route('reviews.index') }} --}}
-                    <a href=""
-                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('reports*') ? 'sidebar-active' : 'text-gray-700' }}">
-                        <i class="fas fa-chart-bar text-lg w-5"></i>
-                        <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Reports') }}</span>
-                    </a>
 
-                    <!-- Settings -->
-                    <a href="{{ route('settings.index') }}"
-                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('settings*') ? 'sidebar-active' : 'text-gray-700' }}">
-                        <i class="fas fa-cog text-lg w-5"></i>
-                        <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Settings') }}</span>
-                    </a>
 
                 </nav>
 
@@ -309,26 +295,60 @@
                         </div>
 
                         <!-- Notifications -->
+                        @php
+                            $latestNotifications = auth()->user()
+                                ?->notifications()
+                                ->latest()
+                                ->take(5)
+                                ->get() ?? collect();
+                            $unreadCount = auth()->user()
+                                ?->unreadNotifications()
+                                ->count() ?? 0;
+                        @endphp
                         <div x-data="{ open: false }" class="relative">
                             <button @click="open = !open"
                                 class="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
                                 <i class="fas fa-bell text-xl"></i>
-                                <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                                @if ($unreadCount > 0)
+                                    <span
+                                        class="absolute -top-1 -right-1 min-w-5 h-5 px-1 bg-red-500 text-white text-[10px] leading-5 text-center rounded-full">
+                                        {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                                    </span>
+                                @endif
                             </button>
                             <div x-show="open" @click.away="open = false" x-cloak
-                                class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border">
-                                <div class="p-4 border-b">
-                                    <h3 class="font-semibold text-gray-800">{{ __('Notifications') }}</h3>
+                                class="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border">
+                                <div class="p-4 border-b flex items-center justify-between">
+                                    <h3 class="font-semibold text-gray-800">{{ __('notifications.notifications') }}</h3>
+                                    <a href="{{ route('notifications.index') }}"
+                                        class="text-xs text-purple-600 hover:text-purple-700 font-medium">
+                                        {{ __('notifications.view_all') }}
+                                    </a>
                                 </div>
                                 <div class="max-h-96 overflow-y-auto">
-                                    <a href="#" class="block px-4 py-3 hover:bg-gray-50 border-b">
-                                        <p class="text-sm text-gray-800">{{ __('New order received') }}</p>
-                                        <p class="text-xs text-gray-500 mt-1">{{ __('2 minutes ago') }}</p>
-                                    </a>
-                                    <a href="#" class="block px-4 py-3 hover:bg-gray-50">
-                                        <p class="text-sm text-gray-800">{{ __('New user registered') }}</p>
-                                        <p class="text-xs text-gray-500 mt-1">{{ __('1 hour ago') }}</p>
-                                    </a>
+                                    @forelse ($latestNotifications as $notification)
+                                        <form method="POST" action="{{ route('notifications.read', $notification->id) }}"
+                                            class="border-b last:border-b-0">
+                                            @csrf
+                                            <button type="submit"
+                                                class="w-full text-left px-4 py-3 hover:bg-gray-50">
+                                                <p
+                                                    class="text-sm {{ $notification->read_at ? 'text-gray-800' : 'font-semibold text-gray-900' }}">
+                                                    {{ $notification->data['title'] ?? __('notifications.notification') }}
+                                                </p>
+                                                <p class="text-xs text-gray-500 mt-1">
+                                                    {{ $notification->data['body'] ?? '' }}
+                                                </p>
+                                                <p class="text-[11px] text-gray-400 mt-1">
+                                                    {{ $notification->created_at->diffForHumans() }}
+                                                </p>
+                                            </button>
+                                        </form>
+                                    @empty
+                                        <div class="px-4 py-6 text-center text-sm text-gray-500">
+                                            {{ __('notifications.no_notifications') }}
+                                        </div>
+                                    @endforelse
                                 </div>
                             </div>
                         </div>
@@ -342,20 +362,21 @@
                                     {{ substr(auth()->user()->first_name, 0, 1) }}{{ substr(auth()->user()->last_name, 0, 1) }}
                                 </div>
                                 <div class="hidden md:block text-left">
-                                    <p class="text-sm font-semibold text-gray-800">{{ auth()->user()->first_name }}
-                                        {{ auth()->user()->last_name }}</p>
+                                    <p class="text-sm font-semibold text-gray-800">{{ auth()->user()->name }}</p>
                                     <p class="text-xs text-gray-500">{{ __('Administrator') }}</p>
                                 </div>
                                 <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                             </button>
                             <div x-show="open" @click.away="open = false" x-cloak
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-2">
-                                <a href="{{ route('profile.edit') }}"
+                                {{-- {{ route('profile.edit') }} --}}
+                                <a href=""
                                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">
                                     <i class="fas fa-user w-5"></i>
                                     <span>{{ __('Profile') }}</span>
                                 </a>
-                                <a href="{{ route('settings.index') }}"
+                                {{-- {{ route('settings.index') }} --}}
+                                <a href=""
                                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">
                                     <i class="fas fa-cog w-5"></i>
                                     <span>{{ __('Settings') }}</span>
@@ -386,6 +407,102 @@
     </div>
 
     @stack('scripts')
+
+    <script type="module">
+        import {
+            initializeApp
+        } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import {
+            getMessaging,
+            getToken,
+            onMessage
+        } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging.js";
+
+        // TODO: paste firebaseConfig here
+        const firebaseConfig = {
+            apiKey: "AIzaSyCg9F6j7wmEZPVuC3Q85Od_velGH9V6ExA",
+            authDomain: "kandoura-f72d5.firebaseapp.com",
+            projectId: "kandoura-f72d5",
+            storageBucket: "kandoura-f72d5.firebasestorage.app",
+            messagingSenderId: "353127064443",
+            appId: "1:353127064443:web:2b4d49dc5f1e9e3e1813de",
+            measurementId: "G-S2TLZ46HL1"
+        };
+
+        const VAPID_KEY = "BIZVjSD9X55PkQHg-3YkyLmhT0MdcPxmRnmg9u5Z_P4gYW-14HnNTqO-00SJn8rhv_Q4Y2cF-jthCDvmYz29QJo";
+
+        const app = initializeApp(firebaseConfig);
+        const messaging = getMessaging(app);
+
+        async function registerFcm() {
+            try {
+                if (!("serviceWorker" in navigator)) {
+                    console.warn("No serviceWorker support");
+                    return;
+                }
+
+                // 1) Register SW
+                const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+                console.log("SW registered:", swReg);
+
+                // 2) Ask permission
+                const permission = await Notification.requestPermission();
+                console.log("Notification permission:", permission);
+                if (permission !== "granted") return;
+
+                // 3) Get token
+                const token = await getToken(messaging, {
+                    vapidKey: VAPID_KEY,
+                    serviceWorkerRegistration: swReg,
+                });
+
+                console.log("FCM token:", token);
+                if (!token) return;
+
+                // 4) Send token to Laravel
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+                if (!csrf) {
+                    console.error("Missing <meta name='csrf-token' ...>");
+                    return;
+                }
+
+                const res = await fetch("/fcm/token", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrf,
+                    },
+                    credentials: "same-origin",
+                    body: JSON.stringify({
+                        token,
+                        platform: "web"
+                    }),
+                });
+
+                const text = await res.text();
+                console.log("Save token response:", res.status, text);
+
+            } catch (e) {
+                console.error("FCM register error:", e);
+            }
+        }
+
+        // Foreground messages (when dashboard tab is open)
+        onMessage(messaging, (payload) => {
+            console.log("FCM foreground:", payload);
+
+            // Optional: show a browser notification even in foreground
+            const title = payload?.notification?.title;
+            const body = payload?.notification?.body;
+            if (title) new Notification(title, {
+                body: body ?? ""
+            });
+
+        });
+
+        registerFcm();
+    </script>
+
 </body>
 
 </html>

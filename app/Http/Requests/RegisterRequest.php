@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\SyrianNumberRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RegisterRequest extends FormRequest
@@ -22,11 +23,12 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-
             'name' => ['required','string'],
             'email'=> ['required','email','unique:users,email'],
-            'phone'=> ['required','string','unique:users,phone'],
-            'password'=> ['required','string'],
+            'phone'=> ['required','string','unique:users,phone', new SyrianNumberRule()],
+            'password'=> ['required','string','confirmed','min:8','max:20'],
+            'roles' => ['sometimes', 'array'],
+            'roles.*' => ['string', 'exists:roles,name'],
         ];
     }
 

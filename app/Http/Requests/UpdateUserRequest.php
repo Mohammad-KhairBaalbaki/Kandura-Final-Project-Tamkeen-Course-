@@ -2,12 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -16,7 +12,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return (Auth::id() == $this->user->id)||((Gate::allows('edit-admin', User::class))&& (User::findOrFail($this->user->id)->hasRole('admin')));
+        return true;
     }
 
     /**
@@ -30,6 +26,11 @@ class UpdateUserRequest extends FormRequest
             'name' => ['string'],
             'email' => ['email', 'unique:users,email,'.$this->user->id],
             'phone' => ['string', 'unique:users,phone,'.$this->user->id],
+            'is_active' => ['boolean'],
+            'roles' => ['sometimes', 'array'],
+            'roles.*' => ['string', 'exists:roles,name'],
+            'new_password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'super_admin_password' => ['required_with:new_password','nullable', 'string'],
         ];
     }
 

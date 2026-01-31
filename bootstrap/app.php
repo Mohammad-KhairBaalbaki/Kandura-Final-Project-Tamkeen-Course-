@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
     $middleware->web(append: [
         \App\Http\Middleware\SetLocaleMiddleware::class,
     ]);
+    $middleware->alias([
+        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+    ]);
 })
     ->withExceptions(function (Exceptions $exceptions) {
         // Handle NotFoundHttpException
@@ -30,9 +33,9 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             // For web routes - return custom view
-            return response()->view('errors.404', [
-                'message' => 'Page not found',
-            ], 404);
+            // return response()->view('errors.404', [
+            //     'message' => 'Page not found',
+            // ], 404);
         });
 
     })->create();

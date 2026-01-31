@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Image extends Model
 {
@@ -15,5 +16,9 @@ class Image extends Model
     public function model()
     {
         return $this->morphTo();
+    }
+
+    public function getFullUrlAttribute(){
+        return Storage::url($this->url);
     }
 }

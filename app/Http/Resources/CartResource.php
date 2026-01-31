@@ -16,9 +16,11 @@ class CartResource extends JsonResource
     {
         return [
             'id'=>$this->id,
-            'user'=>$this->whenLoaded('user',UserResource::make($this->user)),
+            'user'=>$this->whenLoaded('user',fn()=>UserResource::make($this->user)),
             'subtotal'=>$this->subtotal,
-            'discount'=>$this->discount
+            'discount'=>$this->discount,
+            'itemsCart'=>$this->whenLoaded('itemsCart',fn()=>ItemCartResource::collection($this->itemsCart)),
+            'coupon'=>$this->whenLoaded('coupon',fn()=>CouponResource::make($this->coupon))
         ];
     }
 }

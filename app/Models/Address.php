@@ -17,6 +17,7 @@ class Address extends Model
         'latitude',
         'longitude',
         'details',
+        'is_default'
     ];
 
     public function user(){
@@ -24,5 +25,9 @@ class Address extends Model
     }
     public function city(){
         return $this->belongsTo(City::class);
+    }
+
+    public function orders(){
+        return $this->hasMany(Order::class);
     }
 }

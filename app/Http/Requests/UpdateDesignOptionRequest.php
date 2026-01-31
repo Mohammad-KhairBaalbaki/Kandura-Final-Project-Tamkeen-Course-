@@ -26,6 +26,7 @@ class UpdateDesignOptionRequest extends FormRequest
             'type' => [
                 'in:color,dome,fabric,sleeve',
             ],
+            'is_active' => ['boolean'],
             'name' => ['array'],
             'name.en' => [
                 'string',
