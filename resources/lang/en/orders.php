@@ -11,7 +11,7 @@ return [
     'cancelled' => 'Cancelled',
     'failed' => 'Failed',
     'search_orders' => 'Search Orders',
-    'search_placeholder' => 'Search by order id, name, email, or phone...',
+    'search_placeholder' => 'Search by order id,num, name, email, or phone...',
     'start_date' => 'Start Date',
     'end_date' => 'End Date',
     'status' => 'Status',

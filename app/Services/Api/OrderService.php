@@ -2,6 +2,7 @@
 
 namespace App\Services\Api;
 
+use App\Enums\PaymentMethodEnum;
 use App\Enums\StatusEnum;
 use App\Events\DashboardNotificationRequested;
 use App\Models\Coupon;
@@ -10,6 +11,7 @@ use App\Models\ItemOrder;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
+use App\Notifications\User\UserOrderNotification;
 use App\Services\Global\InvoiceService;
 use App\Services\Global\WalletService;
 use Illuminate\Http\Request;
@@ -115,6 +117,28 @@ class OrderService
             }
             $cart->delete();
             $order->refresh();
+
+            //send notification to admin when order is created
+        event(new DashboardNotificationRequested(
+            permission: 'notify.orders.created',
+            title: 'New order Created',
+            body: "Order #{$order->num} created by {$order->user->name}",
+            data: [
+                'type' => 'admin.order',
+                'event' => 'created',
+                'order_id' => $order->id,
+                'url' => route('orders.show', $order->id),
+            ]
+        ));
+
+        if ($order->user) {
+            $user = $order->user;
+                $user->notify(new UserOrderNotification(
+                    order: $order,
+                    statusLabel: 'Placed Successfully'
+                ));
+            }
+
             return $order->load('address', 'itemsOrder', 'itemsOrder.design', 'itemsOrder.measurement', 'itemsOrder.itemsSelected.designOption', 'coupon');
 
         });
@@ -143,7 +167,7 @@ class OrderService
                 return '1';
             }
             $user = Auth::user();
-            if ($payment->method === 'stripe') {
+            if ($payment->method === PaymentMethodEnum::STRIPE) {
                 Stripe::setApiKey(config('stripe.sk'));
 
                 $session = Session::create([
@@ -182,7 +206,7 @@ class OrderService
                     ],
                 ]);
                 return ($session->url);
-            } elseif ($payment->method === 'wallet') {
+            } elseif ($payment->method === PaymentMethodEnum::WALLET) {
                 if ($this->walletService->checkWalletPay($user, $payment->amount)) {
                     $this->walletService->payWallet($user, $payment->amount);
                     return $this->successPayment($order);

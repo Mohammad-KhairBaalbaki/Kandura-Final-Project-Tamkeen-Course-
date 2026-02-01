@@ -7,11 +7,9 @@ use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\DesignController;
 use App\Http\Controllers\Api\DesignOptionController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\NotificationController ;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\WebhookController;
-use App\Http\Controllers\NotificationController;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,11 +18,9 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-Route::post('/send-notification',[NotificationController::class,'sendPushNotification']);
-
 Route::controller(AuthController::class)->group(function () {
-    Route::post('/register', 'apiRegister');
-    Route::post('/login', 'apiLogin');
+    Route::post('/register', 'register');
+    Route::post('/login', 'login');
 });
 
 
@@ -114,6 +110,19 @@ Route::middleware('auth:sanctum')->group(function () {
             ->middleware('permission:add-reviews,api');
     });
 
+    Route::prefix('notifications')->controller(NotificationController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::get('/unread', 'unread');
+        Route::get('/unread/count', 'unreadCount');
+
+        Route::put('/{notification}/read', 'markRead');
+
+        Route::put('/read-all', 'markAllRead');
+
+        
+    });
+
+
 });
 
 
@@ -122,3 +131,5 @@ Route::prefix('order')->group(function () {
     Route::get('/success-payment/{order}', [OrderController::class, 'successPayment'])->name('success_payment');
     Route::get('/failed-payment', [OrderController::class, 'failedPayment'])->name('failed_payment');
 });
+
+

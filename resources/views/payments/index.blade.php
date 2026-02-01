@@ -105,9 +105,22 @@
                     <i class="fas fa-credit-card mr-1"></i>
                     {{ __('payments.method') }}
                 </label>
-                <input type="text" name="method" value="{{ request('method') }}"
-                    placeholder="{{ __('payments.method_placeholder') }}"
+                <select name="method"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
+                    <option value="">{{ __('payments.method_placeholder') }}</option>
+                    <option value="{{ \App\Enums\PaymentMethodEnum::WALLET }}"
+                        {{ request('method') === \App\Enums\PaymentMethodEnum::WALLET ? 'selected' : '' }}>
+                        {{ \App\Enums\PaymentMethodEnum::WALLET }}
+                    </option>
+                    <option value="{{ \App\Enums\PaymentMethodEnum::STRIPE }}"
+                        {{ request('method') === \App\Enums\PaymentMethodEnum::STRIPE ? 'selected' : '' }}>
+                        {{ \App\Enums\PaymentMethodEnum::STRIPE }}
+                    </option>
+                    <option value="{{ \App\Enums\PaymentMethodEnum::AFTER_DELIVERY }}"
+                        {{ request('method') === \App\Enums\PaymentMethodEnum::AFTER_DELIVERY ? 'selected' : '' }}>
+                        {{ \App\Enums\PaymentMethodEnum::AFTER_DELIVERY }}
+                    </option>
+                </select>
             </div>
 
             <!-- Type Filter -->
@@ -192,9 +205,6 @@
                             <td class="px-6 py-4 text-center">
                                 <div class="text-sm font-semibold text-gray-800">
                                     #{{ $payment->num ?? $payment->id }}
-                                </div>
-                                <div class="text-xs text-gray-500">
-                                    {{ __('payments.transaction_id') }}: {{ $payment->num ?? 'N/A' }}
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-center">

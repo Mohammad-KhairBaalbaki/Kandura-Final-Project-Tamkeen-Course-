@@ -2,6 +2,7 @@
 
 namespace App\Notifications\User;
 
+use App\Models\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -15,8 +16,7 @@ class UserOrderNotification extends Notification
      * Create a new notification instance.
      */
     public function __construct(
-        public int $orderNum,
-        public string $status,
+        public Order $order,
         public ?string $statusLabel = null, // نص لطيف للعرض (اختياري)
     ) {}
 
@@ -49,20 +49,21 @@ class UserOrderNotification extends Notification
 
     public function toDatabase($notifiable): array
     {
-        $label = $this->statusLabel ?? match ($this->status) {
+        $label = $this->statusLabel ?? match ($this->order->status) {
             'confirmed'  => 'order confiremed',
             'delivered'  => 'order delivered',
             'cancelled'  => 'order cancelled',
+            'pending'    => 'order pending',
             default      => 'order status updated',
         };
 
         return [
             'title' => 'order updated',
-            'body'  => " your order #{$this->orderNum}: {$label}",
+            'body'  => " your order #{$this->order->num}: {$label}",
             'data'  => [
                 'type'     => 'order',
-                'order_id' => $this->orderNum,
-                'status'   => $this->status,
+                'order_id' => $this->order->id,
+                'status'   => $this->order->status,
             ],
         ];
     }

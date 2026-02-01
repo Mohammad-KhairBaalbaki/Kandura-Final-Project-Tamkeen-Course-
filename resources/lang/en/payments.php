@@ -21,7 +21,7 @@ return [
     "status" => "Status",
     "all_status" => "All Status",
     "method" => "Method",
-    "method_placeholder" => "e.g. card, cash",
+    "method_placeholder" => "e.g. Stripe, Wallet",
     "type" => "Type",
     "all_types" => "All Types",
     "charge" => "Charge",
