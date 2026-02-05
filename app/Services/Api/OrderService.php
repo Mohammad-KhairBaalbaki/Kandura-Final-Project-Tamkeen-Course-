@@ -12,6 +12,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
 use App\Notifications\User\UserOrderNotification;
+use App\Notifications\User\UserWalletNotification;
 use App\Services\Global\InvoiceService;
 use App\Services\Global\WalletService;
 use Illuminate\Http\Request;
@@ -130,7 +131,7 @@ class OrderService
                 'url' => route('orders.show', $order->id),
             ]
         ));
-
+        //send notification to user when order is created
         if ($order->user) {
             $user = $order->user;
                 $user->notify(new UserOrderNotification(
@@ -267,6 +268,13 @@ class OrderService
                     'payment_id' => $payment->id,
 
                 ]
+            ));
+            //send notification to user when payment failed
+            $user = $order->user;
+            $user->notify(new UserWalletNotification(
+                event: 'payment_failed',
+                amount: $payment->amount,
+
             ));
             $payment->save();
             return $order;

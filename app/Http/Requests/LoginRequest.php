@@ -27,4 +27,18 @@ class LoginRequest extends FormRequest
             'password' => ['required', 'string'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'email.required_without' => 'Email is required when phone is not provided.',
+            'email.email' => 'Email must be a valid email address.',
+            'email.exists' => 'Email does not exist in our records.',
+            'phone.required_without' => 'Phone is required when email is not provided.',
+            'phone.string' => 'Phone must be a valid string.',
+            'phone.exists' => 'Phone does not exist in our records.',
+            'password.required' => 'Password is required.',
+            'password.string' => 'Password must be a valid string.',
+        ];
+    }
 }

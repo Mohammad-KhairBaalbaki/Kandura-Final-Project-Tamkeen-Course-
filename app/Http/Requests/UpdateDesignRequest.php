@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class UpdateDesignRequest extends FormRequest
 {
@@ -36,7 +37,7 @@ class UpdateDesignRequest extends FormRequest
             'images' => 'array',
             'images.*' => 'mime:png,jpg,jpeg',
             'design_options' => 'array',
-            'design_options.*' => 'exists:design_options,id',
+            'design_options.*' => Rule::exists('design_options', 'id')->whereNull('deleted_at'),
         ];
     }
 

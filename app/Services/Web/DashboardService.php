@@ -40,9 +40,39 @@ class DashboardService
                 ->take(5)
                 ->get();
 
+            $top_designs = Design::query()
+                ->select(
+                    'designs.id',
+                    'designs.user_id',
+                    'designs.name',
+                    'designs.description',
+                    'designs.price',
+                    'designs.status',
+                    'designs.created_at',
+                    'designs.updated_at'
+                )
+                ->selectRaw('SUM(item_orders.quantity) as sales_count')
+                ->join('item_orders', 'item_orders.design_id', '=', 'designs.id')
+                ->join('orders', 'orders.id', '=', 'item_orders.order_id')
+                ->whereIn('orders.status', [StatusEnum::DELIVERED, StatusEnum::CONFIRMED])
+                ->groupBy(
+                    'designs.id',
+                    'designs.user_id',
+                    'designs.name',
+                    'designs.description',
+                    'designs.price',
+                    'designs.status',
+                    'designs.created_at',
+                    'designs.updated_at'
+                )
+                ->orderByDesc('sales_count')
+                ->take(5)
+                ->get();
+
             return [
                 'stats' => $stats,
                 'latest_orders' => $latest_orders,
+                'top_designs' => $top_designs,
             ];
         });
     }

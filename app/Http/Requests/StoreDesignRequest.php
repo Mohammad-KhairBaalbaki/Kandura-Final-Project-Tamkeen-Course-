@@ -37,7 +37,14 @@ class StoreDesignRequest extends FormRequest
             'images' => 'required|array',
             'images.*' => 'required|image|mimes:png,jpg,jpeg',
             'design_options' => ['required', 'array', 'min:1'],
-            'design_options.*' => ['required', 'integer', 'distinct', Rule::exists('design_options', 'id')]
+            'design_options.*' => [
+                'required',
+                'integer',
+                'distinct',
+                Rule::exists('design_options', 'id')
+                    ->where('is_active', true)
+                    ->whereNull('deleted_at'),
+            ],
         ];
     }
 
@@ -52,6 +59,8 @@ class StoreDesignRequest extends FormRequest
 
                 // Option 1 (dynamic): require at least one from EVERY type that exists in DB (you said there are 4)
                 $requiredTypes = DesignOption::query()
+                    ->where('is_active', true)
+                    ->whereNull('deleted_at')
                     ->distinct()
                     ->orderBy('type')
                     ->pluck('type')
@@ -59,6 +68,8 @@ class StoreDesignRequest extends FormRequest
 
                 // Get types for selected IDs
                 $selectedTypes = DesignOption::whereIn('id', $ids)
+                    ->where('is_active', true)
+                    ->whereNull('deleted_at')
                     ->pluck('type')
                     ->unique()
                     ->values()

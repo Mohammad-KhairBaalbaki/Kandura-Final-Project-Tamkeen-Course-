@@ -295,14 +295,14 @@
                         <i class="fas fa-fire text-purple-600 mr-2"></i>
                         {{ __('Top Selling Designs') }}
                     </h2>
-                    {{-- {{ route('perfumes.index') }} --}}
-                    <a href="" class="text-sm text-purple-600 hover:text-purple-700 font-semibold">
+                    <a href="{{ route('designs.index') }}"
+                        class="text-sm text-purple-600 hover:text-purple-700 font-semibold">
                         {{ __('View All') }} <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>
             </div>
             <div class="p-6 space-y-4">
-                @forelse($top_perfumes ?? [] as $perfume)
+                @forelse($top_designs ?? [] as $design)
                     <div class="flex items-center justify-between pb-4 border-b last:border-b-0">
                         <div class="flex items-center space-x-4">
                             <div
@@ -310,12 +310,14 @@
                                 <i class="fas fa-shopping-cart text-lg w-5"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-gray-800">{{ $perfume->name['en'] ?? $perfume->name }}</h4>
-                                <p class="text-sm text-gray-500">{{ $perfume->sku }}</p>
+                                <h4 class="font-semibold text-gray-800">
+                                    {{ $design->getTranslation('name', app()->getLocale()) }}
+                                </h4>
+                                <p class="text-sm text-gray-500">{{ $design->status ?? '-' }}</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-lg font-bold text-purple-600">{{ $perfume->sales_count ?? 0 }}</p>
+                            <p class="text-lg font-bold text-purple-600">{{ $design->sales_count ?? 0 }}</p>
                             <p class="text-xs text-gray-500">{{ __('Sales') }}</p>
                         </div>
                     </div>

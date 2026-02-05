@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\NotificationController ;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Middleware\CheckActiveMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,7 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{address}', 'destroy');
     });
 
-    Route::prefix('admins')->controller(AdminController::class)->group(function () {
+    Route::prefix('admins')->middleware([CheckActiveMiddleware::class])->controller(AdminController::class)->group(function () {
 
         // Route::get('/', 'index');
         Route::post('/', 'store')->middleware('permission:add-admins,api');
@@ -54,7 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     });
 
-    Route::prefix('design-options')->controller(DesignOptionController::class)->group(function () {
+    Route::prefix('design-options')->middleware([CheckActiveMiddleware::class])->controller(DesignOptionController::class)->group(function () {
         Route::get('/', 'index')->middleware('permission:view-design-options,api');
 
         Route::post('/', 'store')->middleware('permission:create-design-options,api');
@@ -65,11 +66,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     //designs
-    Route::prefix('designs')->controller(DesignController::class)->group(function () {
+    Route::prefix('designs')->middleware([CheckActiveMiddleware::class])->controller(DesignController::class)->group(function () {
 
         Route::get('/', 'index')->withoutMiddleware('auth:sanctum');
 
-        Route::get('/my-designs', 'myDesigns');
+        Route::get('/my-designs', 'myDesigns')->withoutMiddleware(CheckActiveMiddleware::class);
 
         Route::post('/', 'store')->middleware('permission:create-designs,api');
 
@@ -81,7 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     //add to cart
-    Route::prefix('cart')->group(function () {
+    Route::prefix('cart')->middleware([CheckActiveMiddleware::class])->group(function () {
         //my cart
         Route::get('', [CartController::class, 'index'])->middleware('permission:create-orders,api');
         //add to cart
@@ -96,7 +97,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/remove-coupon', [CartController::class, 'removeCoupon'])->middleware('permission:create-orders,api');
     });
 
-    Route::prefix('order')->group(function () {
+    Route::prefix('order')->middleware([CheckActiveMiddleware::class])->group(function () {
         //my orders
         Route::get('/', [OrderController::class, 'index'])->middleware('permission:create-orders,api');
         //crate order
@@ -119,7 +120,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::put('/read-all', 'markAllRead');
 
-        
+
     });
 
 

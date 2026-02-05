@@ -56,7 +56,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-lg font-bold text-gray-800">Kandoura Store</h2>
+                            <h2 class="text-lg font-bold text-gray-800">{{ __('Kandoura Store') }}</h2>
                             <p class="text-xs text-gray-500">{{ __('Admin Panel') }}</p>
                         </div>
                     </div>
@@ -235,7 +235,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-lg font-bold text-gray-800">Perfume Store</h2>
+                            <h2 class="text-lg font-bold text-gray-800">{{ __('Kandoura Store') }}</h2>
                             <p class="text-xs text-gray-500">{{ __('Admin Panel') }}</p>
                         </div>
                     </div>
@@ -370,7 +370,7 @@
                             <div x-show="open" @click.away="open = false" x-cloak
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-2">
                                 {{-- {{ route('profile.edit') }} --}}
-                                <a href=""
+                                <a href="{{ route('profile.show') }}"
                                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">
                                     <i class="fas fa-user w-5"></i>
                                     <span>{{ __('Profile') }}</span>

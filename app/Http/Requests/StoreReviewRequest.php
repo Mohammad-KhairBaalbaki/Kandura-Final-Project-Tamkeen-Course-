@@ -18,4 +18,16 @@ class StoreReviewRequest extends FormRequest
             'comment' => ['required', 'string', 'max:255'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'rating.required' => 'Rating is required.',
+            'rating.integer' => 'Rating must be an integer.',
+            'rating.between' => 'Rating must be between 1 and 5.',
+            'comment.required' => 'Comment is required.',
+            'comment.string' => 'Comment must be a valid string.',
+            'comment.max' => 'Comment may not be greater than 255 characters.',
+        ];
+    }
 }

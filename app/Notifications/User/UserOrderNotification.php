@@ -17,7 +17,7 @@ class UserOrderNotification extends Notification
      */
     public function __construct(
         public Order $order,
-        public ?string $statusLabel = null, // نص لطيف للعرض (اختياري)
+        public ?string $statusLabel = null, 
     ) {}
 
     /**

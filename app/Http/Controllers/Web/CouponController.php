@@ -37,7 +37,6 @@ class CouponController extends Controller
     public function create()
     {
         try {
-            $this->couponService->create();
             return view('coupons.create');
         } catch (\Exception $e) {
             Log::error($e);

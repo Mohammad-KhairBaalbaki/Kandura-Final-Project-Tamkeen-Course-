@@ -221,7 +221,7 @@
                                     @endif
                                     <div class="text-left">
                                         <div class="text-sm text-gray-800">
-                                            {{ $payment->user->name ?? 'N/A' }}
+                                            {{ $payment->user->name ?? __('N/A') }}
                                         </div>
                                         <div class="text-xs text-gray-500">
                                             {{ $payment->user->email ?? '' }}
@@ -236,17 +236,17 @@
                                         #{{ $payment->order->num ?? $payment->order->id }}
                                     </a>
                                 @else
-                                    <span class="text-sm text-gray-500">N/A</span>
+                                    <span class="text-sm text-gray-500">{{ __('N/A') }}</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-center text-sm font-semibold text-gray-800">
                                 ${{ number_format($payment->amount ?? 0, 2) }}
                             </td>
                             <td class="px-6 py-4 text-center text-sm text-gray-800">
-                                {{ $payment->method ?? 'N/A' }}
+                                {{ $payment->method ?? __('N/A') }}
                             </td>
                             <td class="px-6 py-4 text-center text-sm text-gray-800">
-                                {{ $payment->type ?? 'N/A' }}
+                                {{ $payment->type ?? __('N/A') }}
                             </td>
                             <td class="px-6 py-4 text-center">
                                 @php

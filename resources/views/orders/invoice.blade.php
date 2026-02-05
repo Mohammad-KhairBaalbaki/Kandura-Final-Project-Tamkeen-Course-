@@ -33,7 +33,7 @@
     <div class="header">
         <div class="row">
             <div class="col col-50">
-                <div class="title">Kandoura Store</div>
+                <div class="title">{{ __('Kandoura Store') }}</div>
                 <div class="muted">{{ __('orders.invoice') }}</div>
             </div>
             <div class="col col-50" style="text-align:right;">
@@ -56,15 +56,15 @@
         <div class="col col-50">
             <div class="card">
                 <div><strong>{{ __('orders.customer') }}</strong></div>
-                <div>{{ $order->user->name ?? 'N/A' }}</div>
-                <div class="muted">{{ $order->user->email ?? 'N/A' }}</div>
-                <div class="muted">{{ $order->user->phone ?? 'N/A' }}</div>
+                <div>{{ $order->user->name ?? __('N/A') }}</div>
+                <div class="muted">{{ $order->user->email ?? __('N/A') }}</div>
+                <div class="muted">{{ $order->user->phone ?? __('N/A') }}</div>
             </div>
         </div>
         <div class="col col-50">
             <div class="card">
                 <div><strong>{{ __('orders.payment') }}</strong></div>
-                <div class="muted">{{ __('orders.method') }}: {{ $order->payment->method ?? 'N/A' }}</div>
+                <div class="muted">{{ __('orders.method') }}: {{ $order->payment->method ?? __('N/A') }}</div>
                 <div class="muted">{{ __('orders.status') }}: {{ __(ucfirst($order->payment->status ?? 'pending')) }}</div>
                 @if (isset($order->payment->num))
                     <div class="muted">{{ __('orders.transaction_id') }}: {{ $order->payment->num }}</div>
@@ -76,7 +76,7 @@
     @if ($order->address)
         <div class="card">
             <div><strong>{{ __('orders.delivery_address') }}</strong></div>
-            <div>{{ $order->address->city->name ?? 'N/A' }}</div>
+            <div>{{ $order->address->city->name ?? __('N/A') }}</div>
             <div class="muted">{{ $order->address->street }}</div>
             @if ($order->address->details)
                 <div class="muted">{{ $order->address->details }}</div>
@@ -108,22 +108,22 @@
                                     @endphp
                                     @if ($imageFile && file_exists($imageFile))
                                         <img src="{{ $imageFile }}"
-                                            alt="{{ $item->design->name ?? 'Design' }}"
+                                            alt="{{ $item->design->name ?? __('Design') }}"
                                             style="width:36px; height:36px; border-radius:6px; object-fit:cover; border:1px solid #e5e7eb;">
                                     @endif
                                 @endif
                                 <div>
-                                    <div style="font-weight:700;">{{ $item->design->name ?? 'N/A' }}</div>
+                                    <div style="font-weight:700;">{{ $item->design->name ?? __('N/A') }}</div>
                                     <div class="muted" style="font-size:11px;">#{{ $item->design->id ?? '-' }}</div>
                                 </div>
                             </div>
                         </td>
                         <td class="muted">
-                            <div><strong>{{ __('orders.size') }}:</strong> {{ $item->measurement->size ?? 'N/A' }}</div>
-                            <div><strong>{{ __('orders.color') }}:</strong> {{ $item->color ?? 'N/A' }}</div>
-                            <div><strong>{{ __('orders.dome') }}:</strong> {{ $item->dome ?? 'N/A' }}</div>
-                            <div><strong>{{ __('orders.sleeve') }}:</strong> {{ $item->sleeve ?? 'N/A' }}</div>
-                            <div><strong>{{ __('orders.fabric') }}:</strong> {{ $item->fabric ?? 'N/A' }}</div>
+                            <div><strong>{{ __('orders.size') }}:</strong> {{ $item->measurement->size ?? __('N/A') }}</div>
+                            <div><strong>{{ __('orders.color') }}:</strong> {{ $item->color ?? __('N/A') }}</div>
+                            <div><strong>{{ __('orders.dome') }}:</strong> {{ $item->dome ?? __('N/A') }}</div>
+                            <div><strong>{{ __('orders.sleeve') }}:</strong> {{ $item->sleeve ?? __('N/A') }}</div>
+                            <div><strong>{{ __('orders.fabric') }}:</strong> {{ $item->fabric ?? __('N/A') }}</div>
                         </td>
                         <td class="text-right">${{ number_format($item->price, 2) }}</td>
                         <td class="text-right">{{ $item->quantity }}</td>

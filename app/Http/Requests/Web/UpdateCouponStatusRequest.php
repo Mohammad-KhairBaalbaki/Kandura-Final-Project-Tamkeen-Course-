@@ -25,4 +25,12 @@ class UpdateCouponStatusRequest extends FormRequest
             'is_active' => 'required|boolean',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'is_active.required' => 'Status is required.',
+            'is_active.boolean' => 'Status must be true or false.',
+        ];
+    }
 }

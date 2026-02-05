@@ -2,6 +2,7 @@
 
 namespace App\Services\Api;
 
+use App\Enums\StatusEnum;
 use App\Models\Design;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +34,13 @@ class DesignService
         //filter size priceRange design option creator
         return DB::transaction(function () use ($params) {
 
-            $query = Design::with('images', 'designOptions', 'measurements');
+            $query = Design::with('images', 'designOptions', 'measurements')->where(function ($q) {
+                $q->where('status', StatusEnum::ACTIVE);
+                $q->whereHas('user', function ($query) {
+                    $query->where('is_active', true);
+                });
+
+            });
             if (Auth::check()) {
                 $query = Design::whereNot('user_id', Auth::id());
             }
@@ -75,7 +82,6 @@ class DesignService
                 $maxPrice = $params['max_price'];
                 $query->where('price', '<=', $maxPrice);
             }
-
 
 
             if (isset($params['design_options_name'])) {

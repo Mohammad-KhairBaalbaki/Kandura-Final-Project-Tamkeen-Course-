@@ -34,6 +34,26 @@ class UpdateUserRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'name.string' => 'Name must be a valid string.',
+            'email.email' => 'Email must be a valid email address.',
+            'email.unique' => 'Email has already been taken.',
+            'phone.string' => 'Phone must be a valid string.',
+            'phone.unique' => 'Phone has already been taken.',
+            'is_active.boolean' => 'Status must be true or false.',
+            'roles.array' => 'Roles must be an array.',
+            'roles.*.string' => 'Each role must be a valid string.',
+            'roles.*.exists' => 'One or more selected roles are invalid.',
+            'new_password.string' => 'New password must be a string.',
+            'new_password.min' => 'New password must be at least 8 characters.',
+            'new_password.confirmed' => 'New password confirmation does not match.',
+            'super_admin_password.required_with' => 'Super admin password is required when setting a new password.',
+            'super_admin_password.string' => 'Super admin password must be a string.',
+        ];
+    }
+
     protected function failedAuthorization()
     {
         throw new HttpResponseException(response()->json([

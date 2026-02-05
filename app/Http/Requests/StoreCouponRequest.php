@@ -25,4 +25,13 @@ class StoreCouponRequest extends FormRequest
             'code' => ['required', 'string', 'exists:coupons,code'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'code.required' => 'Coupon code is required.',
+            'code.string' => 'Coupon code must be a valid string.',
+            'code.exists' => 'Coupon code does not exist.',
+        ];
+    }
 }

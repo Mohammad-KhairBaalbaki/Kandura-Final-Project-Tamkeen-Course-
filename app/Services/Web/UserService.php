@@ -2,6 +2,7 @@
 
 namespace App\Services\Web;
 
+use App\Events\DashboardNotificationRequested;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -79,6 +80,9 @@ class UserService
             $user->update([
                 'is_active' => $validated['is_active'],
             ]);
+
+            
+
 
             return $user;
         });

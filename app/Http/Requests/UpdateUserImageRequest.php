@@ -25,4 +25,14 @@ class UpdateUserImageRequest extends FormRequest
             'image' => 'required|image|mimes:jpeg,png,jpg,svg|max:2048',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'image.required' => 'Image is required.',
+            'image.image' => 'File must be an image.',
+            'image.mimes' => 'Image must be a file of type: jpeg, png, jpg, svg.',
+            'image.max' => 'Image may not be greater than 2048 kilobytes.',
+        ];
+    }
 }

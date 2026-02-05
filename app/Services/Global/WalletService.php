@@ -6,6 +6,7 @@ use App\Enums\StatusEnum;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\Wallet;
+use App\Notifications\User\UserWalletNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -45,6 +46,14 @@ class WalletService
             $wallet = $user->wallet;
             $wallet->balance = $wallet->balance - $amount;
             $wallet->save();
+
+            //send notification to user when balance is debited
+            $user->notify(new UserWalletNotification(
+                event: 'debited',
+                amount: $amount,
+                balance: $wallet->balance,
+
+            ));
         });
     }
 
@@ -61,6 +70,17 @@ class WalletService
             }
             $wallet->balance = $wallet->balance + $amount;
             $wallet->save();
+
+
+
+            //send notification to user when balance is credited
+            $user->notify(new UserWalletNotification(
+                event: 'credited',
+                amount: $amount,
+                balance: $wallet->balance,
+
+            ));
+
 
             $payment = Payment::create([
                 'user_id' => $user->id,

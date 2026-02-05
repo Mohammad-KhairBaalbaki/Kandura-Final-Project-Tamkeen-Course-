@@ -24,16 +24,18 @@ class OrderObserver
 
         $isCancelled = in_array($newStatus, ['cancelled'], true);
         $isConfirmed = in_array($newStatus, ['confirmed'], true);
+        $isDelivered = in_array($newStatus, ['delivered'], true);
 
-        
         if ($isCancelled) {
             $user = $order->user;
             if ($user) {
+                //send notification to user when order is cancelled
                 $user->notify(new UserOrderNotification(
                     order: $order,
                     statusLabel: 'has been cancelled'
                 ));
 
+                //send notification to admin when order is cancelled
                 event(new DashboardNotificationRequested(
                     permission: 'notify.orders.cancelled',
                     title: 'Order cancelled',
@@ -51,12 +53,34 @@ class OrderObserver
         } else if ($isConfirmed) {
             $user = $order->user;
             if ($user) {
+                //send notification to user when order is confirmed
                 $user->notify(new UserOrderNotification(
                     order: $order,
                     statusLabel: 'has been confiremed'
                 ));
             }
         }
+        else if ($isDelivered) {
+            $user = $order->user;
+            if ($user) {
+                //send notification to user when order is delivered
+                $user->notify(new UserOrderNotification(
+                    order: $order,
+                    statusLabel: 'has been delivered'
+                ));
+            }
+        }
+        else
+            {
+                $user = $order->user;
+            if ($user) {
+                //send notification to user when order status is changed
+                $user->notify(new UserOrderNotification(
+                    order: $order,
+                    statusLabel: 'has been updated from ' . $oldStatus . ' to ' . $newStatus
+                ));
+            }
+            }
 
     }
 }

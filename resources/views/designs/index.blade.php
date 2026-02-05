@@ -198,7 +198,7 @@
                     <div class="mt-3 flex items-baseline justify-between">
                         <div class="text-lg font-bold text-gray-900">
                             {{ number_format($design->price ?? 0, 2) }}
-                            <span class="text-[11px] text-gray-500">USD</span>
+                            <span class="text-[11px] text-gray-500">{{ __('USD') }}</span>
                         </div>
                         <span class="text-xs text-gray-500">{{ $design->created_at->format('d M, Y') }}</span>
                     </div>

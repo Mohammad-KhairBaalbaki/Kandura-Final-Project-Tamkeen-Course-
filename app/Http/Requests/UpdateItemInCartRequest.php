@@ -25,4 +25,12 @@ class UpdateItemInCartRequest extends FormRequest
             'quantity'=>['integer','min:1']
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'quantity.integer' => 'Quantity must be an integer.',
+            'quantity.min' => 'Quantity must be at least 1.',
+        ];
+    }
 }

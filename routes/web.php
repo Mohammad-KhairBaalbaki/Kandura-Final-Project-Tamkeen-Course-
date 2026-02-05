@@ -12,10 +12,12 @@ use App\Http\Controllers\Web\LanguageController;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\NotificationController;
 use App\Http\Controllers\Web\PaymentController;
+use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\Web\WalletController;
 use App\Http\Controllers\Api\WebhookController;
 use App\Http\Controllers\FcmTokenController;
+use App\Http\Middleware\CheckActiveMiddleware;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
@@ -47,16 +49,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/payment/result/{order}', [StripeController::class, 'result'])->name('payment.result');
     Route::get('/payment/status/{order}', [StripeController::class, 'status'])->name('payment.status');
 
+    /////////////////////////////////
     Route::get('/payment/success/{order}', [StripeController::class, 'successP'])->name('payment.success');
     Route::get('/payment/failed/{order}', [StripeController::class, 'failedP'])->name('payment.failed');
 
+    ////////////////////////////////
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'show'])
+        ->name('profile.show');
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     // Orders
-    Route::prefix('orders')->name('orders.')->group(function () {
+    Route::prefix('orders')->middleware([CheckActiveMiddleware::class])->name('orders.')->group(function () {
 
         Route::get('/', [OrderController::class,'index'])->name('index')->middleware('permission:view-orders,api');
 
@@ -71,13 +79,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     // Payments
-    Route::prefix('payments')->name('payments.')->group(function () {
+    Route::prefix('payments')->middleware([CheckActiveMiddleware::class])->name('payments.')->group(function () {
         Route::get('/', [PaymentController::class, 'index'])->name('index')
             ->middleware('permission:view-invoices,api');
     });
 
     // Users
-    Route::prefix('users')->controller(UserController::class)->name('users.')->group(function () {
+    Route::prefix('users')->middleware([CheckActiveMiddleware::class])->controller(UserController::class)->name('users.')->group(function () {
         Route::get('/', 'index')->name('index')
             ->middleware('permission:view-users,api');
 
@@ -90,7 +98,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     //Admins
-    Route::prefix('admins')->name('admins.')->group(function () {
+    Route::prefix('admins')->middleware([CheckActiveMiddleware::class])->name('admins.')->group(function () {
         Route::get('/', [AdminController::class,'index'])->name('index')
             ->middleware('permission:view-admins,api');
 
@@ -109,7 +117,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     // Designs
-    Route::prefix('designs')->name('designs.')->group(function () {
+    Route::prefix('designs')->middleware([CheckActiveMiddleware::class])->name('designs.')->group(function () {
         Route::get('/', [DesignController::class, 'index'])->name('index');
 
         Route::get('/{design}', [DesignController::class, 'show'])->name('show');
@@ -118,7 +126,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     // Design Options
-    Route::prefix('design_options')->name('design_options.')->group(function () {
+    Route::prefix('design_options')->middleware([CheckActiveMiddleware::class])->name('design_options.')->group(function () {
         Route::get('/', [DesignOptionController::class, 'index'])->name('index')
             ->middleware('permission:view-design-options,api');
 
@@ -139,7 +147,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     // Coupons
-    Route::prefix('coupons')->name('coupons.')->group(function () {
+    Route::prefix('coupons')->middleware([CheckActiveMiddleware::class])->name('coupons.')->group(function () {
 
         Route::get('/', [CouponController::class, 'index'])->name('index')
             ->middleware('permission:view-coupons,api');
@@ -161,7 +169,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     // Wallets
-    Route::prefix('wallets')->name('wallets.')->group(function () {
+    Route::prefix('wallets')->middleware([CheckActiveMiddleware::class])->name('wallets.')->group(function () {
         Route::get('/charge', [WalletController::class, 'charge'])->name('charge')
             ->middleware('permission:add-balance,api');
 
@@ -171,7 +179,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     // Roles
-    Route::prefix('roles')->name('roles.')->group(function () {
+    Route::prefix('roles')->middleware([CheckActiveMiddleware::class])->name('roles.')->group(function () {
         Route::get('/', [RoleController::class, 'index'])->name('index')
             ->middleware('permission:view-roles,api');
 

@@ -73,7 +73,7 @@
                     <div class="text-xl font-bold text-gray-900">
                         {{ number_format($design->price ?? 0, 2) }}
                     </div>
-                    <div class="text-xs text-gray-500">USD</div>
+                    <div class="text-xs text-gray-500">{{ __('USD') }}</div>
                 </div>
             </div>
         </div>

@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\StatusEnum;
+use App\Models\Design;
 use App\Models\DesignOption;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
@@ -26,9 +28,18 @@ class StoreItemInCartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'design_id' => ['required', 'integer', Rule::exists('designs', 'id')],
+            'design_id' => [
+                'required',
+                'integer',
+                Rule::exists('designs', 'id')->whereNull('deleted_at'),
+            ],
             'design_option_ids' => ['required', 'array', 'min:1'],
-            'design_option_ids.*' => ['required', 'integer', 'distinct', Rule::exists('design_options', 'id')],
+            'design_option_ids.*' => [
+                'required',
+                'integer',
+                'distinct',
+                Rule::exists('design_options', 'id')->whereNull('deleted_at'),
+            ],
             'measurement_id' => ['required', 'integer', Rule::exists('measurements', 'id')],
             'quantity' => ['required', 'numeric', 'min:1'],
         ];
@@ -47,6 +58,22 @@ class StoreItemInCartRequest extends FormRequest
 
                 $measurementId = (int) $this->input('measurement_id');
 
+                $design = Design::query()
+                    ->with('user')
+                    ->where('status', StatusEnum::ACTIVE)
+                    ->whereHas('user', function ($q) {
+                        $q->where('is_active', true);
+                    })
+                    ->find($designId);
+
+                if (!$design) {
+                    $validator->errors()->add(
+                        'design_id',
+                        'The selected design is inactive or its owner is inactive.'
+                    );
+                    return;
+                }
+
                 $measurementExistsForDesign = DB::table('design_measurement')
                     ->where('design_id', $designId)
                     ->where('measurement_id', $measurementId)
@@ -61,6 +88,7 @@ class StoreItemInCartRequest extends FormRequest
                 $requiredTypes = DesignOption::query()
                     ->join('design_design_option as p', 'p.design_option_id', '=', 'design_options.id')
                     ->where('p.design_id', $designId)
+                    ->whereNull('design_options.deleted_at')
                     ->distinct()
                     ->pluck('design_options.type')
                     ->all();
@@ -71,6 +99,7 @@ class StoreItemInCartRequest extends FormRequest
                     ->join('design_design_option as p', 'p.design_option_id', '=', 'design_options.id')
                     ->where('p.design_id', $designId)
                     ->whereIn('design_options.id', $ids)
+                    ->whereNull('design_options.deleted_at')
                     ->get();
 
                 // A) Make sure every sent option actually belongs to this design
@@ -113,6 +142,28 @@ class StoreItemInCartRequest extends FormRequest
                     }
                 }
             }
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'design_id.required' => 'Design is required.',
+            'design_id.integer' => 'Design must be a valid id.',
+            'design_id.exists' => 'Selected design does not exist.',
+            'design_option_ids.required' => 'Design options are required.',
+            'design_option_ids.array' => 'Design options must be an array.',
+            'design_option_ids.min' => 'At least one design option is required.',
+            'design_option_ids.*.required' => 'Each design option is required.',
+            'design_option_ids.*.integer' => 'Design option must be a valid id.',
+            'design_option_ids.*.distinct' => 'Duplicate design options are not allowed.',
+            'design_option_ids.*.exists' => 'One or more design options are invalid.',
+            'measurement_id.required' => 'Measurement is required.',
+            'measurement_id.integer' => 'Measurement must be a valid id.',
+            'measurement_id.exists' => 'Selected measurement does not exist.',
+            'quantity.required' => 'Quantity is required.',
+            'quantity.numeric' => 'Quantity must be a number.',
+            'quantity.min' => 'Quantity must be at least 1.',
         ];
     }
 }

@@ -26,4 +26,14 @@ class StoreOrderRequest extends FormRequest
             'payment_method'=>'required|in:stripe,wallet,after_delivery',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'address_id.required' => 'Address is required.',
+            'address_id.exists' => 'Selected address does not exist.',
+            'payment_method.required' => 'Payment method is required.',
+            'payment_method.in' => 'Payment method must be one of: stripe, wallet, after_delivery.',
+        ];
+    }
 }

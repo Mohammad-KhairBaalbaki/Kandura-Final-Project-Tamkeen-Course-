@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Login - Kandoura</title>
+    <title>{{ __('Login - Kandoura') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -64,8 +64,8 @@
                         stroke-width="1.5" />
                 </svg>
             </div>
-            <h1 class="text-3xl font-bold text-white mb-2">Kandoura</h1>
-            <p class="text-purple-100">Sign in to manage your store</p>
+            <h1 class="text-3xl font-bold text-white mb-2">{{ __('Kandoura') }}</h1>
+            <p class="text-purple-100">{{ __('Sign in to manage your store') }}</p>
         </div>
 
         <!-- Login Card -->
@@ -82,7 +82,7 @@
             @if ($errors->any())
                 <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
                     <i class="fas fa-exclamation-circle mr-2"></i>
-                    <span class="font-semibold">Oops! Something went wrong.</span>
+                    <span class="font-semibold">{{ __('Oops! Something went wrong.') }}</span>
                     <ul class="mt-2 ml-6 list-disc text-sm">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -97,12 +97,12 @@
                 <!-- Email Field -->
                 <div class="mb-6">
                     <label for="email" class="block text-gray-700 font-semibold mb-2">
-                        <i class="fas fa-envelope mr-2 text-purple-600"></i>Email Address
+                        <i class="fas fa-envelope mr-2 text-purple-600"></i>{{ __('Email Address') }}
                     </label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus
                         autocomplete="username"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition @error('email') border-red-500 @enderror"
-                        placeholder="admin@example.com">
+                        placeholder="{{ __('admin@example.com') }}">
                     @error('email')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -111,12 +111,12 @@
                 <!-- Password Field -->
                 <div class="mb-6">
                     <label for="password" class="block text-gray-700 font-semibold mb-2">
-                        <i class="fas fa-lock mr-2 text-purple-600"></i>Password
+                        <i class="fas fa-lock mr-2 text-purple-600"></i>{{ __('Password') }}
                     </label>
                     <div class="relative">
                         <input type="password" id="password" name="password" required autocomplete="current-password"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition @error('password') border-red-500 @enderror"
-                            placeholder="••••••••">
+                            placeholder="{{ __('Password Placeholder') }}">
                         <button type="button" onclick="togglePassword()"
                             class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
                             <i class="fas fa-eye" id="toggleIcon"></i>
@@ -129,7 +129,7 @@
                 <!-- Submit Button -->
                 <button type="submit"
                     class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transform transition hover:scale-[1.02] active:scale-[0.98]">
-                    <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                    <i class="fas fa-sign-in-alt mr-2"></i>{{ __('Sign In') }}
                 </button>
             </form>
 
@@ -139,7 +139,7 @@
 
         <!-- Footer -->
         <div class="text-center mt-8 text-white text-sm">
-            <p>&copy; {{ date('Y') }} Kandoura Store. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {{ __('Kandoura Store') }}. {{ __('All rights reserved.') }}</p>
         </div>
     </div>
 
