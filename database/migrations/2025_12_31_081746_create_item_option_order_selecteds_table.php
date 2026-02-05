@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('item_option_order_selecteds', function (Blueprint $table) {
             $table->id();
             $table->foreignId('item_order_id')->constrained('item_orders')->cascadeOnDelete();
-            $table->foreignId('design_option_id')->constrained('design_options')->cascadeOnDelete();
+            $table->foreignId('design_option_id')->constrained('design_options')->noActionOnDelete();
             $table->timestamps();
         });
     }

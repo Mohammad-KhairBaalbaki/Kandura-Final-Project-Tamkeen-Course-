@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Web\AdminController;
-use App\Http\Controllers\Api\StripeController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\DashboardController;
@@ -9,11 +8,14 @@ use App\Http\Controllers\Web\CouponController;
 use App\Http\Controllers\Web\DesignController;
 use App\Http\Controllers\Web\DesignOptionController;
 use App\Http\Controllers\Web\LanguageController;
+use App\Http\Controllers\Web\LocationController;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\NotificationController;
 use App\Http\Controllers\Web\PaymentController;
 use App\Http\Controllers\Web\ProfileController;
+use App\Http\Controllers\Web\ReviewController;
 use App\Http\Controllers\Web\RoleController;
+use App\Http\Controllers\Web\SettingsController;
 use App\Http\Controllers\Web\WalletController;
 use App\Http\Controllers\Api\WebhookController;
 use App\Http\Controllers\FcmTokenController;
@@ -36,30 +38,31 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::get('/language/{locale}', [LanguageController::class, 'switch'])->name('language.switch');
 
+//webhook
 Route::post('/stripe/webhook', [WebhookController::class, 'handle'])
     ->withoutMiddleware([
 VerifyCsrfToken::class])->name('stripe.webhook');
 
-// Route::get('/pay/{order}', [ControllersOrderController::class, 'pay']);
 
 // Protected routes
 Route::middleware(['auth:sanctum'])->group(function () {
 
-    // One page that decides where to send the user (success/failed)
-    Route::get('/payment/result/{order}', [StripeController::class, 'result'])->name('payment.result');
-    Route::get('/payment/status/{order}', [StripeController::class, 'status'])->name('payment.status');
 
-    /////////////////////////////////
-    Route::get('/payment/success/{order}', [StripeController::class, 'successP'])->name('payment.success');
-    Route::get('/payment/failed/{order}', [StripeController::class, 'failedP'])->name('payment.failed');
 
-    ////////////////////////////////
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'show'])
         ->name('profile.show');
+
+    // Settings
+    Route::get('/settings', [SettingsController::class, 'index'])
+        ->middleware([CheckActiveMiddleware::class])
+        ->name('settings.index');
+    Route::post('/settings/notifications', [SettingsController::class, 'updateNotifications'])
+        ->middleware([CheckActiveMiddleware::class])
+        ->name('settings.notifications.update');
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -73,6 +76,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/{order}/invoice', [OrderController::class, 'invoice'])->name('invoice')->middleware('permission:view-invoices,api');
 
         Route::post('/invoices/zip', [OrderController::class, 'downloadInvoicesZip'])->middleware('permission:view-invoices,api')->name('invoices.zip');
+
+        Route::patch('/{order}/status', [OrderController::class, 'updateStatus'])
+            ->name('updateStatus')
+            ->middleware('permission:edit-orders,api');
 
         Route::get('/failed/{order}', [OrderController::class, 'failed'])->name('failed');
 
@@ -130,6 +137,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/', [DesignOptionController::class, 'index'])->name('index')
             ->middleware('permission:view-design-options,api');
 
+        Route::get('/trashed', [DesignOptionController::class, 'trashed'])->name('trashed')
+            ->middleware('permission:view-design-options,api');
+
         Route::get('/create', [DesignOptionController::class, 'create'])->name('create')
             ->middleware('permission:create-design-options,api');
 
@@ -144,6 +154,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::patch('/{designOption}/status', [DesignOptionController::class, 'updateStatus'])->name('updateStatus')
             ->middleware('permission:edit-design-options,api');
+
+        Route::delete('/{designOption}', [DesignOptionController::class, 'destroy'])->name('destroy')
+            ->middleware('permission:delete-design-options,api');
+
+        Route::patch('/{designOption}/restore', [DesignOptionController::class, 'restore'])->name('restore')
+            ->middleware('permission:delete-design-options,api');
     });
 
     // Coupons
@@ -201,6 +217,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy')
             ->middleware('permission:delete-roles,api');
 
+    });
+
+    // Reviews
+    Route::prefix('reviews')->middleware([CheckActiveMiddleware::class])->name('reviews.')->group(function () {
+        Route::get('/', [ReviewController::class, 'index'])->name('index')
+            ->middleware('permission:view-orders,api');
+    });
+
+    // Locations
+    Route::prefix('locations')->middleware([CheckActiveMiddleware::class])->name('locations.')->group(function () {
+        Route::get('/cities', [LocationController::class, 'cities'])->name('cities')
+            ->middleware('permission:view-orders,api');
     });
 
     // Notifications

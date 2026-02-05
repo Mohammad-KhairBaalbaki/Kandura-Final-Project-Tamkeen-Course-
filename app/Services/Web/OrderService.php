@@ -104,5 +104,19 @@ class OrderService
                 ->with('payment_failed', 'Payment failed. Please try again.');
         });
     }
-}
 
+    public function updateStatus(Request $request, Order $order): Order
+    {
+        return DB::transaction(function () use ($request, $order) {
+            $validated = $request->validate([
+                'status' => 'required|in:pending,confirmed,delivered,cancelled',
+            ]);
+
+            $order->update([
+                'status' => $validated['status'],
+            ]);
+
+            return $order;
+        });
+    }
+}

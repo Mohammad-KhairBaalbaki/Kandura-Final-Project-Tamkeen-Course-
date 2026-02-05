@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('notification_preferences', function (Blueprint $table) {
+        //  'invoice_num',
+        // 'order_id',
+        // 'total',
+        // 'pdf_url'
+        Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->string('permission');
-            $table->boolean('enabled')->default(true);
+            $table->string('invoice_num');
+            $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
+            $table->float('total');
+            $table->string('pdf_url');
             $table->timestamps();
-
-            $table->unique(['user_id', 'permission']);
-            $table->index(['user_id']);
         });
     }
 
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('notification_preferences');
+        Schema::dropIfExists('invoices');
     }
 };

@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Events\DashboardNotificationRequested;
 use App\Models\User;
 use App\Notifications\User\UserAccountNotification;
+use Illuminate\Support\Facades\Log;
 
 class UserObserver
 {
@@ -23,9 +24,9 @@ class UserObserver
     {
         //
         if (!$user->wasChanged('is_active')) {
+
             return;
         }
-
         if (!$user->is_active) {
             //send notifications to admin when user is deactivated
             event(new DashboardNotificationRequested(

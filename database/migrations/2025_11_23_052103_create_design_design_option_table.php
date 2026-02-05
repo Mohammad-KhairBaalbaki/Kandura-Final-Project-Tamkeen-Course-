@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('design_design_option', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('design_id')->constrained('designs')->cascadeOnDelete();
-            $table->foreignId('design_option_id')->constrained('design_options')->cascadeOnDelete();
+            $table->foreignId('design_id')->constrained('designs')->noActionOnDelete();
+            $table->foreignId('design_option_id')->constrained('design_options')->noActionOnDelete();
             $table->unique(['design_id', 'design_option_id']);
             $table->timestamps();
         });

@@ -277,12 +277,7 @@
                                         {{ __('designs.active') }}
                                     </button>
 
-                                    <button type="submit" name="status" value="inactive"
-                                        class="w-full px-3 py-2 mt-1 text-sm rounded-lg text-left
-                hover:bg-purple-100 text-purple-700 transition">
-                                        <i class="fas fa-times-circle mr-2"></i>
-                                        {{ __('designs.inactive') }}
-                                    </button>
+
 
                                     <button type="submit" name="status" value="blocked"
                                         class="w-full px-3 py-2 mt-1 text-sm rounded-lg text-left

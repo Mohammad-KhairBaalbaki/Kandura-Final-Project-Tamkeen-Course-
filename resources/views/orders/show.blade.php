@@ -41,10 +41,59 @@
                         'cancelled' => 'bg-red-100 text-red-800',
                     ];
                 @endphp
-                <span
-                    class="px-4 py-2 text-sm font-semibold rounded-full {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
-                    {{ __(ucfirst($order->status)) }}
-                </span>
+                <div class="relative inline-block text-left">
+                    @php
+                        $statusLabels = [
+                            'pending' => __('orders.pending'),
+                            'confirmed' => __('orders.confirmed'),
+                            'delivered' => __('orders.delivered'),
+                            'cancelled' => __('orders.cancelled'),
+                        ];
+                    @endphp
+                    <button type="button" onclick="toggleOrderStatusMenu(event)"
+                        class="px-4 py-2 text-sm font-semibold rounded-full transition
+                        {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
+                        {{ $statusLabels[$order->status] ?? $order->status }}
+                        <i class="fas fa-chevron-down ml-2 text-[10px]"></i>
+                    </button>
+
+                    <div id="order-status-menu"
+                        class="hidden absolute left-0 top-full z-10 mt-2 w-40 bg-white rounded-xl shadow-lg border p-2">
+                        <form method="POST" action="{{ route('orders.updateStatus', $order->id) }}"
+                            onclick="event.stopPropagation()">
+                            @csrf
+                            @method('PATCH')
+
+                            <button name="status" value="pending"
+                                class="w-full px-3 py-2 text-sm rounded-lg text-left
+                                hover:bg-yellow-100 text-yellow-800 transition">
+                                <i class="fas fa-clock mr-2"></i>
+                                {{ __('orders.pending') }}
+                            </button>
+
+                            <button name="status" value="confirmed"
+                                class="w-full px-3 py-2 mt-1 text-sm rounded-lg text-left
+                                hover:bg-blue-100 text-blue-800 transition">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                {{ __('orders.confirmed') }}
+                            </button>
+
+                            <button name="status" value="delivered"
+                                class="w-full px-3 py-2 mt-1 text-sm rounded-lg text-left
+                                hover:bg-green-100 text-green-800 transition">
+                                <i class="fas fa-truck mr-2"></i>
+                                {{ __('orders.delivered') }}
+                            </button>
+
+                            <button name="status" value="cancelled"
+                                class="w-full px-3 py-2 mt-1 text-sm rounded-lg text-left
+                                hover:bg-red-100 text-red-800 transition">
+                                <i class="fas fa-times-circle mr-2"></i>
+                                {{ __('orders.cancelled') }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
                 <a href="{{ route('orders.invoice', $order->id) }}"
                     class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm font-medium">
                     <i class="fas fa-file-pdf mr-2"></i>
@@ -297,6 +346,20 @@
 
 @push('scripts')
     <script>
-        // Add any additional JavaScript functionality here
+        function toggleOrderStatusMenu(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            const menu = document.getElementById('order-status-menu');
+            const isOpen = !menu.classList.contains('hidden');
+
+            document
+                .querySelectorAll('[id^="order-status-menu"]')
+                .forEach(el => el.classList.add('hidden'));
+
+            if (!isOpen) {
+                menu.classList.add('z-50');
+                menu.classList.remove('hidden');
+            }
+        }
     </script>
 @endpush

@@ -5,6 +5,7 @@ namespace App\Services\Web;
 use App\Events\DashboardNotificationRequested;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -24,7 +25,31 @@ class RoleService
     public function create()
     {
         return DB::transaction(function () {
-            return Permission::orderBy('name')->get();
+            $permissions = Permission::orderBy('name')
+                ->whereNotIn('name', [
+                    'create-orders',
+                    'view-admins',
+                    'add-admins',
+                    'edit-admins',
+                    'delete-admins',
+                    'view-roles',
+                    'add-roles',
+                    'edit-roles',
+                    'delete-roles',
+                ])
+                ->get();
+
+            return [
+                'permissions' => $permissions,
+                'groupUsers' => $this->collectPermissions($permissions, ['view-users', 'disable-accounts']),
+                'groupOrders' => $this->collectPermissions($permissions, ['view-orders', 'view-invoices', 'edit-orders']),
+                'groupDesigns' => $this->collectPermissions($permissions, [ 'disable-designs']),
+                'groupDesignOptions' => $this->collectPermissions($permissions, ['view-design-options', 'create-design-options', 'edit-design-options', 'delete-design-options']),
+                'groupCoupons' => $this->collectPermissions($permissions, ['view-coupons', 'create-coupons', 'edit-coupons']),
+                'groupWallets' => $this->collectPermissions($permissions, ['add-balance']),
+                'groupNotifications' => $this->collectNotificationPermissions($permissions),
+                'otherPermissions' => $this->collectOtherPermissions($permissions),
+            ];
         });
     }
 
@@ -65,13 +90,68 @@ class RoleService
             if (in_array($role->name, ['user', 'super-admin'], true)) {
                 abort(404);
             }
-            $permissions = Permission::orderBy('name')->get();
+            $permissions = Permission::orderBy('name')
+                ->whereNotIn('name', [
+                    'create-orders',
+                    'view-admins',
+                    'add-admins',
+                    'edit-admins',
+                    'delete-admins',
+                    'view-roles',
+                    'add-roles',
+                    'edit-roles',
+                    'delete-roles',
+                ])
+                ->get();
             $role->load('permissions');
+
             return [
                 'role' => $role,
                 'permissions' => $permissions,
+                'groupUsers' => $this->collectPermissions($permissions, ['view-users', 'disable-accounts']),
+                'groupOrders' => $this->collectPermissions($permissions, ['view-orders', 'view-invoices', 'edit-orders']),
+                'groupDesigns' => $this->collectPermissions($permissions, [ 'disable-designs']),
+                'groupDesignOptions' => $this->collectPermissions($permissions, ['view-design-options', 'create-design-options', 'edit-design-options', 'delete-design-options']),
+                'groupCoupons' => $this->collectPermissions($permissions, ['view-coupons', 'create-coupons', 'edit-coupons']),
+                'groupWallets' => $this->collectPermissions($permissions, ['add-balance']),
+                'groupNotifications' => $this->collectNotificationPermissions($permissions),
+                'otherPermissions' => $this->collectOtherPermissions($permissions),
             ];
         });
+    }
+
+    protected function collectPermissions(Collection $permissions, array $names): Collection
+    {
+        $permissionsByName = $permissions->keyBy('name');
+        return collect($names)
+            ->filter(fn($name) => $permissionsByName->has($name))
+            ->map(fn($name) => $permissionsByName[$name])
+            ->values();
+    }
+
+    protected function collectNotificationPermissions(Collection $permissions): Collection
+    {
+        return $permissions
+            ->filter(fn($p) => str_starts_with($p->name, 'notify.'))
+            ->values();
+    }
+
+    protected function collectOtherPermissions(Collection $permissions): Collection
+    {
+        $used = collect([
+            'view-users', 'disable-accounts',
+            'view-orders', 'view-invoices', 'edit-orders',
+            'create-designs', 'edit-designs', 'delete-designs', 'disable-designs',
+            'view-design-options', 'create-design-options', 'edit-design-options', 'delete-design-options',
+            'view-coupons', 'create-coupons', 'edit-coupons',
+            'add-reviews',
+            'add-balance',
+        ]);
+
+        $notifications = $this->collectNotificationPermissions($permissions)->pluck('name');
+        $used = $used->merge($notifications)->unique();
+
+        return $permissions->filter(fn($p) => ! $used->contains($p->name))->values();
     }
 
     public function update(Request $request, Role $role)
@@ -126,4 +206,3 @@ class RoleService
         });
     }
 }
-

@@ -53,13 +53,6 @@
                                 {{ __('designs.active') }}
                             </button>
 
-                            <button name="status" value="inactive"
-                                class="w-full px-3 py-2 mt-1 text-sm rounded-lg text-left
-                                hover:bg-gray-100 text-gray-700 transition">
-                                <i class="fas fa-minus-circle mr-2"></i>
-                                {{ __('designs.inactive') }}
-                            </button>
-
                             <button name="status" value="blocked"
                                 class="w-full px-3 py-2 mt-1 text-sm rounded-lg text-left
                                 hover:bg-red-100 text-red-800 transition">
@@ -74,6 +67,12 @@
                         {{ number_format($design->price ?? 0, 2) }}
                     </div>
                     <div class="text-xs text-gray-500">{{ __('USD') }}</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-xl font-bold text-purple-700">
+                        {{ $design->sales_count ?? 0 }}
+                    </div>
+                    <div class="text-xs text-gray-500">{{ __('Sales') }}</div>
                 </div>
             </div>
         </div>

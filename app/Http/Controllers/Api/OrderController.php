@@ -101,7 +101,6 @@ class OrderController extends Controller
 
     public function failedPayment()
     {
-
         return $this->success(false, "Order Payment failed .", 200);
     }
 

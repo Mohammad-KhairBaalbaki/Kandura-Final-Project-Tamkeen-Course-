@@ -32,8 +32,27 @@ class RoleController extends Controller
     public function create()
     {
         try {
-            $permissions = $this->roleService->create();
-            return view('roles.create', compact('permissions'));
+            $data = $this->roleService->create();
+            $permissions = $data['permissions'];
+            $groupUsers = $data['groupUsers'];
+            $groupOrders = $data['groupOrders'];
+            $groupDesigns = $data['groupDesigns'];
+            $groupDesignOptions = $data['groupDesignOptions'];
+            $groupCoupons = $data['groupCoupons'];
+            $groupWallets = $data['groupWallets'];
+            $groupNotifications = $data['groupNotifications'];
+            $otherPermissions = $data['otherPermissions'];
+            return view('roles.create', compact(
+                'permissions',
+                'groupUsers',
+                'groupOrders',
+                'groupDesigns',
+                'groupDesignOptions',
+                'groupCoupons',
+                'groupWallets',
+                'groupNotifications',
+                'otherPermissions'
+            ));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
@@ -73,7 +92,26 @@ class RoleController extends Controller
             $data = $this->roleService->edit($role);
             $role = $data['role'];
             $permissions = $data['permissions'];
-            return view('roles.edit', compact('role', 'permissions'));
+            $groupUsers = $data['groupUsers'];
+            $groupOrders = $data['groupOrders'];
+            $groupDesigns = $data['groupDesigns'];
+            $groupDesignOptions = $data['groupDesignOptions'];
+            $groupCoupons = $data['groupCoupons'];
+            $groupWallets = $data['groupWallets'];
+            $groupNotifications = $data['groupNotifications'];
+            $otherPermissions = $data['otherPermissions'];
+            return view('roles.edit', compact(
+                'role',
+                'permissions',
+                'groupUsers',
+                'groupOrders',
+                'groupDesigns',
+                'groupDesignOptions',
+                'groupCoupons',
+                'groupWallets',
+                'groupNotifications',
+                'otherPermissions'
+            ));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());

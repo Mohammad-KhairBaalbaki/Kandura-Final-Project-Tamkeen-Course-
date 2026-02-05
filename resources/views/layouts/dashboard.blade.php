@@ -136,6 +136,12 @@
                         <i class="fas fa-shopping-cart text-lg w-5"></i>
                         <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Orders') }}</span>
                     </a>
+                    <!-- Reviews -->
+                    <a href="{{ route('reviews.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('reviews*') ? 'sidebar-active' : 'text-gray-700' }}">
+                        <i class="fas fa-star text-lg w-5"></i>
+                        <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Reviews') }}</span>
+                    </a>
 
                     <!-- Coupons -->
                     {{-- {{ route('bottles.index') }} --}}
@@ -149,31 +155,12 @@
 
 
                     <!-- Locations -->
-                    <div x-data="{ open: {{ request()->is('countries*') || request()->is('cities*') ? 'true' : 'false' }} }">
-                        <button @click="open = !open"
-                            class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-purple-50 transition text-gray-700">
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-map-marked-alt text-lg w-5"></i>
-                                <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Locations') }}</span>
-                            </div>
-                            <i x-show="sidebarOpen" :class="open ? 'fa-chevron-down' : 'fa-chevron-right'"
-                                class="fas text-sm"></i>
-                        </button>
-                        <div x-show="open && sidebarOpen" x-cloak class="ml-8 mt-2 space-y-1">
-                            {{-- {{ route('countries.index') }} --}}
-                            <a href=""
-                                class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50">
-                                <i class="fas fa-flag w-4"></i>
-                                <span>{{ __('Countries') }}</span>
-                            </a>
-                            {{-- {{ route('cities.index') }} --}}
-                            <a href=""
-                                class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50">
+                    {{-- {{ route('cities.index') }} --}}
+                            <a href="{{ route('locations.cities') }}"
+                                class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('locations*') ? 'sidebar-active' : 'text-gray-700' }}">
                                 <i class="fas fa-city w-4"></i>
                                 <span>{{ __('Cities') }}</span>
                             </a>
-                        </div>
-                    </div>
 
                     <!-- Wallets -->
                     {{-- {{ route('reviews.index') }} --}}
@@ -182,6 +169,8 @@
                         <i class="fas fa-wallet text-lg w-5"></i>
                         <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('wallets.wallets') }}</span>
                     </a>
+
+
 
                     <!-- Roles -->
                     {{-- {{ route('reviews.index') }} --}}
@@ -199,7 +188,12 @@
                         <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('payments.payments') }}</span>
                     </a>
 
-
+                    <!-- Settings -->
+                    <a href="{{ route('settings.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('settings*') ? 'sidebar-active' : 'text-gray-700' }}">
+                        <i class="fas fa-cog text-lg w-5"></i>
+                        <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('Settings') }}</span>
+                    </a>
 
                 </nav>
 
@@ -296,14 +290,9 @@
 
                         <!-- Notifications -->
                         @php
-                            $latestNotifications = auth()->user()
-                                ?->notifications()
-                                ->latest()
-                                ->take(5)
-                                ->get() ?? collect();
-                            $unreadCount = auth()->user()
-                                ?->unreadNotifications()
-                                ->count() ?? 0;
+                            $latestNotifications =
+                                auth()->user()?->notifications()->latest()->take(5)->get() ?? collect();
+                            $unreadCount = auth()->user()?->unreadNotifications()->count() ?? 0;
                         @endphp
                         <div x-data="{ open: false }" class="relative">
                             <button @click="open = !open"
@@ -319,7 +308,8 @@
                             <div x-show="open" @click.away="open = false" x-cloak
                                 class="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border">
                                 <div class="p-4 border-b flex items-center justify-between">
-                                    <h3 class="font-semibold text-gray-800">{{ __('notifications.notifications') }}</h3>
+                                    <h3 class="font-semibold text-gray-800">{{ __('notifications.notifications') }}
+                                    </h3>
                                     <a href="{{ route('notifications.index') }}"
                                         class="text-xs text-purple-600 hover:text-purple-700 font-medium">
                                         {{ __('notifications.view_all') }}
@@ -327,7 +317,8 @@
                                 </div>
                                 <div class="max-h-96 overflow-y-auto">
                                     @forelse ($latestNotifications as $notification)
-                                        <form method="POST" action="{{ route('notifications.read', $notification->id) }}"
+                                        <form method="POST"
+                                            action="{{ route('notifications.read', $notification->id) }}"
                                             class="border-b last:border-b-0">
                                             @csrf
                                             <button type="submit"
@@ -369,14 +360,12 @@
                             </button>
                             <div x-show="open" @click.away="open = false" x-cloak
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-2">
-                                {{-- {{ route('profile.edit') }} --}}
                                 <a href="{{ route('profile.show') }}"
                                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">
                                     <i class="fas fa-user w-5"></i>
                                     <span>{{ __('Profile') }}</span>
                                 </a>
-                                {{-- {{ route('settings.index') }} --}}
-                                <a href=""
+                                <a href="{{ route('settings.index') }}"
                                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">
                                     <i class="fas fa-cog w-5"></i>
                                     <span>{{ __('Settings') }}</span>

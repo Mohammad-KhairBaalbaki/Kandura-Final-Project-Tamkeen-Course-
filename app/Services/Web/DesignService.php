@@ -103,7 +103,9 @@ class DesignService
     public function show(Design $design)
     {
         return DB::transaction(function () use ($design) {
+            $salesCount = $design->itemsOrder()->sum('quantity');
             $design->load(['images', 'designOptions', 'measurements', 'user.image']);
+            $design->sales_count = $salesCount;
             return $design;
         });
     }

@@ -31,6 +31,18 @@ class DesignOptionController extends Controller
         }
     }
 
+    public function trashed(Request $request)
+    {
+        try {
+            $designOptions = $this->designOptionService->trashed($request);
+            return view('design_options.trashed', compact('designOptions'));
+        } catch (\Exception $e) {
+            Log::error($e);
+            Log::error($e->getMessage());
+            return $this->success(false, 'process failed try again later', 422);
+        }
+    }
+
     public function create()
     {
         try {
@@ -100,6 +112,38 @@ class DesignOptionController extends Controller
             }
 
             return back();
+        } catch (\Exception $e) {
+            Log::error($e);
+            Log::error($e->getMessage());
+            return $this->success(false, 'process failed try again later', 422);
+        }
+    }
+
+    public function destroy(DesignOption $designOption)
+    {
+        try {
+            $deleted = $this->designOptionService->destroy($designOption);
+            if (!$deleted) {
+                return back()->withErrors(['service' => __('design_options.not_authorized_delete')]);
+            }
+
+            return redirect()->route('design_options.index');
+        } catch (\Exception $e) {
+            Log::error($e);
+            Log::error($e->getMessage());
+            return $this->success(false, 'process failed try again later', 422);
+        }
+    }
+
+    public function restore($designOption)
+    {
+        try {
+            $restored = $this->designOptionService->restore((int) $designOption);
+            if (!$restored) {
+                return back()->withErrors(['service' => __('design_options.not_authorized_restore')]);
+            }
+
+            return redirect()->route('design_options.trashed');
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());

@@ -53,15 +53,152 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         {{ __('Permissions') }}
                     </label>
-                    <select id="permissions" name="permissions[]" multiple
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
-                        @foreach ($permissions as $permission)
-                            <option value="{{ $permission->name }}"
-                                {{ in_array($permission->name, old('permissions', $role->permissions->pluck('name')->toArray()), true) ? 'selected' : '' }}>
-                                {{ $permission->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    @php
+                        $selectedPermissions = old('permissions', $role->permissions->pluck('name')->toArray());
+                    @endphp
+
+                    <div class="space-y-4">
+                        @if ($groupUsers->isNotEmpty())
+                            <div class="rounded-lg border border-gray-200 p-4">
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('User Management') }}</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    @foreach ($groupUsers as $permission)
+                                        <label
+                                            class="flex items-start gap-3 p-2 rounded-lg border border-gray-100 hover:bg-gray-50">
+                                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                                class="mt-1"
+                                                {{ in_array($permission->name, $selectedPermissions, true) ? 'checked' : '' }}>
+                                            <span class="text-sm text-gray-700">{{ $permission->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($groupOrders->isNotEmpty())
+                            <div class="rounded-lg border border-gray-200 p-4">
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('Order Management') }}</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    @foreach ($groupOrders as $permission)
+                                        <label
+                                            class="flex items-start gap-3 p-2 rounded-lg border border-gray-100 hover:bg-gray-50">
+                                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                                class="mt-1"
+                                                {{ in_array($permission->name, $selectedPermissions, true) ? 'checked' : '' }}>
+                                            <span class="text-sm text-gray-700">{{ $permission->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($groupDesigns->isNotEmpty())
+                            <div class="rounded-lg border border-gray-200 p-4">
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('Design Management') }}</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    @foreach ($groupDesigns as $permission)
+                                        <label
+                                            class="flex items-start gap-3 p-2 rounded-lg border border-gray-100 hover:bg-gray-50">
+                                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                                class="mt-1"
+                                                {{ in_array($permission->name, $selectedPermissions, true) ? 'checked' : '' }}>
+                                            <span class="text-sm text-gray-700">{{ $permission->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($groupDesignOptions->isNotEmpty())
+                            <div class="rounded-lg border border-gray-200 p-4">
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('Design Options Management') }}
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    @foreach ($groupDesignOptions as $permission)
+                                        <label
+                                            class="flex items-start gap-3 p-2 rounded-lg border border-gray-100 hover:bg-gray-50">
+                                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                                class="mt-1"
+                                                {{ in_array($permission->name, $selectedPermissions, true) ? 'checked' : '' }}>
+                                            <span class="text-sm text-gray-700">{{ $permission->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($groupCoupons->isNotEmpty())
+                            <div class="rounded-lg border border-gray-200 p-4">
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('Coupon Management') }}</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    @foreach ($groupCoupons as $permission)
+                                        <label
+                                            class="flex items-start gap-3 p-2 rounded-lg border border-gray-100 hover:bg-gray-50">
+                                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                                class="mt-1"
+                                                {{ in_array($permission->name, $selectedPermissions, true) ? 'checked' : '' }}>
+                                            <span class="text-sm text-gray-700">{{ $permission->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        
+
+                        @if ($groupWallets->isNotEmpty())
+                            <div class="rounded-lg border border-gray-200 p-4">
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('Wallet Management') }}</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    @foreach ($groupWallets as $permission)
+                                        <label
+                                            class="flex items-start gap-3 p-2 rounded-lg border border-gray-100 hover:bg-gray-50">
+                                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                                class="mt-1"
+                                                {{ in_array($permission->name, $selectedPermissions, true) ? 'checked' : '' }}>
+                                            <span class="text-sm text-gray-700">{{ $permission->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($groupNotifications->isNotEmpty())
+                            <div class="rounded-lg border border-gray-200 p-4">
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">
+                                    {{ __('notifications.notifications') }}</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    @foreach ($groupNotifications as $permission)
+                                        <label
+                                            class="flex items-start gap-3 p-2 rounded-lg border border-gray-100 hover:bg-gray-50">
+                                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                                class="mt-1"
+                                                {{ in_array($permission->name, $selectedPermissions, true) ? 'checked' : '' }}>
+                                            <span class="text-sm text-gray-700">{{ $permission->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($otherPermissions->isNotEmpty())
+                            <div class="rounded-lg border border-gray-200 p-4">
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('Other Permissions') }}</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    @foreach ($otherPermissions as $permission)
+                                        <label
+                                            class="flex items-start gap-3 p-2 rounded-lg border border-gray-100 hover:bg-gray-50">
+                                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                                class="mt-1"
+                                                {{ in_array($permission->name, $selectedPermissions, true) ? 'checked' : '' }}>
+                                            <span class="text-sm text-gray-700">{{ $permission->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
                     @error('permissions')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror
@@ -97,13 +234,12 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const resetBtn = document.getElementById('reset-permissions');
-            const select = document.getElementById('permissions');
-            if (!resetBtn || !select) return;
+            const checkboxes = document.querySelectorAll('input[name="permissions[]"]');
+            if (!resetBtn || !checkboxes.length) return;
             resetBtn.addEventListener('click', () => {
-                Array.from(select.options).forEach(option => {
-                    option.selected = false;
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
                 });
-                select.dispatchEvent(new Event('change'));
             });
         });
     </script>

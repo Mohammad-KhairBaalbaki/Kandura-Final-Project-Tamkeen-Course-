@@ -248,8 +248,7 @@
                         <i class="fas fa-star text-purple-600 mr-2"></i>
                         {{ __('Recent Reviews') }}
                     </h2>
-                    {{-- {{ route('reviews.index') }} --}}
-                    <a href="" class="text-sm text-purple-600 hover:text-purple-700 font-semibold">
+                    <a href="{{ route('reviews.index') }}" class="text-sm text-purple-600 hover:text-purple-700 font-semibold">
                         {{ __('View All') }} <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>
@@ -259,12 +258,11 @@
                     <div class="flex items-start space-x-4 pb-4 border-b last:border-b-0">
                         <div
                             class="w-10 h-10 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
-                            {{ substr($review->user->first_name, 0, 1) }}{{ substr($review->user->last_name, 0, 1) }}
+                            {{ strtoupper(substr($review->user->name ?? 'U', 0, 1)) }}
                         </div>
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-1">
-                                <h4 class="font-semibold text-gray-800">{{ $review->user->first_name }}
-                                    {{ $review->user->last_name }}</h4>
+                                <h4 class="font-semibold text-gray-800">{{ $review->user->name ?? __('N/A') }}</h4>
                                 <div class="flex items-center">
                                     @for ($i = 1; $i <= 5; $i++)
                                         <i
@@ -273,8 +271,9 @@
                                 </div>
                             </div>
                             <p class="text-sm text-purple-600 mb-2">
-                                {{ $review->perfume->name['en'] ?? $review->perfume->name }}</p>
-                            <p class="text-sm text-gray-600">{{ Str::limit($review->body, 100) }}</p>
+                                {{ __('Order') }} #{{ $review->order->num ?? $review->order_id }}
+                            </p>
+                            <p class="text-sm text-gray-600">{{ \Illuminate\Support\Str::limit($review->comment, 100) }}</p>
                             <p class="text-xs text-gray-400 mt-2">{{ $review->created_at->diffForHumans() }}</p>
                         </div>
                     </div>

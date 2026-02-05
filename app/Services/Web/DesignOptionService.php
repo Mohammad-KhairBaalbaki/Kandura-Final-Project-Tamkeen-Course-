@@ -43,6 +43,26 @@ class DesignOptionService
         });
     }
 
+    public function trashed(Request $request)
+    {
+        return DB::transaction(function () use ($request) {
+            $query = DesignOption::onlyTrashed();
+
+            if ($request->filled('name')) {
+                $name = $request->name;
+                $query->where(function ($q) use ($name) {
+                    $q->where('name->' . config('app.locale'), 'like', "%{$name}%");
+                });
+            }
+
+            if ($request->filled('type')) {
+                $query->where('type', $request->type);
+            }
+
+            return $query->latest('deleted_at')->paginate(15)->withQueryString();
+        });
+    }
+
     public function create()
     {
         return DB::transaction(function () {
@@ -107,6 +127,25 @@ class DesignOptionService
             }
 
             return true;
+        });
+    }
+
+    public function destroy(DesignOption $designOption): bool
+    {
+        return DB::transaction(function () use ($designOption) {
+            return (bool) $designOption->delete();
+        });
+    }
+
+    public function restore(int $designOptionId): bool
+    {
+        return DB::transaction(function () use ($designOptionId) {
+            $designOption = DesignOption::withTrashed()->find($designOptionId);
+            if (!$designOption) {
+                return false;
+            }
+
+            return (bool) $designOption->restore();
         });
     }
 }

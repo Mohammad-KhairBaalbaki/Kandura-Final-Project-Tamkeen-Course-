@@ -64,4 +64,16 @@ class OrderController extends Controller
             return $this->success(false, 'process failed try again later', 422);
         }
     }
+
+    public function updateStatus(Request $request, Order $order)
+    {
+        try {
+            $this->orderService->updateStatus($request, $order);
+            return back();
+        } catch (\Exception $e) {
+            Log::error($e);
+            Log::error($e->getMessage());
+            return $this->success(false, 'process failed try again later', 422);
+        }
+    }
 }

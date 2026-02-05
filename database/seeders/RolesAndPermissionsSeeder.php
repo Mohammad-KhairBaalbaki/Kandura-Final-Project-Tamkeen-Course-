@@ -21,13 +21,13 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $user = Role::firstOrCreate(['name' => 'user', 'guard_name' => $guard]);
 
-
-
+        
         $allPermissions = [
             // Orders & invoices
             'view-orders',
             'view-invoices',
             'create-orders',
+            'edit-orders',
             // Users
             'view-users',
             'disable-accounts',
@@ -116,7 +116,7 @@ class RolesAndPermissionsSeeder extends Seeder
         }
 ////////////////////////////
         $user->syncPermissions($userPermissions);
-        $admin->syncPermissions($adminPermissions);
+        $admin->syncPermissions(array_merge($adminNotificationPermissions, $adminPermissions));
         $superAdmin->syncPermissions(array_merge($allPermissions, $SuperAdminNotificationPermissions, $adminNotificationPermissions));
     }
 }

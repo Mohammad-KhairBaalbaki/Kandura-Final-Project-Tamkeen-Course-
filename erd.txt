@@ -1,0 +1,259 @@
+erDiagram
+    USERS ||--o{ ADDRESSES : has
+    CITIES ||--o{ ADDRESSES : has
+    USERS ||--o{ DESIGNS : creates
+    USERS ||--|| CARTS : owns
+    USERS ||--o{ ORDERS : places
+    USERS ||--o{ PAYMENTS : makes
+    USERS ||--|| WALLETS : owns
+    USERS ||--o{ REVIEWS : writes
+    USERS ||--o{ DEVICE_TOKENS : has
+    USERS ||--o{ NOTIFICATION_PREFERENCES : has
+
+    COUPONS ||--o{ CARTS : applies_to
+    COUPONS ||--o{ ORDERS : applies_to
+
+    ADDRESSES ||--o{ ORDERS : used_by
+    PAYMENTS ||--|| ORDERS : paid_for
+    ORDERS ||--o{ ITEM_ORDERS : contains
+    ORDERS ||--|| INVOICES : billed_by
+    ORDERS ||--|| REVIEWS : reviewed_by
+
+    DESIGNS ||--o{ ITEM_ORDERS : included_in
+    MEASUREMENTS ||--o{ ITEM_ORDERS : sized_by
+
+    CARTS ||--o{ ITEM_CARTS : contains
+    DESIGNS ||--o{ ITEM_CARTS : added_to
+    MEASUREMENTS ||--o{ ITEM_CARTS : sized_by
+    ITEM_CARTS ||--o{ ITEM_OPTION_SELECTEDS : selects
+    DESIGN_OPTIONS ||--o{ ITEM_OPTION_SELECTEDS : option
+
+    ITEM_ORDERS ||--o{ ITEM_OPTION_ORDER_SELECTEDS : selects
+    DESIGN_OPTIONS ||--o{ ITEM_OPTION_ORDER_SELECTEDS : option
+
+    DESIGNS ||--o{ DESIGN_DESIGN_OPTION : has
+    DESIGN_OPTIONS ||--o{ DESIGN_DESIGN_OPTION : has
+
+    DESIGNS ||--o{ DESIGN_MEASUREMENT : has
+    MEASUREMENTS ||--o{ DESIGN_MEASUREMENT : has
+
+    PERMISSIONS ||--o{ NOTIFICATION_PREFERENCES : configures
+
+    ROLES ||--o{ ROLE_HAS_PERMISSIONS : grants
+    PERMISSIONS ||--o{ ROLE_HAS_PERMISSIONS : granted_to
+    ROLES ||--o{ MODEL_HAS_ROLES : assigned_to
+    PERMISSIONS ||--o{ MODEL_HAS_PERMISSIONS : assigned_to
+
+    
+    USERS {
+        bigint id
+        string name
+        string email
+        string phone
+        boolean is_active
+    }
+
+    CITIES {
+        bigint id
+        string name
+    }
+
+    ADDRESSES {
+        bigint id
+        bigint user_id
+        bigint city_id
+        string street
+        float latitude
+        float longitude
+        boolean is_default
+        text details
+    }
+
+    DESIGNS {
+        bigint id
+        bigint user_id
+        json name
+        json description
+        float price
+        string status
+    }
+
+    DESIGN_OPTIONS {
+        bigint id
+        json name
+        string type
+        boolean is_active
+    }
+
+    DESIGN_DESIGN_OPTION {
+        bigint id
+        bigint design_id
+        bigint design_option_id
+    }
+
+    MEASUREMENTS {
+        bigint id
+        string size
+        boolean is_active
+    }
+
+    DESIGN_MEASUREMENT {
+        bigint id
+        bigint design_id
+        bigint measurement_id
+    }
+
+    CARTS {
+        bigint id
+        bigint user_id
+        float subtotal
+        float discount
+        bigint coupon_id
+    }
+
+    ITEM_CARTS {
+        bigint id
+        bigint cart_id
+        bigint design_id
+        bigint measurement_id
+        int quantity
+        float price
+        float discount
+    }
+
+    ITEM_OPTION_SELECTEDS {
+        bigint id
+        bigint item_cart_id
+        bigint design_option_id
+    }
+
+    COUPONS {
+        bigint id
+        string code
+        date validate_from
+        date validate_until
+        boolean is_percentage
+        float amount
+        boolean is_active
+        float order_limit_amount
+        int general_limit
+        int usages
+    }
+
+    ORDERS {
+        bigint id
+        string num
+        bigint user_id
+        bigint address_id
+        string status
+        float subtotal
+        float discount
+        bigint payment_id
+        bigint coupon_id
+    }
+
+    ITEM_ORDERS {
+        bigint id
+        bigint order_id
+        bigint design_id
+        bigint measurement_id
+        int quantity
+        float price
+        float discount
+    }
+
+    ITEM_OPTION_ORDER_SELECTEDS {
+        bigint id
+        bigint item_order_id
+        bigint design_option_id
+    }
+
+    PAYMENTS {
+        bigint id
+        string num
+        bigint user_id
+        string method
+        string status
+        float amount
+        string type
+    }
+
+    INVOICES {
+        bigint id
+        string invoice_num
+        bigint order_id
+        float total
+        string pdf_url
+    }
+
+    REVIEWS {
+        bigint id
+        bigint user_id
+        bigint order_id
+        int rating
+        string comment
+    }
+
+    WALLETS {
+        bigint id
+        float balance
+        bigint user_id
+    }
+
+    DEVICE_TOKENS {
+        bigint id
+        bigint user_id
+        string token
+    }
+
+    NOTIFICATION_PREFERENCES {
+        bigint id
+        bigint user_id
+        bigint permission_id
+        boolean enabled
+    }
+
+    IMAGES {
+        bigint id
+        string model_type
+        bigint model_id
+        string url
+    }
+
+    NOTIFICATIONS {
+        string id
+        string type
+        string notifiable_type
+        bigint notifiable_id
+        text data
+        datetime read_at
+    }
+
+    PERMISSIONS {
+        bigint id
+        string name
+        string guard_name
+    }
+
+    ROLES {
+        bigint id
+        string name
+        string guard_name
+    }
+
+    ROLE_HAS_PERMISSIONS {
+        bigint role_id
+        bigint permission_id
+    }
+
+    MODEL_HAS_ROLES {
+        bigint role_id
+        string model_type
+        bigint model_id
+    }
+
+    MODEL_HAS_PERMISSIONS {
+        bigint permission_id
+        string model_type
+        bigint model_id
+    }

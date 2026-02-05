@@ -33,14 +33,14 @@ class StoreDesignOptionRequest extends FormRequest
                 'string',
                 Rule::unique('design_options', 'name->en')
                     ->where('type', $this->type)
-                    ->whereNull('deleted_at')
+
             ],
             'name.ar' => [
                 'required',
                 'string',
                 Rule::unique('design_options', 'name->ar')
                     ->where('type', $this->type)
-                    ->whereNull('deleted_at')
+                    
             ],
 
         ];

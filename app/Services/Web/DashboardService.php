@@ -5,6 +5,7 @@ namespace App\Services\Web;
 use App\Enums\StatusEnum;
 use App\Models\Design;
 use App\Models\Order;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -36,6 +37,11 @@ class DashboardService
             ];
 
             $latest_orders = Order::with(['user'])
+                ->latest()
+                ->take(5)
+                ->get();
+
+            $latest_reviews = Review::with(['user', 'order'])
                 ->latest()
                 ->take(5)
                 ->get();
@@ -72,6 +78,7 @@ class DashboardService
             return [
                 'stats' => $stats,
                 'latest_orders' => $latest_orders,
+                'latest_reviews' => $latest_reviews,
                 'top_designs' => $top_designs,
             ];
         });
