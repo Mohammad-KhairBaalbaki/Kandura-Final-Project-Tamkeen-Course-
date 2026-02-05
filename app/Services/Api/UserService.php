@@ -45,7 +45,7 @@ class UserService
                 Storage::delete($url);
                 $user->image()->delete();
             }
-            $newUrl = ImageService::uploadImage($data['image'], 'users');
+            $newUrl = FileService::uploadFile($data['image'], 'users');
             $user->image()->create([
                 'url' => $newUrl,
             ]);

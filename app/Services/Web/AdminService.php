@@ -93,10 +93,30 @@ class AdminService
         });
     }
 
-    public function store(RegisterRequest $request)
+    public function store($data)
     {
-        return DB::transaction(function () use ($request) {
-            return $this->adminService->storeAdmin($request->validated());
+        return DB::transaction(function () use ($data) {
+
+            $roles = $data['roles'] ?? ['admin'];
+            $roles = array_values(array_diff($roles, ['user', 'super-admin']));
+            unset($data['roles']);
+            $user = User::create($data);
+            $user->syncRoles($roles);
+
+            //send notification to super admin
+            event(new DashboardNotificationRequested(
+                'notify.admin.created',
+                'Admin created',
+                "Admin (user #{$user->id}) was created",
+                [
+                    'type' => 'super.admin',
+                    'event' => 'created',
+                    'admin_id' => $user->id,
+                    'url' => route('admins.show', $user->id)
+                ]
+            ));
+
+            return $user;
         });
     }
 
@@ -118,12 +138,11 @@ class AdminService
         });
     }
 
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(array $data, User $user)
     {
-        return DB::transaction(function () use ($request, $user) {
+        return DB::transaction(function () use ($data, $user) {
 
-            $data = $request->validated();
-            if ($request->filled('new_password')) {
+            if ($data('new_password')) {
                 $currentUser = Auth::user();
                 if (!$currentUser || !$currentUser->hasRole('super-admin')) {
                     throw ValidationException::withMessages([
@@ -131,18 +150,40 @@ class AdminService
                     ]);
                 }
 
-                if (!Hash::check($request->input('super_admin_password'), $currentUser->password)) {
+                if (!Hash::check($data('super_admin_password'), $currentUser->password)) {
                     throw ValidationException::withMessages([
                         'super_admin_password' => __('auth.password'),
                     ]);
                 }
 
-                $data['password'] = $request->input('new_password');
+                $data['password'] = $data('new_password');
             }
 
             unset($data['new_password'], $data['new_password_confirmation'], $data['super_admin_password']);
 
-            return $this->adminService->updateAdmin($data, $user);
+            $roles = $data['roles'] ?? null;
+            if ($roles !== null) {
+                $roles = array_values(array_diff($roles, ['user', 'super-admin']));
+            }
+            unset($data['roles']);
+            $user->update($data);
+            if ($roles !== null) {
+                $user->syncRoles($roles);
+                // send notification to super admin when roles is edited
+                event(new DashboardNotificationRequested(
+                    'notify.admin.permissions.updated',
+                    'Admin Permissions Updated',
+                    "Admin $user->name (user #{$user->id}) Permissions was Updated",
+                    [
+                        'type' => 'super.admin',
+                        'event' => 'permissions updated',
+                        'admin_id' => $user->id,
+                        'url' => route('admins.show', $user->id)
+                    ]
+                ));
+            }
+            $user = User::findOrFail($user->id);
+            return $user;
         });
     }
 

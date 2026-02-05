@@ -67,16 +67,14 @@ class OrderController extends Controller
     public function pay(Order $order)
     {
         try {
-            $data = $this->orderService->pay( $order);
+            $data = $this->orderService->pay($order);
             if ($data === '1') {
                 return $this->success(false, "you cant pay for this action", 401);
             } elseif ($data === '2') {
                 return $this->success(false, "you dont have enough money in wallet", 401);
-            }
-            elseif($data === '3') {
-                return $this->success(false,"coupon removed because its expired please re pay your order",200);
-            }
-             elseif ($data instanceof Order) {
+            } elseif ($data === '3') {
+                return $this->success(false, "coupon removed because its expired please re pay your order", 200);
+            } elseif ($data instanceof Order) {
                 return $this->success(OrderResource::make($data), "Order Payment Confirmed Successfully .", 200);
             }
             return $data;
@@ -121,22 +119,6 @@ class OrderController extends Controller
             return $this->success(false, 'process failed try again later', 422);
         }
     }
-
-    public function invoice(Order $order)
-    {
-        try {
-            $link = $this->orderService->invoiceLink($order);
-            if ($link === '1') {
-                return $this->success(false, "this order is not for you !", 401);
-            }
-            return $this->success(['link' => url($link)], "Invoice generated successfully .", 200);
-        } catch (\Exception $e) {
-            Log::error($e);
-            Log::error($e->getMessage());
-            return $this->success(false, 'process failed try again later', 422);
-        }
-    }
-
 
 }
 

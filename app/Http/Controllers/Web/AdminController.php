@@ -57,7 +57,7 @@ class AdminController extends Controller
     public function store(RegisterRequest $request)
     {
         try {
-            $result = $this->adminService->store($request);
+            $result = $this->adminService->store($request->validated());
             if (!$result) {
                 return back()
                     ->withInput()
@@ -89,7 +89,7 @@ class AdminController extends Controller
     public function update(UpdateUserRequest $request, User $user)
     {
         try {
-            $result = $this->adminService->update($request, $user);
+            $result = $this->adminService->update($request->validated(), $user);
             if (!$result) {
                 return back()
                     ->withInput()

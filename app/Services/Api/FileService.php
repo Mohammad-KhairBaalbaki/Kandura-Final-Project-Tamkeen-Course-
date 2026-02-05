@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class ImageService
+class FileService
 {
     /**
      * Create a new class instance.
@@ -16,7 +16,7 @@ class ImageService
         //
     }
 
-    public static function uploadImage($file, $path)
+    public static function uploadFile($file, $path)
     {
         return DB::transaction(function () use ($file, $path) {
 

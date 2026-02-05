@@ -111,7 +111,7 @@ class DesignService
                 foreach ($data['images'] as $idx => $file) {
                     $path = 'design/' . $design->id . '/' . $idx;
                     $design->images()->create([
-                        'url' => ImageService::uploadImage($file, $path),
+                        'url' => FileService::uploadFile($file, $path),
                     ]);
 
                 }
@@ -136,7 +136,7 @@ class DesignService
                 foreach ($data['images'] as $idx => $file) {
                     $path = 'designs/' . $design->id . '/' . $idx;
                     $design->images()->update([
-                        'url' => ImageService::uploadImage($file, $path),
+                        'url' => FileService::uploadFile($file, $path),
                     ]);
 
                 }

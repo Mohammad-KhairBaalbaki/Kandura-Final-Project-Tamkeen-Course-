@@ -11,10 +11,12 @@ use App\Models\ItemOrder;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
+use App\Notifications\User\UserInvoiceNotification;
 use App\Notifications\User\UserOrderNotification;
 use App\Notifications\User\UserWalletNotification;
+use App\Services\Api\InvoiceService as ApiInvoiceService;
 use App\Services\Global\InvoiceService;
-use App\Services\Global\WalletService;
+use App\Services\Api\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -44,14 +46,13 @@ class OrderService
             if (!$user->orders || $user->orders->count() == 0) {
                 return '2';
             }
-            return $user->orders()->with('itemsOrder.design', 'itemsOrder.measurement', 'itemsOrder.itemsSelected.designOption', 'coupon','review')->get();
+            return $user->orders()->with('itemsOrder.design', 'itemsOrder.measurement', 'itemsOrder.itemsSelected.designOption', 'coupon', 'review')->get();
         });
     }
 
-    public function store(array $data)
+    static public function store(array $data)
     {
         return DB::transaction(function () use ($data) {
-
 
             $user = User::find(Auth::id());
             $cart = $user->cart;
@@ -99,6 +100,15 @@ class OrderService
             $order->num = $order->created_at->format('Ymd') . $order->id;
             $order->save();
 
+
+            $invoice = (new ApiInvoiceService(new InvoiceService()))->store($order);
+
+            //send notification to user when invoice is generated
+            $user->notify(new UserInvoiceNotification(
+                invoice: $invoice,
+                event: 'generated',
+            ));
+
             foreach ($cart->itemsCart as $item) {
                 $orderItem = ItemOrder::create([
                     'order_id' => $order->id,
@@ -120,20 +130,20 @@ class OrderService
             $order->refresh();
 
             //send notification to admin when order is created
-        event(new DashboardNotificationRequested(
-            permission: 'notify.orders.created',
-            title: 'New order Created',
-            body: "Order #{$order->num} created by {$order->user->name}",
-            data: [
-                'type' => 'admin.order',
-                'event' => 'created',
-                'order_id' => $order->id,
-                'url' => route('orders.show', $order->id),
-            ]
-        ));
-        //send notification to user when order is created
-        if ($order->user) {
-            $user = $order->user;
+            event(new DashboardNotificationRequested(
+                permission: 'notify.orders.created',
+                title: 'New order Created',
+                body: "Order #{$order->num} created by {$order->user->name}",
+                data: [
+                    'type' => 'admin.order',
+                    'event' => 'created',
+                    'order_id' => $order->id,
+                    'url' => route('orders.show', $order->id),
+                ]
+            ));
+            //send notification to user when order is created
+            if ($order->user) {
+                $user = $order->user;
                 $user->notify(new UserOrderNotification(
                     order: $order,
                     statusLabel: 'Placed Successfully'
@@ -145,9 +155,9 @@ class OrderService
         });
     }
 
-    public function pay( Order $order)
+    public function pay(Order $order)
     {
-        return DB::transaction(function () use ( $order) {
+        return DB::transaction(function () use ($order) {
 
             $coupon = $order->coupon;
             if (isset($coupon)) {
@@ -294,22 +304,5 @@ class OrderService
             return $order;
         });
     }
-
-    public function invoiceLink(Order $order)
-    {
-        return DB::transaction(function () use ($order) {
-            if ($order->user_id !== Auth::id()) {
-                return '1';
-            }
-
-            $num = $order->num ?? $order->id;
-            $path = 'invoices/order-' . $num . '-invoice.pdf';
-            $pdf = $this->invoiceService->orderPdf($order);
-            Storage::disk('public')->put($path, $pdf->output());
-
-            return Storage::url($path);
-        });
-    }
-
 
 }

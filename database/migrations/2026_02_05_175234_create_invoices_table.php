@@ -17,10 +17,10 @@ return new class extends Migration
         // 'pdf_url'
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->string('invoice_num');
+            $table->string('num');
             $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
-            $table->float('total');
-            $table->string('pdf_url');
+            $table->float('total')->nullable();
+            $table->string('pdf_url')->nullable();
             $table->timestamps();
         });
     }

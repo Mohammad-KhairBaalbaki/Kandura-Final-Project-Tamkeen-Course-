@@ -1,0 +1,118 @@
+You are Codex. Work in a non-interactive mode: do not ask questions unless absolutely necessary. Scan the repository and generate TWO files:
+
+1) PROJECT_DOCUMENTATION.txt
+2) ROUTES_REFERENCE.csv
+
+You MUST read and use the real codebase. Do not invent anything that does not exist.
+
+---------------------------------------
+INPUTS YOU MUST READ FROM THE REPO
+---------------------------------------
+- README.md (if exists)
+- composer.json (packages + versions)
+- .env.example (only list used services; DO NOT output secrets)
+- routes/web.php, routes/api.php, and any other route files
+- app/Http/Controllers/** (controllers referenced by routes)
+- app/Services/** (services called by controllers)
+- app/Events/**, app/Listeners/**, app/Jobs/** (event/queue flow)
+- app/Notifications/** (notification payload structure)
+- app/Models/** (relations used in flows)
+- app/Observers/** (observers)
+- database/migrations/** (important tables)
+- resources/views/** (web pages + invoice pdf view if exists)
+- Any API Resources in app/Http/Resources/**
+
+Also use route discovery output if possible:
+- Run / read output of: php artisan route:list -v
+(If you cannot run commands, infer from route definitions.)
+
+---------------------------------------
+OUTPUT FILE #1: PROJECT_DOCUMENTATION.txt
+---------------------------------------
+Language: Arabic (MSA), simple and clear.
+Format: plain text (no Markdown code fences).
+Do not include API keys or secrets.
+
+STRUCTURE:
+1) مقدمة عن المشروع
+   - وصف مختصر (2–6 أسطر)
+   - أدوار النظام (User/Admin/Super Admin) إن وجدت
+
+2) أهم التقنيات والبكجات المستخدمة
+   - Laravel 12 (لماذا)
+   - قائمة أهم packages من composer.json مع وصف سطر واحد لكل package
+   - خدمات خارجية مستخدمة (Stripe / Firebase / …) بدون أسرار
+
+3) أبرز الميزات (Features)
+   - Bullet points واقعية حسب الكود
+
+4) المعمارية المختصرة (Flow)
+   - Route → Controller → Service → Model/DB
+   - Events/Listeners/Jobs (إذا موجود)
+   - Notifications (database / push) (إذا موجود)
+
+5) توثيق المسارات Routes (مهم جداً)
+   - قسم A: Web Routes
+   - قسم B: API Routes
+   - لكل Route اكتب:
+     - Method + URI
+     - Route name (إن وجد)
+     - Middleware (auth / permission / …)
+     - Controller@method
+     - ماذا يفعل هذا المسار
+     - ماذا يستدعي داخلياً:
+       * Service method (إن وجد)
+       * Models/relations used
+       * Events fired
+       * Notifications sent (DB/FCM)
+       * PDF/Files/Storage usage
+       * Transactions/Queues usage if any
+
+6) أهم الـ Models والعلاقات (مختصر)
+   - key models + relations المهمة
+
+7) الإشعارات Notifications
+   - أنواع إشعارات اليوزر (database)
+   - أنواع إشعارات الداشبورد (database + push)
+   - شكل الـ payload (title/body/data/read)
+
+8) نظام الفواتير PDF / Invoice (إن وجد)
+   - كيف يتم توليد PDF (view/service)
+   - أين يتم التخزين (disk/path)
+   - كيف يتم ربطه بجدول invoices (pdf_url/total…)
+
+9) ملاحظات التشغيل Setup
+   - composer install
+   - migrate / seed
+   - storage:link إذا مستخدم
+   - queue worker إذا في ShouldQueue listeners
+
+If any item is not present in repo, write: "غير متوفر في الكود الحالي".
+
+---------------------------------------
+OUTPUT FILE #2: ROUTES_REFERENCE.csv
+---------------------------------------
+Generate a CSV file with this exact header row:
+
+Type,Method,URI,Name,Middleware,ControllerAction,CallsServices,CallsEvents,CallsNotifications,Notes
+
+Rules:
+- Type = WEB or API
+- Middleware should be a single field (separate multiple by " | ")
+- ControllerAction like: RoleController@update
+- CallsServices: list service methods (if any) separated by " | "
+- CallsEvents: list event classes (if any) separated by " | "
+- CallsNotifications: list notification classes/channels (if any) separated by " | "
+- Notes: short description of what it does
+
+Fill one row per route.
+
+---------------------------------------
+QUALITY / SAFETY RULES
+---------------------------------------
+- Must match codebase, do not hallucinate.
+- Prefer structured lists over long paragraphs.
+- Keep Arabic terms consistent.
+- Do not output secrets.
+- If route:list -v is available, use it to include middleware accurately.
+

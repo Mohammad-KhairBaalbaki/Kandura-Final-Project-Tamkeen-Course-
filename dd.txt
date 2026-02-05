@@ -1,0 +1,90 @@
+You are Codex. Create a single text file named: PROJECT_DOCUMENTATION.txt
+
+Goal:
+Write a clear, structured documentation for this Laravel 12 project. The document must be in Arabic (MSA), with simple language, and suitable to submit as a course project.
+
+INPUTS YOU MUST READ FROM MY REPO:
+1) README.md (if exists)
+2) composer.json (packages + versions)
+3) .env.example (only for listing used services, DO NOT print secrets)
+4) routes/web.php and routes/api.php (and any other route files)
+5) app/Http/Controllers/** (all controllers referenced by routes)
+6) app/Services/** (services called by controllers)
+7) app/Events/** and app/Listeners/** (events flow)
+8) app/Notifications/** (notifications payload)
+9) app/Models/** (relations needed to explain flows)
+10) Any observers in app/Observers/**
+11) database/migrations/** (important tables)
+12) If exists: resources/views/** (for web pages or invoice pdf views)
+
+OUTPUT REQUIREMENTS:
+- The output must be plain text (no Markdown code fences).
+- Use headings and numbering.
+- Be accurate and consistent with the real codebase.
+- Do not invent routes/controllers/services that do not exist.
+- Do not include any API keys or secrets.
+
+DOCUMENT STRUCTURE:
+1) مقدمة عن المشروع
+   - ما هو المشروع؟ ولماذا تم بناؤه؟ (2–6 أسطر)
+   - الفئات الرئيسية (Users / Admin / Super Admin) إن وجدت.
+
+2) أهم التقنيات والبكجات المستخدمة
+   - Laravel 12 (اذكر سبب الاستخدام باختصار)
+   - أي حزم أساسية من composer.json (مثل: spatie/laravel-permission لإدارة الأدوار والصلاحيات) مع وصف سطر واحد لكل حزمة.
+   - اذكر أي خدمات خارجية مستخدمة (مثل Firebase/FCM, Stripe) بشكل عام بدون أسرار.
+
+3) أبرز الميزات (Features)
+   - نقاط واضحة (Bullets) تشمل: إدارة الطلبات، الإشعارات، الفواتير PDF، الصلاحيات… حسب الموجود فعلاً.
+
+4) المعمارية المختصرة (كيف يمشي الطلب داخل النظام)
+   - Route → Controller → Service → Model/DB
+   - Events/Listeners/Jobs (إذا مستخدمة)
+   - Notifications: database + push (إذا موجود)
+
+5) Routes Documentation (الأهم)
+   - اعمل جدول/قائمة منظمة حسب النوع:
+     A) Web Routes (routes/web.php)
+     B) API Routes (routes/api.php)
+   - لكل Route اكتب:
+     - Method + URI
+     - Name (إذا موجود)
+     - Middleware (auth, permission, etc.)
+     - Controller@method / Invokable Controller
+     - What it does (شرح مختصر)
+     - What it calls internally:
+       * Service class and method (إذا موجود)
+       * Models/relationships used
+       * Events fired (مثال: event(new ...))
+       * Notifications sent (Database/FCM)
+       * Any file generation (PDF/Zip/etc.)
+   - IMPORTANT: Use `php artisan route:list -v` style info if available in codebase; otherwise infer from route definitions.
+
+6) أهم الـ Models والعلاقات (مختصر)
+   - List the key models (Order, Invoice, User, Role, Permission, etc.)
+   - For each: mention important relations used in features (e.g., Order hasMany items, belongsTo user, hasOne invoice…)
+
+7) الإشعارات (Notifications)
+   - اشرح أنواع إشعارات اليوزر (Database) وأنواع إشعارات الداشبورد (Database + Push)
+   - اشرح شكل الـ payload (title/body/data/read status) إن كان موجود في Resources.
+
+8) PDF / Invoice subsystem (إن وجد)
+   - كيف يتم توليد PDF (view used, service used)
+   - أين يتم تخزينه (Storage disk/path)
+   - كيف يتم ربطه بجدول invoices (pdf_url, total, …)
+
+9) ملاحظات تشغيل المشروع (Run/Setup)
+   - خطوات تشغيل عامة بدون أسرار:
+     - composer install
+     - migrations/seeders
+     - storage:link إذا مستخدم
+     - queue worker إذا كان في listeners queued
+   - إذا يوجد إعدادات إضافية (مثل FCM) اذكرها كعناوين فقط.
+
+QUALITY RULES:
+- Be specific: mention actual class names and methods.
+- If something is missing from repo, write: "غير متوفر في الكود الحالي".
+- Keep it clean: avoid long paragraphs; prefer structured lists.
+- Ensure Arabic terms are consistent.
+
+Now scan the repository and generate PROJECT_DOCUMENTATION.txt accordingly.

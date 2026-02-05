@@ -8,8 +8,7 @@ use App\Http\Requests\StoreDesignOptionRequest;
 use App\Http\Requests\UpdateDesignOptionRequest;
 use App\Http\Resources\DesignOptionResource;
 use App\Models\DesignOption;
-use App\Services\Global\DesignOptionService;
-use Illuminate\Http\Request;
+use App\Services\Api\DesignOptionService;
 use Illuminate\Support\Facades\Log;
 
 class DesignOptionController extends Controller

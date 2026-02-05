@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Global;
+namespace App\Services\Api;
 
 use App\Models\DesignOption;
 use Illuminate\Support\Facades\DB;
@@ -49,7 +49,7 @@ class DesignOptionService
     {
         return DB::transaction(function () use ($designOption) {
 
-            
+
             $designOption->delete();
             return true;
         });

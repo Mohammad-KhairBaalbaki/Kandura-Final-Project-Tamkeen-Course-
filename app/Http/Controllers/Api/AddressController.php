@@ -22,6 +22,13 @@ class AddressController extends Controller
         $this->addressService = $addressService;
     }
 
+    /**
+     * Retrieves a list of addresses.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+
     public function index(Request $request)
     {
         try {
@@ -33,6 +40,14 @@ class AddressController extends Controller
             return $this->success(false, 'process failed try again later', 422);
         }
     }
+    /**
+     * Stores a new address.
+     *
+     * @param StoreAddressRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Exception
+     */
     public function store(StoreAddressRequest $request)
     {
         try {
@@ -45,6 +60,16 @@ class AddressController extends Controller
             return $this->success(false, 'process failed try again later', 422);
         }
     }
+    /**
+     * Updates an existing address.
+     *
+     * @param UpdateAddressRequest $request
+     * @param Address $address
+     *
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Exception
+     */
     public function update(UpdateAddressRequest $request, Address $address)
     {
         try {

@@ -5,19 +5,13 @@ namespace App\Services\Web;
 use App\Http\Requests\StoreDesignOptionRequest;
 use App\Http\Requests\UpdateDesignOptionRequest;
 use App\Models\DesignOption;
-use App\Services\Global\DesignOptionService as CoreDesignOptionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DesignOptionService
 {
-    protected $designOptionService;
 
-    public function __construct(CoreDesignOptionService $designOptionService)
-    {
-        $this->designOptionService = $designOptionService;
-    }
 
     public function index(Request $request)
     {
