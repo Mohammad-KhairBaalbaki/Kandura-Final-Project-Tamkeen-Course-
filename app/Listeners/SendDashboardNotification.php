@@ -17,7 +17,7 @@ class SendDashboardNotification implements ShouldQueue
     public function handle(DashboardNotificationRequested $event): void
     {
         // ✅ 1) هات المستلمين: فقط يلي عندن permission
-        $recipients = User::permission($event->permission)->get(); 
+        $recipients = User::permission($event->permission)->get();
 
         if ($recipients->isEmpty()) {
             return;
@@ -44,20 +44,21 @@ class SendDashboardNotification implements ShouldQueue
 
         $tokens = $recipients
             ->filter(function ($user) use ($permissionId) {
-                if (!$permissionId) {
+                if (! $permissionId) {
                     return true;
                 }
                 $pref = $user->notificationPreferences->firstWhere('permission_id', $permissionId);
+
                 return $pref ? (bool) $pref->enabled : true;
             })
-            ->flatMap(fn($u) => $u->deviceTokens->pluck('token'))
+            ->flatMap(fn ($u) => $u->deviceTokens->pluck('token'))
             ->filter()
             ->unique()
             ->values()
             ->all();
 
         // مهم: data values strings بالـ FCM
-        $data = array_map(fn($v) => is_scalar($v) ? (string)$v : json_encode($v), $event->data);
+        $data = array_map(fn ($v) => is_scalar($v) ? (string) $v : json_encode($v), $event->data);
 
         $this->fcm->sendToTokens($tokens, $event->title, $event->body, $data);
     }

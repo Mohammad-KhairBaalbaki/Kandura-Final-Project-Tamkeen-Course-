@@ -20,7 +20,7 @@ class FileService
     {
         return DB::transaction(function () use ($file, $path) {
 
-            $filename = Str::uuid() . '.' . $file->extension();
+            $filename = Str::uuid().'.'.$file->extension();
 
             // Store in a secure disk (e.g. local "public" or other)
             $path = $file->storeAs($path, $filename, 'public');
@@ -32,4 +32,3 @@ class FileService
         });
     }
 }
-

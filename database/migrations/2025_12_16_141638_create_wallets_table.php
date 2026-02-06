@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->float('balance');
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            
+
             $table->timestamps();
         });
     }

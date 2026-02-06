@@ -17,10 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('num')->nullable()->unique();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->enum('method',[PaymentMethodEnum::STRIPE,PaymentMethodEnum::AFTER_DELIVERY,PaymentMethodEnum::WALLET]);
-            $table->enum('status',[StatusEnum::PENDING,StatusEnum::CANCELLED,StatusEnum::CONFIRMED,StatusEnum::FAILED])->default(StatusEnum::PENDING);
+            $table->enum('method', [PaymentMethodEnum::STRIPE, PaymentMethodEnum::AFTER_DELIVERY, PaymentMethodEnum::WALLET]);
+            $table->enum('status', [StatusEnum::PENDING, StatusEnum::CANCELLED, StatusEnum::CONFIRMED, StatusEnum::FAILED])->default(StatusEnum::PENDING);
             $table->float('amount');
-            $table->enum('type',['pay','charge'])->default('pay');
+            $table->enum('type', ['pay', 'charge'])->default('pay');
             $table->timestamps();
         });
     }

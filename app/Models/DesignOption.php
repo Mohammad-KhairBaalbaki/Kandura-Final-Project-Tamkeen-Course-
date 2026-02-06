@@ -12,26 +12,25 @@ class DesignOption extends Model
     use HasTranslations, SoftDeletes;
 
     protected $translatable = ['name'];
+
     protected $fillable = [
         'name',
         'type',
-        'is_active'
+        'is_active',
     ];
 
-    public function itemsSelected(){
+    public function itemsSelected()
+    {
         return $this->hasMany(ItemOptionSelected::class);
     }
-    
+
     public function designs()
     {
-        return $this->belongsToMany(Design::class,'design_design_option');
+        return $this->belongsToMany(Design::class, 'design_design_option');
     }
 
-    public function itemsCart(){
+    public function itemsCart()
+    {
         return $this->hasMany(ItemCart::class);
     }
-
-
-
-
 }

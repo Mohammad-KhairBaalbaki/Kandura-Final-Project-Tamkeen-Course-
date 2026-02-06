@@ -12,7 +12,7 @@ class Payment extends Model
         'method',
         'num',
         'amount',
-        'type',     //charge //pay
+        'type',     // charge //pay
         'status',
         'user_id',
         'details',
@@ -23,7 +23,8 @@ class Payment extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function order(){
+    public function order()
+    {
         return $this->hasOne(Order::class);
     }
 }

@@ -7,10 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class AuthService
 {
-
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function login(array $data)
     {
@@ -23,7 +20,7 @@ class AuthService
                 // Attempt login with phone
                 $credentials = ['phone' => $data['phone'], 'password' => $data['password']];
             }
-            if (!Auth::attempt($credentials)) {
+            if (! Auth::attempt($credentials)) {
                 return false;
             }
             $user = Auth::user();
@@ -31,9 +28,11 @@ class AuthService
                 return false;
             }
             Auth::login($user);
+
             return $user;
         });
     }
+
     public function logout()
     {
         return DB::transaction(function () {
@@ -43,4 +42,3 @@ class AuthService
 
     }
 }
-

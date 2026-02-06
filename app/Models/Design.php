@@ -15,12 +15,13 @@ class Design extends Model
         'name',
         'description',
     ];
+
     protected $fillable = [
         'user_id',
         'name',
         'description',
         'price',
-        'status'
+        'status',
     ];
 
     public function user()
@@ -35,24 +36,26 @@ class Design extends Model
 
     public function designOptions()
     {
-        return $this->belongsToMany(DesignOption::class,'design_design_option')->withTimestamps();
+        return $this->belongsToMany(DesignOption::class, 'design_design_option')->withTimestamps();
     }
 
     public function measurements()
     {
-        return $this->belongsToMany(Measurement::class,'design_measurement')->withTimestamps();
+        return $this->belongsToMany(Measurement::class, 'design_measurement')->withTimestamps();
     }
 
-    public function itemsCart(){
+    public function itemsCart()
+    {
         return $this->hasMany(ItemCart::class);
     }
 
-    public function carts(){
+    public function carts()
+    {
         return $this->hasMany(Cart::class);
     }
 
-    public function itemsOrder(){
+    public function itemsOrder()
+    {
         return $this->hasMany(ItemOrder::class);
     }
-
 }

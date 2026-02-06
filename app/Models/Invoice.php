@@ -12,7 +12,7 @@ class Invoice extends Model
         'num',
         'order_id',
         'total',
-        'pdf_url'
+        'pdf_url',
     ];
 
     public function order()
@@ -23,10 +23,10 @@ class Invoice extends Model
     public function getUrlAttribute()
     {
         $url = $this->pdf_url;
-        if (!isset($url)) {
+        if (! isset($url)) {
             return null;
         }
-        
+
         return url(Storage::url($url));
     }
 }

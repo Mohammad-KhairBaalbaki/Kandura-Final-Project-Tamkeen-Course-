@@ -22,7 +22,7 @@ class UpdateItemInCartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'quantity'=>['integer','min:1']
+            'quantity' => ['integer', 'min:1'],
         ];
     }
 

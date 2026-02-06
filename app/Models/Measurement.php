@@ -9,7 +9,7 @@ class Measurement extends Model
     //
     protected $fillable = [
         'size',
-        'is_active'
+        'is_active',
     ];
 
     public function design()
@@ -17,8 +17,8 @@ class Measurement extends Model
         return $this->belongsToMany(Design::class, 'design_design_option');
     }
 
-    public function itemsCart(){
+    public function itemsCart()
+    {
         return $this->hasMany(ItemCart::class);
     }
-    
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,12 +16,12 @@ class CheckActiveMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return $next($request);
         }
 
         $user = Auth::user();
-        if (!$user || !$user->is_active) {
+        if (! $user || ! $user->is_active) {
 
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json([
@@ -31,7 +30,6 @@ class CheckActiveMiddleware
                 ], 403);
             }
 
-            
             return response()->view('auth.deactivated', [], 403);
         }
 

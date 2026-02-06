@@ -5,6 +5,8 @@ namespace App\Services\Web;
 use App\Models\NotificationPreference;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SettingsService
 {
@@ -55,5 +57,24 @@ class SettingsService
         $enabledIds = $allowedIds->diff($disabledIds)->values();
 
         $this->syncNotificationPreferences($user, $permissions, $enabledIds);
+    }
+
+    public function updateNotifications(array $data)
+    {
+        return DB::transaction(function () use ($data) {
+            $user = Auth::user();
+            if (! $user) {
+                abort(403);
+            }
+
+            $permissions = collect($data['permissions'])->unique()->values();
+            $enabledPermissions = collect($validated['enabled_permissions'] ?? [])->unique()->values();
+            $allowed = $this->getNotifyPermissions($user);
+            $allowedIds = $allowed->pluck('id')->values();
+
+            $filteredEnabled = $enabledPermissions->filter(fn ($id) => $allowedIds->contains($id))->values();
+
+            $this->syncNotificationPreferences($user, $allowed, $filteredEnabled);
+        });
     }
 }

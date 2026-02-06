@@ -3,9 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\City;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class CitySeeder extends Seeder
 {
@@ -20,8 +18,8 @@ class CitySeeder extends Seeder
         City::create([
             'name' => [
                 'en' => 'Cairo',
-                'ar' => 'مصر'
-            ]
+                'ar' => 'مصر',
+            ],
         ]);
     }
 }

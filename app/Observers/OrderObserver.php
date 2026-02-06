@@ -12,14 +12,12 @@ use Illuminate\Support\Facades\DB;
 
 class OrderObserver
 {
-    public function created(Order $order): void
-    {
+    public function created(Order $order): void {}
 
-    }
     public function updated(Order $order): void
     {
         DB::transaction(function () use ($order) {
-            if (!$order->wasChanged('status')) {
+            if (! $order->wasChanged('status')) {
                 return;
             }
 
@@ -33,13 +31,13 @@ class OrderObserver
             if ($isCancelled) {
                 $user = $order->user;
                 if ($user) {
-                    //send notification to user when order is cancelled
+                    // send notification to user when order is cancelled
                     $user->notify(new UserOrderNotification(
                         order: $order,
                         statusLabel: 'has been cancelled'
                     ));
 
-                    //send notification to admin when order is cancelled
+                    // send notification to admin when order is cancelled
                     event(new DashboardNotificationRequested(
                         permission: 'notify.orders.cancelled',
                         title: 'Order cancelled',
@@ -54,31 +52,29 @@ class OrderObserver
                         ]
                     ));
                 }
-            } else if ($isConfirmed) {
+            } elseif ($isConfirmed) {
                 $user = $order->user;
 
                 if ($user) {
-                    //send notification to user when order is confirmed
+                    // send notification to user when order is confirmed
                     $user->notify(new UserOrderNotification(
                         order: $order,
                         statusLabel: 'has been confiremed'
                     ));
 
-                    $invoice = (new InvoiceService(new GlobalInvoiceService()))->makePdf($order);
+                    $invoice = (new InvoiceService(new GlobalInvoiceService))->makePdf($order);
 
-                    //send notification to user when invoice pdf is ready
+                    // send notification to user when invoice pdf is ready
                     $user->notify(new UserInvoiceNotification(
                         invoice: $invoice,
                         event: 'pdf_ready',
                     ));
                 }
 
-
-
-            } else if ($isDelivered) {
+            } elseif ($isDelivered) {
                 $user = $order->user;
                 if ($user) {
-                    //send notification to user when order is delivered
+                    // send notification to user when order is delivered
                     $user->notify(new UserOrderNotification(
                         order: $order,
                         statusLabel: 'has been delivered'
@@ -87,10 +83,10 @@ class OrderObserver
             } else {
                 $user = $order->user;
                 if ($user) {
-                    //send notification to user when order status is changed
+                    // send notification to user when order status is changed
                     $user->notify(new UserOrderNotification(
                         order: $order,
-                        statusLabel: 'has been updated from ' . $oldStatus . ' to ' . $newStatus
+                        statusLabel: 'has been updated from '.$oldStatus.' to '.$newStatus
                     ));
                 }
             }

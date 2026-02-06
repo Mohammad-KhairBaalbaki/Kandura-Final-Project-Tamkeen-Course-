@@ -12,13 +12,13 @@ class ItemOptionSelected extends Model
         'design_option_id',
     ];
 
-    public function item(){
+    public function item()
+    {
         return $this->belongsTo(ItemCart::class);
     }
 
-
-    public function designOption(){
+    public function designOption()
+    {
         return $this->belongsTo(DesignOption::class);
     }
-
 }

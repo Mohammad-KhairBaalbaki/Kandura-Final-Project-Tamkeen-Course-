@@ -2,8 +2,8 @@
 
 namespace App\Services\Api;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class NotificationService
 {
@@ -16,8 +16,7 @@ class NotificationService
             return Auth::user()
                 ->notifications()
                 ->latest()
-                ->paginate($perPage)
-            ;
+                ->paginate($perPage);
         });
     }
 

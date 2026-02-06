@@ -2,7 +2,6 @@
 
 namespace App\Services\Web;
 
-use App\Events\DashboardNotificationRequested;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -70,22 +69,15 @@ class UserService
         });
     }
 
-    public function updateStatus(Request $request, User $user)
+    public function updateStatus(array $data, User $user)
     {
-        return DB::transaction(function () use ($request, $user) {
-            $validated = $request->validate([
-                'is_active' => 'required|boolean',
-            ]);
+        return DB::transaction(function () use ($data, $user) {
 
             $user->update([
-                'is_active' => $validated['is_active'],
+                'is_active' => $data['is_active'],
             ]);
-
-            
-
 
             return $user;
         });
     }
 }
-

@@ -27,20 +27,20 @@ class StoreDesignOptionRequest extends FormRequest
                 'required',
                 'in:color,dome,fabric,sleeve',
             ],
-            'name' => ['required','array'],
+            'name' => ['required', 'array'],
             'name.en' => [
                 'required',
                 'string',
                 Rule::unique('design_options', 'name->en')
-                    ->where('type', $this->type)
+                    ->where('type', $this->type),
 
             ],
             'name.ar' => [
                 'required',
                 'string',
                 Rule::unique('design_options', 'name->ar')
-                    ->where('type', $this->type)
-                    
+                    ->where('type', $this->type),
+
             ],
 
         ];
@@ -49,12 +49,12 @@ class StoreDesignOptionRequest extends FormRequest
     public function messages(): array
     {
         return [
-        'name.required' => 'The name field is required.',
-        'name.en.required' => 'The English name is required.',
-        'name.ar.required' => 'The Arabic name is required.',
+            'name.required' => 'The name field is required.',
+            'name.en.required' => 'The English name is required.',
+            'name.ar.required' => 'The Arabic name is required.',
 
-        'type.required' => 'The type field is required.',
-        'type.in' => 'The type must be one of: color, dome, fabric, sleeve.',
-    ];
+            'type.required' => 'The type field is required.',
+            'type.in' => 'The type must be one of: color, dome, fabric, sleeve.',
+        ];
     }
 }

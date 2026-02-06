@@ -15,7 +15,9 @@ class FcmService
     public function sendToTokens(array $tokens, string $title, string $body, array $data = []): void
     {
         $tokens = array_values(array_unique(array_filter($tokens)));
-        if (empty($tokens)) return;
+        if (empty($tokens)) {
+            return;
+        }
 
         $message = CloudMessage::new()
             ->withNotification(Notification::create($title, $body))

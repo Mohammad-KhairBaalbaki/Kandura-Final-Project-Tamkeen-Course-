@@ -13,29 +13,31 @@ class ItemCart extends Model
         'quantity',
         'price',
         'measurement_id',
-        'discount'
+        'discount',
     ];
-
 
     /**
      * Get the item options that have been selected for this item cart
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function itemsSelected(){
+    public function itemsSelected()
+    {
         return $this->hasMany(ItemOptionSelected::class);
     }
 
-    public function cart(){
+    public function cart()
+    {
         return $this->belongsTo(Cart::class);
     }
 
-    public function design(){
+    public function design()
+    {
         return $this->belongsTo(Design::class);
     }
 
-
-    public function measurement(){
+    public function measurement()
+    {
         return $this->belongsTo(Measurement::class);
     }
 }

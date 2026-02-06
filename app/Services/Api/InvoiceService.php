@@ -15,6 +15,7 @@ class InvoiceService
      * Create a new class instance.
      */
     protected $invoiceService;
+
     public function __construct(GlobalInvoiceService $invoiceService)
     {
         $this->invoiceService = $invoiceService;
@@ -23,7 +24,6 @@ class InvoiceService
     /**
      * Store an invoice for a given order.
      *
-     * @param Order $order
      * @return Invoice
      */
     public function store(Order $order)
@@ -38,6 +38,7 @@ class InvoiceService
                 'num' => $order->num,
                 'total' => $order->total,
             ]);
+
             return $invoice;
         });
     }
@@ -45,14 +46,13 @@ class InvoiceService
     /**
      * Generate a PDF invoice for an order and save it to storage/app/public/invoices
      *
-     * @param Order $order
      * @return Invoice
      */
     public function makePdf(Order $order)
     {
         return DB::transaction(function () use ($order) {
             $num = $order->num;
-            $path = 'invoices/order-' . $num . '-invoice.pdf';
+            $path = 'invoices/order-'.$num.'-invoice.pdf';
 
             $order->load([
                 'itemsOrder.design.images',
@@ -72,19 +72,19 @@ class InvoiceService
             $total = $order->subtotal - $order->discount;
             $invoice->update([
                 'total' => $total,
-                'pdf_url' => $path
+                'pdf_url' => $path,
             ]);
+
             return $invoice;
         });
 
     }
 
-/**
- * Retrieve an invoice for a given order.
- *
- * @param Order $order
- * @return Invoice|null
- */
+    /**
+     * Retrieve an invoice for a given order.
+     *
+     * @return Invoice|null
+     */
     public function invoice(Order $order)
     {
         return DB::transaction(function () use ($order) {

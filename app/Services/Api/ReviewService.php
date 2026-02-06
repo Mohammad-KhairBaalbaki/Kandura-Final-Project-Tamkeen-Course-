@@ -13,7 +13,6 @@ class ReviewService
     public function store(Order $order, array $data)
     {
         return DB::transaction(function () use ($order, $data) {
-            
 
             if ($order->status !== StatusEnum::DELIVERED) {
                 return '2';
@@ -35,8 +34,8 @@ class ReviewService
                 'rating' => $data['rating'],
                 'comment' => $data['comment'],
             ]);
+
             return $review;
         });
     }
 }
-

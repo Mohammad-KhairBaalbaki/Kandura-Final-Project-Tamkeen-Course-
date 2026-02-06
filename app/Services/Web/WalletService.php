@@ -39,7 +39,7 @@ class WalletService
                 $user = User::where('phone', $identifier)->first();
             }
 
-            if (!$user) {
+            if (! $user) {
                 return [
                     'error' => 'user_not_found',
                 ];
@@ -56,7 +56,7 @@ class WalletService
         return DB::transaction(function () use ($user, $amount) {
 
             $wallet = $user->wallet;
-            if (!isset($wallet)) {
+            if (! isset($wallet)) {
                 $wallet = Wallet::create([
                     'user_id' => $user->id,
                     'balance' => 0,
@@ -65,16 +65,13 @@ class WalletService
             $wallet->balance = $wallet->balance + $amount;
             $wallet->save();
 
-
-
-            //send notification to user when balance is credited
+            // send notification to user when balance is credited
             $user->notify(new UserWalletNotification(
                 event: 'credited',
                 amount: $amount,
                 balance: $wallet->balance,
 
             ));
-
 
             $payment = Payment::create([
                 'user_id' => $user->id,
@@ -84,12 +81,10 @@ class WalletService
                 'type' => 'charge',
             ]);
 
-            $payment->num = $payment->created_at->format('Ymd') . $payment->id;
+            $payment->num = $payment->created_at->format('Ymd').$payment->id;
             $payment->save();
-
 
             return $wallet;
         });
     }
 }
-

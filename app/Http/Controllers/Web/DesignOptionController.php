@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDesignOptionRequest;
 use App\Http\Requests\UpdateDesignOptionRequest;
+use App\Http\Requests\UpdateDesignOptionStatusRequest;
 use App\Models\DesignOption;
 use App\Services\Web\DesignOptionService;
 use Illuminate\Http\Request;
@@ -23,10 +24,12 @@ class DesignOptionController extends Controller
     {
         try {
             $designOptions = $this->designOptionService->index($request);
+
             return view('design_options.index', compact('designOptions'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -35,10 +38,12 @@ class DesignOptionController extends Controller
     {
         try {
             $designOptions = $this->designOptionService->trashed($request);
+
             return view('design_options.trashed', compact('designOptions'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -47,10 +52,12 @@ class DesignOptionController extends Controller
     {
         try {
             $this->designOptionService->create();
+
             return view('design_options.create');
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -59,10 +66,12 @@ class DesignOptionController extends Controller
     {
         try {
             $designOption = $this->designOptionService->edit($designOption);
+
             return view('design_options.edit', compact('designOption'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -71,7 +80,7 @@ class DesignOptionController extends Controller
     {
         try {
             $designOption = $this->designOptionService->store($request);
-            if (!$designOption) {
+            if (! $designOption) {
                 return back()
                     ->withInput()
                     ->withErrors(['service' => __('design_options.not_authorized_create')]);
@@ -81,6 +90,7 @@ class DesignOptionController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -89,7 +99,7 @@ class DesignOptionController extends Controller
     {
         try {
             $updated = $this->designOptionService->update($request, $designOption);
-            if (!$updated) {
+            if (! $updated) {
                 return back()
                     ->withInput()
                     ->withErrors(['service' => __('design_options.not_authorized_update')]);
@@ -99,14 +109,15 @@ class DesignOptionController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
 
-    public function updateStatus(Request $request, DesignOption $designOption)
+    public function updateStatus(UpdateDesignOptionStatusRequest $request, DesignOption $designOption)
     {
         try {
-            $updated = $this->designOptionService->updateStatus($request, $designOption);
+            $updated = $this->designOptionService->updateStatus($request->validated(), $designOption);
             if (is_array($updated) && ($updated['error'] ?? null) === 'not_authorized') {
                 return back()->withErrors(['status' => __('design_options.not_authorized_update_status')]);
             }
@@ -115,6 +126,7 @@ class DesignOptionController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -123,7 +135,7 @@ class DesignOptionController extends Controller
     {
         try {
             $deleted = $this->designOptionService->destroy($designOption);
-            if (!$deleted) {
+            if (! $deleted) {
                 return back()->withErrors(['service' => __('design_options.not_authorized_delete')]);
             }
 
@@ -131,6 +143,7 @@ class DesignOptionController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -139,7 +152,7 @@ class DesignOptionController extends Controller
     {
         try {
             $restored = $this->designOptionService->restore((int) $designOption);
-            if (!$restored) {
+            if (! $restored) {
                 return back()->withErrors(['service' => __('design_options.not_authorized_restore')]);
             }
 
@@ -147,6 +160,7 @@ class DesignOptionController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }

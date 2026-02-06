@@ -16,12 +16,12 @@ class DesignService
 
             if ($request->filled('name')) {
                 $name = $request->name;
-                $query->where('name->' . config('app.locale'), 'like', "%{$name}%");
+                $query->where('name->'.config('app.locale'), 'like', "%{$name}%");
             }
 
             if ($request->filled('description')) {
                 $description = $request->description;
-                $query->where('description->' . config('app.locale'), 'like', "%{$description}%");
+                $query->where('description->'.config('app.locale'), 'like', "%{$description}%");
             }
 
             if ($request->filled('user_name')) {
@@ -49,7 +49,7 @@ class DesignService
             if ($request->filled('design_options_name')) {
                 $designOptionsName = $request->design_options_name;
                 $query->whereHas('designOptions', function ($q) use ($designOptionsName) {
-                    $q->where('design_options.name->' . config('app.locale'), 'like', "%{$designOptionsName}%");
+                    $q->where('design_options.name->'.config('app.locale'), 'like', "%{$designOptionsName}%");
                 });
             }
 
@@ -57,7 +57,7 @@ class DesignService
                 $color = $request->design_options_color;
                 $query->whereHas('designOptions', function ($q) use ($color) {
                     $q->where('design_options.type', 'color')
-                        ->where('design_options.name->' . config('app.locale'), 'like', "%{$color}%");
+                        ->where('design_options.name->'.config('app.locale'), 'like', "%{$color}%");
                 });
             }
 
@@ -65,7 +65,7 @@ class DesignService
                 $fabric = $request->design_options_fabric;
                 $query->whereHas('designOptions', function ($q) use ($fabric) {
                     $q->where('design_options.type', 'fabric')
-                        ->where('design_options.name->' . config('app.locale'), 'like', "%{$fabric}%");
+                        ->where('design_options.name->'.config('app.locale'), 'like', "%{$fabric}%");
                 });
             }
 
@@ -73,7 +73,7 @@ class DesignService
                 $dome = $request->design_options_dome;
                 $query->whereHas('designOptions', function ($q) use ($dome) {
                     $q->where('design_options.type', 'dome')
-                        ->where('design_options.name->' . config('app.locale'), 'like', "%{$dome}%");
+                        ->where('design_options.name->'.config('app.locale'), 'like', "%{$dome}%");
                 });
             }
 
@@ -81,7 +81,7 @@ class DesignService
                 $sleeve = $request->design_options_sleeve;
                 $query->whereHas('designOptions', function ($q) use ($sleeve) {
                     $q->where('design_options.type', 'sleeve')
-                        ->where('design_options.name->' . config('app.locale'), 'like', "%{$sleeve}%");
+                        ->where('design_options.name->'.config('app.locale'), 'like', "%{$sleeve}%");
                 });
             }
 
@@ -106,23 +106,21 @@ class DesignService
             $salesCount = $design->itemsOrder()->sum('quantity');
             $design->load(['images', 'designOptions', 'measurements', 'user.image']);
             $design->sales_count = $salesCount;
+
             return $design;
         });
     }
 
-    public function updateStatus(Request $request, Design $design)
+    public function updateStatus(array $data, Design $design)
     {
-        return DB::transaction(function () use ($request, $design) {
-            $validated = $request->validate([
-                'status' => 'required|in:active,inactive,blocked',
-            ]);
+        return DB::transaction(function () use ($data, $design) {
+
 
             $design->update([
-                'status' => $validated['status'],
+                'status' => $data['status'],
             ]);
 
             return $design;
         });
     }
 }
-

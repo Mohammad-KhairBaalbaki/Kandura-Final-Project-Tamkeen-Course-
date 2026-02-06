@@ -14,18 +14,22 @@ class AdminController extends Controller
 {
     //
     protected $adminService;
+
     public function __construct(AdminService $adminService)
     {
         $this->adminService = $adminService;
     }
+
     public function index(Request $request)
     {
         try {
             $data = $this->adminService->index($request);
+
             return view('admins.index', $data);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -34,10 +38,12 @@ class AdminController extends Controller
     {
         try {
             $user = $this->adminService->show($user);
+
             return view('admins.show', compact('user'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -46,10 +52,12 @@ class AdminController extends Controller
     {
         try {
             $roles = $this->adminService->create();
+
             return view('admins.create', compact('roles'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -58,18 +66,19 @@ class AdminController extends Controller
     {
         try {
             $result = $this->adminService->store($request->validated());
-            if (!$result) {
+            if (! $result) {
                 return back()
                     ->withInput()
                     ->withErrors(['service' => __('admins.not_authorized_add_admin')]);
             }
+
+            return redirect()->route('admins.index');
+
         } catch (\Throwable $e) {
             return back()
                 ->withInput()
                 ->withErrors(['service' => __('admins.create_failed')]);
         }
-
-        return redirect()->route('admins.index');
     }
 
     public function edit(User $user)
@@ -78,10 +87,12 @@ class AdminController extends Controller
             $data = $this->adminService->edit($user);
             $admin = $data['admin'];
             $roles = $data['roles'];
+
             return view('admins.edit', compact('admin', 'roles'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -90,7 +101,7 @@ class AdminController extends Controller
     {
         try {
             $result = $this->adminService->update($request->validated(), $user);
-            if (!$result) {
+            if (! $result) {
                 return back()
                     ->withInput()
                     ->withErrors(['service' => __('admins.not_authorized_edit_admin')]);
@@ -108,10 +119,12 @@ class AdminController extends Controller
     {
         try {
             $this->adminService->delete($user);
+
             return redirect()->route('admins.index');
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }

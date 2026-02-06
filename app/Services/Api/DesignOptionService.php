@@ -20,6 +20,7 @@ class DesignOptionService
         return DB::transaction(function () {
 
             $designOptions = DesignOption::all();
+
             return $designOptions;
         });
     }
@@ -28,8 +29,8 @@ class DesignOptionService
     {
         return DB::transaction(function () use ($data) {
 
-
             $designOption = DesignOption::create($data);
+
             return $designOption;
         });
     }
@@ -38,9 +39,9 @@ class DesignOptionService
     {
         return DB::transaction(function () use ($data, $designOption) {
 
-
             $designOption->update($data);
             $designOption = DesignOption::findOrFail($designOption->id);
+
             return $designOption;
         });
     }
@@ -49,11 +50,9 @@ class DesignOptionService
     {
         return DB::transaction(function () use ($designOption) {
 
-
             $designOption->delete();
+
             return true;
         });
     }
 }
-
-

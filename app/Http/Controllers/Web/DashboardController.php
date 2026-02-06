@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 class DashboardController extends Controller
 {
     protected $dashboardService;
+
     protected $settingsService;
 
     public function __construct(DashboardService $dashboardService, SettingsService $settingsService)
@@ -23,9 +24,8 @@ class DashboardController extends Controller
     {
         try {
 
-
             $data = $this->dashboardService->index();
-            
+
             $user = Auth::user();
             if ($user) {
                 $this->settingsService->syncFromDashboard($user);
@@ -35,6 +35,7 @@ class DashboardController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }

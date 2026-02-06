@@ -13,7 +13,7 @@ class UserWalletNotification extends Notification
         public string $event,            // credited | debited | payment_failed
         public float $amount,
         public ?float $balance = null,
-        public ?string $currency = 'USD', 
+        public ?string $currency = 'USD',
         public ?int $orderNum = null
     ) {}
 
@@ -25,13 +25,13 @@ class UserWalletNotification extends Notification
     public function toDatabase($notifiable): array
     {
         $currency = $this->currency ? " {$this->currency}" : '';
-        $amountText = number_format($this->amount, 2) . $currency;
+        $amountText = number_format($this->amount, 2).$currency;
 
         $label = match ($this->event) {
-            'credited'       => "wallet balance increased by {$amountText}",
-            'debited'        => "wallet balance deducted by {$amountText}",
+            'credited' => "wallet balance increased by {$amountText}",
+            'debited' => "wallet balance deducted by {$amountText}",
             'payment_failed' => "payment failed ({$amountText})",
-            default          => "wallet updated ({$amountText})",
+            default => "wallet updated ({$amountText})",
         };
 
         if ($this->orderNum) {
@@ -40,13 +40,13 @@ class UserWalletNotification extends Notification
 
         return [
             'title' => 'wallet',
-            'body'  => $label,
-            'data'  => [
-                'type'     => 'wallet',
-                'event'    => $this->event,
-                'amount'   => $this->amount,
+            'body' => $label,
+            'data' => [
+                'type' => 'wallet',
+                'event' => $this->event,
+                'amount' => $this->amount,
                 'currency' => $this->currency,
-                'balance'  => $this->balance,
+                'balance' => $this->balance,
                 'order_id' => $this->orderNum,
             ],
         ];

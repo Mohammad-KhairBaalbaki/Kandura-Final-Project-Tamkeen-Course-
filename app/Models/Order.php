@@ -15,7 +15,7 @@ class Order extends Model
         'subtotal',
         'discount',
         'payment_id',
-        'coupon_id'
+        'coupon_id',
     ];
 
     public function address()
@@ -23,10 +23,10 @@ class Order extends Model
         return $this->belongsTo(Address::class);
     }
 
-    public function coupon(){
+    public function coupon()
+    {
         return $this->belongsTo(Coupon::class);
     }
-
 
     public function user()
     {
@@ -43,7 +43,8 @@ class Order extends Model
         return $this->hasMany(ItemOrder::class);
     }
 
-    public function payment(){
+    public function payment()
+    {
         return $this->belongsTo(Payment::class);
     }
 

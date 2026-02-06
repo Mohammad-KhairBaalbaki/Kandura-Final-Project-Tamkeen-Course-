@@ -53,7 +53,7 @@ class StoreDesignRequest extends FormRequest
         return [
             function (Validator $validator) {
                 $ids = $this->input('design_options', []);
-                if (!is_array($ids) || empty($ids)) {
+                if (! is_array($ids) || empty($ids)) {
                     return;
                 }
 
@@ -77,10 +77,10 @@ class StoreDesignRequest extends FormRequest
 
                 $missing = array_values(array_diff($requiredTypes, $selectedTypes));
 
-                if (!empty($missing)) {
+                if (! empty($missing)) {
                     $validator->errors()->add(
                         'design_options',
-                        'You must select at least one design option from each type. Missing: ' . implode(', ', $missing)
+                        'You must select at least one design option from each type. Missing: '.implode(', ', $missing)
                     );
                 }
             },

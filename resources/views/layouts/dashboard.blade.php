@@ -159,7 +159,7 @@
                             <a href="{{ route('locations.cities') }}"
                                 class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('locations*') ? 'sidebar-active' : 'text-gray-700' }}">
                                 <i class="fas fa-city w-4"></i>
-                                <span>{{ __('Cities') }}</span>
+                                <span class="font-medium">{{ __('Cities') }}</span>
                             </a>
 
                     <!-- Wallets -->

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-
 use App\Http\Requests\StoreAddressRequest;
 use App\Http\Requests\UpdateAddressRequest;
 use App\Http\Resources\AddressResource;
@@ -17,6 +16,7 @@ class AddressController extends Controller
     //
 
     protected $addressService;
+
     public function __construct(AddressService $addressService)
     {
         $this->addressService = $addressService;
@@ -25,25 +25,25 @@ class AddressController extends Controller
     /**
      * Retrieves a list of addresses.
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-
     public function index(Request $request)
     {
         try {
             $addresses = $this->addressService->index($request->all());
-            return $this->success(AddressResource::collection($addresses), "Addresses Retrieved Successfully .", 200);
+
+            return $this->success(AddressResource::collection($addresses), 'Addresses Retrieved Successfully .', 200);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
+
     /**
      * Stores a new address.
      *
-     * @param StoreAddressRequest $request
      * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Exception
@@ -52,19 +52,20 @@ class AddressController extends Controller
     {
         try {
             $address = $this->addressService->store($request->validated());
+
             // dd($address);
-            return $this->success(AddressResource::make($address), "Address Created Successfully .", 201);
+            return $this->success(AddressResource::make($address), 'Address Created Successfully .', 201);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
+
     /**
      * Updates an existing address.
      *
-     * @param UpdateAddressRequest $request
-     * @param Address $address
      *
      * @return \Illuminate\Http\JsonResponse
      *
@@ -74,28 +75,31 @@ class AddressController extends Controller
     {
         try {
             $address = $this->addressService->update($request->validated(), $address);
-            return $this->success(AddressResource::make($address), "Address Updated Successfully .", 200);
+
+            return $this->success(AddressResource::make($address), 'Address Updated Successfully .', 200);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
+
     public function destroy(Address $address)
     {
         try {
             $flag = $this->addressService->delete($address);
-            if (!$flag) {
-                return $this->success(null, "Address Not Found .", 404);
+            if (! $flag) {
+                return $this->success(null, 'Address Not Found .', 404);
             }
-            return $this->success(null, "Address Deleted Successfully .", 200);
+
+            return $this->success(null, 'Address Deleted Successfully .', 200);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
 
     }
 }
-
-

@@ -21,7 +21,6 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $user = Role::firstOrCreate(['name' => 'user', 'guard_name' => $guard]);
 
-        
         $allPermissions = [
             // Orders & invoices
             'view-orders',
@@ -90,7 +89,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'disable-designs',
         ];
 
-////////////////////////////////
+        // //////////////////////////////
         $SuperAdminNotificationPermissions = [
             'notify.admin.created',
             'notify.admin.removed',
@@ -114,7 +113,7 @@ class RolesAndPermissionsSeeder extends Seeder
         foreach ($adminNotificationPermissions as $p) {
             Permission::firstOrCreate(['name' => $p, 'guard_name' => 'api']);
         }
-////////////////////////////
+        // //////////////////////////
         $user->syncPermissions($userPermissions);
         $admin->syncPermissions(array_merge($adminNotificationPermissions, $adminPermissions));
         $superAdmin->syncPermissions(array_merge($allPermissions, $SuperAdminNotificationPermissions, $adminNotificationPermissions));

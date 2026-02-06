@@ -20,10 +20,12 @@ class LocationController extends Controller
     {
         try {
             $data = $this->locationService->cities($request);
+
             return view('locations.cities', $data);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }

@@ -5,13 +5,19 @@ namespace App\Services\Web;
 use App\Http\Requests\StoreDesignOptionRequest;
 use App\Http\Requests\UpdateDesignOptionRequest;
 use App\Models\DesignOption;
+use App\Services\Api\DesignOptionService as CoreDesignOptionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DesignOptionService
 {
+    protected $designOptionService;
 
+    public function __construct(CoreDesignOptionService $designOptionService)
+    {
+        $this->designOptionService = $designOptionService;
+    }
 
     public function index(Request $request)
     {
@@ -78,8 +84,9 @@ class DesignOptionService
             if ($request->has('is_active')) {
                 $data['is_active'] = $request->boolean('is_active');
             }
+            $designOption = DesignOption::create($data);
 
-            return $this->designOptionService->store($data);
+            return $designOption;
         });
     }
 
@@ -95,9 +102,9 @@ class DesignOptionService
         });
     }
 
-    public function updateStatus(Request $request, DesignOption $designOption)
+    public function updateStatus(array $data, DesignOption $designOption)
     {
-        return DB::transaction(function () use ($request, $designOption) {
+        return DB::transaction(function () use ($data, $designOption) {
             $user = Auth::user();
             if (!$user || !$user->hasPermissionTo('edit-design-option')) {
                 return [
@@ -105,12 +112,10 @@ class DesignOptionService
                 ];
             }
 
-            $validated = $request->validate([
-                'is_active' => 'required|boolean',
-            ]);
+
 
             $updated = $this->designOptionService->update(
-                ['is_active' => (bool) $validated['is_active']],
+                ['is_active' => (bool) $data['is_active']],
                 $designOption
             );
 

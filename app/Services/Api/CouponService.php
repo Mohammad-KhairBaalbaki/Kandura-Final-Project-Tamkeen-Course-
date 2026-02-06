@@ -5,7 +5,6 @@ namespace App\Services\Api;
 use App\Enums\StatusEnum;
 use App\Models\Cart;
 use App\Models\Coupon;
-use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -19,16 +18,15 @@ class CouponService
         //
     }
 
-    static public function isExpired(Coupon $coupon)
+    public static function isExpired(Coupon $coupon)
     {
         return DB::transaction(function () use ($coupon) {
 
-            return !($coupon->validate_until > now() && $coupon->usages == $coupon->general_limit);
+            return ! ($coupon->validate_until > now() && $coupon->usages == $coupon->general_limit);
         });
     }
 
-
-    static public function isUsed(Coupon $coupon, User $user)
+    public static function isUsed(Coupon $coupon, User $user)
     {
         return DB::transaction(function () use ($coupon, $user) {
 
@@ -39,7 +37,7 @@ class CouponService
         });
     }
 
-    static public function checkOrderLimit(Cart $cart, Coupon $coupon)
+    public static function checkOrderLimit(Cart $cart, Coupon $coupon)
     {
         return DB::transaction(function () use ($cart, $coupon) {
 
@@ -47,4 +45,3 @@ class CouponService
         });
     }
 }
-

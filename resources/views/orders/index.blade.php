@@ -200,7 +200,7 @@
                     @forelse($orders as $order)
                         <tr class="hover:bg-purple-50 transition-colors">
                             <td class="px-6 py-4 text-center">
-                                <input type="checkbox" name="order_ids[]" value="{{ $order->num }}"
+                                <input type="checkbox" name="order_ids[]" value="{{ $order->id }}"
                                     class="h-4 w-4 order-select">
                             </td>
                             <td class="px-6 py-4 text-center">

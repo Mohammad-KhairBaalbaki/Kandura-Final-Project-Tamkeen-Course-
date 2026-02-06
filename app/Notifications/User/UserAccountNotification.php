@@ -21,19 +21,18 @@ class UserAccountNotification extends Notification
     public function toDatabase($notifiable): array
     {
         $label = match ($this->action) {
-            'activated'   => 'your account has been activated',
+            'activated' => 'your account has been activated',
             'deactivated' => 'your account has been deactivated',
-            default       => 'your account status has been updated',
+            default => 'your account status has been updated',
         };
 
         $body = $label;
 
-
         return [
             'title' => 'account status',
-            'body'  => $body,
-            'data'  => [
-                'type'   => 'account',
+            'body' => $body,
+            'data' => [
+                'type' => 'account',
                 'action' => $this->action,
             ],
         ];

@@ -15,11 +15,11 @@ class ReviewResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'=>$this->id,
-            'user'=>$this->whenLoaded('user',fn()=>UserResource::make($this->user)),
-            'order'=>$this->whenLoaded('order',fn()=>OrderResource::make($this->order)),
-            'rating'=>$this->rating,
-            'comment'=>$this->comment
+            'id' => $this->id,
+            'user' => $this->whenLoaded('user', fn () => UserResource::make($this->user)),
+            'order' => $this->whenLoaded('order', fn () => OrderResource::make($this->order)),
+            'rating' => $this->rating,
+            'comment' => $this->comment,
         ];
     }
 }

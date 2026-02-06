@@ -14,9 +14,8 @@ class Cart extends Model
         'discount',
     ];
 
-
-
-    public function coupon(){
+    public function coupon()
+    {
         return $this->belongsTo(Coupon::class);
     }
 
@@ -29,5 +28,4 @@ class Cart extends Model
     {
         return $this->hasMany(ItemCart::class);
     }
-
 }

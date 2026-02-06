@@ -19,11 +19,11 @@ class DesignResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
-            'status'=>$this->status,
-            'images' => $this->whenLoaded('images', fn()=>ImageResource::collection($this->images)),
-            'designOptions' => $this->whenLoaded('designOptions', fn()=>DesignOptionResource::collection($this->designOptions)),
-            'measurements' => $this->whenLoaded('measurements', fn()=>MeasurementResource::collection($this->measurements)),
-            'user' => $this->whenLoaded('user', fn()=>UserResource::make($this->user)),
+            'status' => $this->status,
+            'images' => $this->whenLoaded('images', fn () => ImageResource::collection($this->images)),
+            'designOptions' => $this->whenLoaded('designOptions', fn () => DesignOptionResource::collection($this->designOptions)),
+            'measurements' => $this->whenLoaded('measurements', fn () => MeasurementResource::collection($this->measurements)),
+            'user' => $this->whenLoaded('user', fn () => UserResource::make($this->user)),
         ];
     }
 }

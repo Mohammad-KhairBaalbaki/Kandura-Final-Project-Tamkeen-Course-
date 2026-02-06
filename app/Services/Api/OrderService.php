@@ -16,11 +16,8 @@ use App\Notifications\User\UserOrderNotification;
 use App\Notifications\User\UserWalletNotification;
 use App\Services\Api\InvoiceService as ApiInvoiceService;
 use App\Services\Global\InvoiceService;
-use App\Services\Api\WalletService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
 
@@ -30,7 +27,9 @@ class OrderService
      * Create a new class instance.
      */
     protected $walletService;
+
     protected $invoiceService;
+
     public function __construct(WalletService $walletService, InvoiceService $invoiceService)
     {
         $this->walletService = $walletService;
@@ -41,30 +40,30 @@ class OrderService
     {
         return DB::transaction(function () {
 
-
             $user = User::find(Auth::id());
-            if (!$user->orders || $user->orders->count() == 0) {
+            if (! $user->orders || $user->orders->count() == 0) {
                 return '2';
             }
+
             return $user->orders()->with('itemsOrder.design', 'itemsOrder.measurement', 'itemsOrder.itemsSelected.designOption', 'coupon', 'review')->get();
         });
     }
 
-    static public function store(array $data)
+    public static function store(array $data)
     {
         return DB::transaction(function () use ($data) {
 
             $user = User::find(Auth::id());
             $cart = $user->cart;
-            if (!$cart || $cart->itemsCart->count() == 0) {
+            if (! $cart || $cart->itemsCart->count() == 0) {
                 return '2';
             }
             if (isset($cart->coupon)) {
                 $coupon = $cart->coupon;
-                if (!CouponService::checkOrderLimit($cart, $cart->coupon)) {
+                if (! CouponService::checkOrderLimit($cart, $cart->coupon)) {
                     return '3';
                 }
-                if (!$coupon->is_active) {
+                if (! $coupon->is_active) {
                     return '4';
                 }
                 if (CouponService::isUsed($coupon, Auth::user())) {
@@ -76,7 +75,6 @@ class OrderService
 
             }
 
-
             $payment = Payment::create([
                 'user_id' => $user->id,
                 'status' => StatusEnum::PENDING,
@@ -84,26 +82,25 @@ class OrderService
                 'amount' => $cart->subtotal - $cart->discount,
 
             ]);
-            $payment->num = $payment->created_at->format('Ymd') . $payment->id;
+            $payment->num = $payment->created_at->format('Ymd').$payment->id;
             $payment->save();
-            //////////////////////////
+            // ////////////////////////
 
-            //////////////////////////
+            // ////////////////////////
             $order = Order::create([
                 'user_id' => $user->id,
                 'address_id' => $data['address_id'],
                 'subtotal' => $cart->subtotal,
                 'discount' => $cart->discount,
                 'payment_id' => $payment->id,
-                'coupon_id' => $cart->coupon_id
+                'coupon_id' => $cart->coupon_id,
             ]);
-            $order->num = $order->created_at->format('Ymd') . $order->id;
+            $order->num = $order->created_at->format('Ymd').$order->id;
             $order->save();
 
+            $invoice = (new ApiInvoiceService(new InvoiceService))->store($order);
 
-            $invoice = (new ApiInvoiceService(new InvoiceService()))->store($order);
-
-            //send notification to user when invoice is generated
+            // send notification to user when invoice is generated
             $user->notify(new UserInvoiceNotification(
                 invoice: $invoice,
                 event: 'generated',
@@ -129,7 +126,7 @@ class OrderService
             $cart->delete();
             $order->refresh();
 
-            //send notification to admin when order is created
+            // send notification to admin when order is created
             event(new DashboardNotificationRequested(
                 permission: 'notify.orders.created',
                 title: 'New order Created',
@@ -141,7 +138,7 @@ class OrderService
                     'url' => route('orders.show', $order->id),
                 ]
             ));
-            //send notification to user when order is created
+            // send notification to user when order is created
             if ($order->user) {
                 $user = $order->user;
                 $user->notify(new UserOrderNotification(
@@ -161,11 +158,12 @@ class OrderService
 
             $coupon = $order->coupon;
             if (isset($coupon)) {
-                if (CouponService::isExpired($coupon) || !$coupon->is_active) {
+                if (CouponService::isExpired($coupon) || ! $coupon->is_active) {
                     $order->coupon_id = null;
 
                     $order->discount = 0;
                     $order->save();
+
                     return '3';
 
                 }
@@ -196,8 +194,8 @@ class OrderService
                     ],
                     'mode' => 'payment',
                     // ✅ Send the user to ONE page no matter what:
-                    'success_url' => route('success_payment', $order) . '?session_id={CHECKOUT_SESSION_ID}',
-                    'cancel_url' => route('failed_payment', $order) . '?canceled=1',
+                    'success_url' => route('success_payment', $order).'?session_id={CHECKOUT_SESSION_ID}',
+                    'cancel_url' => route('failed_payment', $order).'?canceled=1',
 
                     // ✅ Put identifiers somewhere reliable:
                     // Session metadata is fine for session events...
@@ -216,10 +214,12 @@ class OrderService
                         ],
                     ],
                 ]);
-                return ($session->url);
+
+                return $session->url;
             } elseif ($payment->method === PaymentMethodEnum::WALLET) {
                 if ($this->walletService->checkWalletPay($user, $payment->amount)) {
                     $this->walletService->payWallet($user, $payment->amount);
+
                     return $this->successPayment($order);
                 } else {
                     return '2';
@@ -228,6 +228,7 @@ class OrderService
                 $order->method = StatusEnum::CONFIRMED;
                 $this->useCoupon($order);
                 $order->save;
+
                 return $order;
             }
         });
@@ -243,6 +244,7 @@ class OrderService
             $payment->save();
             $order->save();
             $this->useCoupon($order);
+
             return $order->load('address', 'itemsOrder', 'itemsOrder.design', 'itemsOrder.measurement', 'itemsOrder.itemsSelected.designOption', 'coupon');
         });
     }
@@ -267,7 +269,7 @@ class OrderService
 
             $payment = $order->payment;
             $payment->status = StatusEnum::FAILED;
-            //send notifications to admin when payment failed
+            // send notifications to admin when payment failed
             event(new DashboardNotificationRequested(
                 'notify.orders.issue',
                 'Payment Failed',
@@ -279,7 +281,7 @@ class OrderService
 
                 ]
             ));
-            //send notification to user when payment failed
+            // send notification to user when payment failed
             $user = $order->user;
             $user->notify(new UserWalletNotification(
                 event: 'payment_failed',
@@ -287,6 +289,7 @@ class OrderService
 
             ));
             $payment->save();
+
             return $order;
 
         });
@@ -301,8 +304,8 @@ class OrderService
             }
             $order->status = StatusEnum::CANCELLED;
             $order->save();
+
             return $order;
         });
     }
-
 }

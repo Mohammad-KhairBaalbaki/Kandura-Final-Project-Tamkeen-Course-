@@ -8,6 +8,8 @@ use App\Services\Global\InvoiceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use ZipArchive;
 
 class OrderService
 {
@@ -92,7 +94,37 @@ class OrderService
         return DB::transaction(function () use ($order) {
             $num = $order->num ?? $order->id;
             $pdf = $this->invoiceService->orderPdf($order);
-            return $pdf->stream('order-' . $num . '-invoice.pdf');
+
+            return $pdf->stream('order-'.$num.'-invoice.pdf');
+        });
+    }
+
+    public function downloadInvoicesZip(array $orderIds)
+    {
+        return DB::transaction(function () use ($orderIds) {
+            $orders = Order::whereIn('id', $orderIds)->get();
+            if ($orders->isEmpty()) {
+                return back()->withErrors(['invoices' => 'No orders selected.']);
+            }
+
+            $zipName = 'invoices-'.now()->format('Ymd-His').'.zip';
+            $tmpFile = tempnam(sys_get_temp_dir(), 'invoices_');
+
+            $zip = new ZipArchive();
+            if ($zip->open($tmpFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+                return back()->withErrors(['invoices' => 'Unable to create ZIP file.']);
+            }
+
+            foreach ($orders as $order) {
+                $num = $order->num ?? $order->id;
+                $pdf = $this->invoiceService->orderPdf($order);
+                $zip->addFromString('order-'.$num.'-invoice.pdf', $pdf->output());
+            }
+
+            $zip->close();
+            return response()
+                ->download($tmpFile, $zipName)
+                ->deleteFileAfterSend(true);
         });
     }
 
@@ -105,15 +137,11 @@ class OrderService
         });
     }
 
-    public function updateStatus(Request $request, Order $order): Order
+    public function updateStatus(array $data, Order $order): Order
     {
-        return DB::transaction(function () use ($request, $order) {
-            $validated = $request->validate([
-                'status' => 'required|in:pending,confirmed,delivered,cancelled',
-            ]);
-
+        return DB::transaction(function () use ($data, $order) {
             $order->update([
-                'status' => $validated['status'],
+                'status' => $data['status'],
             ]);
 
             return $order;

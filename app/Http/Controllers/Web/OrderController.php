@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DownloadInvoicesZipRequest;
+use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Order;
 use App\Services\Web\OrderService;
 use Illuminate\Http\RedirectResponse;
@@ -22,10 +24,12 @@ class OrderController extends Controller
     {
         try {
             $data = $this->orderService->index($request);
+
             return view('orders.index', $data);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -34,10 +38,12 @@ class OrderController extends Controller
     {
         try {
             $order = $this->orderService->show($order);
+
             return view('orders.show', compact('order'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -49,30 +55,45 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
 
+    public function downloadInvoicesZip(DownloadInvoicesZipRequest $request)
+    {
+        try {
+            return $this->orderService->downloadInvoicesZip($request->validated()['order_ids']);
+        } catch (\Exception $e) {
+            Log::error($e);
+            Log::error($e->getMessage());
 
-    public function failed(Order $order): RedirectResponse
+            return $this->success(false, 'process failed try again later', 422);
+        }
+    }
+
+    public function failed(Order $order)
     {
         try {
             return $this->orderService->failed($order);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
 
-    public function updateStatus(Request $request, Order $order)
+    public function updateStatus(UpdateOrderStatusRequest $request, Order $order)
     {
         try {
-            $this->orderService->updateStatus($request, $order);
+            $this->orderService->updateStatus($request->validated(), $order);
+
             return back();
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }

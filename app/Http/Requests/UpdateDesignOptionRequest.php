@@ -43,7 +43,6 @@ class UpdateDesignOptionRequest extends FormRequest
                     ->ignore($this->designOption->id),
             ],
 
-
         ];
     }
 

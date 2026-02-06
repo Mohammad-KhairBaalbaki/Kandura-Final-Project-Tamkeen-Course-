@@ -19,6 +19,6 @@ class FcmTokenController extends Controller
             $data['token'],
         );
 
-        return $this->success(true,'Token saved successfully',200);
+        return $this->success(true, 'Token saved successfully', 200);
     }
 }

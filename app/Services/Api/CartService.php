@@ -7,7 +7,6 @@ use App\Models\Coupon;
 use App\Models\Design;
 use App\Models\ItemCart;
 use App\Models\ItemOptionSelected;
-use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -27,11 +26,12 @@ class CartService
         return DB::transaction(function () {
 
             $cart = User::findOrFail(Auth::id())->cart;
-            if (!$cart) {
+            if (! $cart) {
                 return '1';
             }
 
             $cart->load('itemsCart', 'coupon');
+
             // dd($cart->getRelations());
             return $cart;
         });
@@ -42,9 +42,8 @@ class CartService
     {
         return DB::transaction(function () use ($data) {
 
-
             $user = User::findOrFail(Auth::id());
-            if (!isset($user->cart)) {
+            if (! isset($user->cart)) {
                 $cart = Cart::create([
                     'user_id' => $user->id,
                 ]);
@@ -63,16 +62,16 @@ class CartService
             foreach ($data['design_option_ids'] as $option) {
                 ItemOptionSelected::create([
                     'item_cart_id' => $item->id,
-                    'design_option_id' => $option
+                    'design_option_id' => $option,
                 ]);
 
             }
             $this->calculateTotal($cart);
+
             return $item;
 
         });
     }
-
 
     public function addCoupon(array $data)
     {
@@ -80,7 +79,7 @@ class CartService
 
             $coupon = Coupon::where('code', $data['code'])->firstOrFail();
 
-            if (!$coupon->is_active) {
+            if (! $coupon->is_active) {
                 return '2';
             }
             if (CouponService::isUsed($coupon, Auth::user())) {
@@ -92,13 +91,13 @@ class CartService
             $user = User::findOrFail(Auth::id());
 
             $cart = $user->cart;
-            if (!isset($cart)) {
+            if (! isset($cart)) {
                 $cart = Cart::create([
-                    'user_id' => $user->id
+                    'user_id' => $user->id,
                 ]);
             }
 
-            if (!CouponService::checkOrderLimit($cart, $coupon)) {
+            if (! CouponService::checkOrderLimit($cart, $coupon)) {
                 return '5';
             }
             $amount = 0;
@@ -109,7 +108,7 @@ class CartService
             }
             $cart->update([
                 'coupon_id' => $coupon->id,
-                'discount' => $amount
+                'discount' => $amount,
             ]);
             $cart->save();
 
@@ -122,13 +121,14 @@ class CartService
         return DB::transaction(function () {
             $user = User::findOrFail(Auth::id());
             $cart = $user->cart;
-            if(!$cart || !$cart->coupon){
+            if (! $cart || ! $cart->coupon) {
                 return '2';
             }
             $cart->update([
                 'coupon_id' => null,
-                'discount' => 0
+                'discount' => 0,
             ]);
+
             return $cart->load('coupon');
         });
     }
@@ -137,10 +137,10 @@ class CartService
     {
         return DB::transaction(function () use ($data, $item) {
 
-
             $item->update($data);
             $cart = $item->cart;
             $this->calculateTotal($cart);
+
             return $item;
         });
     }
@@ -149,10 +149,10 @@ class CartService
     {
         return DB::transaction(function () use ($item) {
 
-            
             $cart = $item->cart;
             $item->delete();
             $this->calculateTotal($cart);
+
             return true;
         });
     }
@@ -169,6 +169,7 @@ class CartService
                 }
             } else {
                 $cart->delete();
+
                 return;
             }
             if (isset($cart->coupon)) {
@@ -181,4 +182,3 @@ class CartService
         });
     }
 }
-

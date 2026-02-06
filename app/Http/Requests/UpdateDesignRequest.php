@@ -72,7 +72,6 @@ class UpdateDesignRequest extends FormRequest
         ];
     }
 
-
     protected function failedAuthorization()
     {
         throw new HttpResponseException(response()->json([

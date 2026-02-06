@@ -20,10 +20,12 @@ class PaymentController extends Controller
     {
         try {
             $data = $this->paymentService->index($request);
+
             return view('payments.index', $data);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }

@@ -23,6 +23,7 @@ class DesignService
         return DB::transaction(function () {
 
             $user = User::findOrFail(Auth::id());
+
             return $user->designs()->with('images', 'designOptions', 'measurements')->get();
         });
     }
@@ -30,8 +31,8 @@ class DesignService
     public function index(array $params = [])
     {
 
-        //search name description userName
-        //filter size priceRange design option creator
+        // search name description userName
+        // filter size priceRange design option creator
         return DB::transaction(function () use ($params) {
 
             $query = Design::with('images', 'designOptions', 'measurements')->where(function ($q) {
@@ -48,14 +49,14 @@ class DesignService
             if (isset($params['name'])) {
                 $name = $params['name'];
                 $query->where(function ($q) use ($name) {
-                    $q->where('name->' . config('app.locale'), 'like', "%{$name}%");
+                    $q->where('name->'.config('app.locale'), 'like', "%{$name}%");
 
                 });
             }
             if (isset($params['description'])) {
                 $description = $params['description'];
                 $query->where(function ($q) use ($description) {
-                    $q->where('description->' . config('app.locale'), 'like', "%{$description}%");
+                    $q->where('description->'.config('app.locale'), 'like', "%{$description}%");
                 });
             }
 
@@ -83,10 +84,9 @@ class DesignService
                 $query->where('price', '<=', $maxPrice);
             }
 
-
             if (isset($params['design_options_name'])) {
                 $query->whereHas('designOptions', function ($q) use ($params) {
-                    $q->where('design_options.name->' . config('app.locale'), 'like', $params['design_options_name']);
+                    $q->where('design_options.name->'.config('app.locale'), 'like', $params['design_options_name']);
                 });
             }
             if (isset($params['design_options_type']) && is_array($params['design_options_type'])) {
@@ -95,13 +95,14 @@ class DesignService
                 });
             }
             $perPage = $params['per_page'] ?? 5;
+
             return $query->paginate($perPage);
         });
     }
+
     public function store(array $data)
     {
         return DB::transaction(function () use ($data) {
-
 
             $user = Auth::user();
             $userArray = ['user_id' => $user->id];
@@ -109,58 +110,62 @@ class DesignService
             $design = Design::create($data);
             if (isset($data['images'])) {
                 foreach ($data['images'] as $idx => $file) {
-                    $path = 'design/' . $design->id . '/' . $idx;
+                    $path = 'design/'.$design->id.'/'.$idx;
                     $design->images()->create([
                         'url' => FileService::uploadFile($file, $path),
                     ]);
 
                 }
             }
-            if (!empty($data['design_options']) && is_array($data['design_options'])) {
+            if (! empty($data['design_options']) && is_array($data['design_options'])) {
                 $design->designOptions()->sync($data['design_options']);
             }
 
-            if (!empty($data['measurements']) && is_array($data['measurements'])) {
+            if (! empty($data['measurements']) && is_array($data['measurements'])) {
                 $design->measurements()->sync($data['measurements']);
             }
+
             return $design->load('images', 'designOptions', 'measurements');
         });
     }
+
     public function update(array $data, Design $design)
     {
         return DB::transaction(function () use ($data, $design) {
 
-
             $design->update($data);
             if (isset($data['images'])) {
                 foreach ($data['images'] as $idx => $file) {
-                    $path = 'designs/' . $design->id . '/' . $idx;
+                    $path = 'designs/'.$design->id.'/'.$idx;
                     $design->images()->update([
                         'url' => FileService::uploadFile($file, $path),
                     ]);
 
                 }
             }
-            if (!empty($data['design_options']) && is_array($data['design_options'])) {
+            if (! empty($data['design_options']) && is_array($data['design_options'])) {
                 $design->designOptions()->sync($data['design_options']);
             }
 
-            if (!empty($data['measurements']) && is_array($data['measurements'])) {
+            if (! empty($data['measurements']) && is_array($data['measurements'])) {
                 $design->measurements()->sync($data['measurements']);
             }
             $design = Design::findOrFail($design->id);
+
             return $design;
         });
     }
+
     public function destroy(Design $design)
     {
         return DB::transaction(function () use ($design) {
 
-            if ($design->user_id !== Auth::id())
+            if ($design->user_id !== Auth::id()) {
                 return false;
+            }
             $design->delete();
+
             return true;
         });
     }
 }
-

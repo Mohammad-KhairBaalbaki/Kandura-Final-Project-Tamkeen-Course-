@@ -1,0 +1,812 @@
+1) مقدمة عن المشروع
+هذا المشروع عبارة عن منصة إدارة لمتجر “Kandoura Store” مبنية على Laravel 12، تجمع بين لوحة تحكم للمديرين وواجهات API للمستخدمين. الهدف هو إدارة الطلبات والتصاميم وخياراتها والمدفوعات والفواتير والإشعارات بشكل منظم وقابل للتوسع. النظام يدعم إدارة الصلاحيات والأدوار، والإشعارات (قاعدة البيانات + إشعارات الدفع عبر FCM)، مع تقارير ولوحات مختصرة للمسؤولين.
+الفئات الرئيسية: Users (مستخدمون)، Admin (مدير)، Super Admin (مدير عام).
+
+2) أهم التقنيات والبكجات المستخدمة
+Laravel 12: لتوفير إطار عمل متكامل وسريع مع ORM (Eloquent)، Routing، Middleware، Queue، Notifications.
+الحزم الأساسية من composer.json:
+barryvdh/laravel-dompdf: توليد ملفات PDF للفواتير.
+kreait/laravel-firebase: تكامل Firebase/FCM لإرسال إشعارات Push.
+laravel/breeze: جاهزية المصادقة الأساسية.
+laravel/sanctum: توثيق API عبر التوكنات.
+spatie/laravel-permission: إدارة الأدوار والصلاحيات.
+spatie/laravel-translatable: تخزين وترجمة الحقول متعددة اللغات (مثل أسماء المدن والتصاميم).
+stripe/stripe-php: تكامل بوابة الدفع Stripe.
+خدمات خارجية مذكورة في .env.example:
+Stripe (بوابة دفع).
+Firebase/FCM (إشعارات دفع).
+MySQL، Redis، Mail (سجلات)، AWS S3 (اختياري للتخزين).
+
+3) أبرز الميزات (Features)
+- إدارة الطلبات بالكامل (إنشاء، دفع، إلغاء، تحديث حالة).
+- نظام فواتير PDF مع تخزين رابط الملف.
+- إدارة التصاميم وخيارات التصميم والمقاسات مع حالات التفعيل.
+- سلة المشتريات والكوبونات والخصومات.
+- نظام المحافظ (Wallet) وشحن الرصيد.
+- صلاحيات وأدوار للمديرين مع واجهات إدارة متقدمة.
+- إشعارات للمستخدمين (Database) وإشعارات للوحة التحكم (Database + Push عبر FCM).
+- لوحة تحكم إحصائية للمديرين وتقارير مختصرة.
+- صفحة خاصة للمستخدم المعطل، وإدارة إعدادات الإشعارات.
+- صفحة توزيع الطلبات حسب المدن (Pie Chart).
+
+4) المعمارية المختصرة (كيف يمشي الطلب داخل النظام)
+المسار Route يستدعي Controller ثم Service ثم Models/DB.
+الأحداث Events مثل DashboardNotificationRequested تُطلق ثم يعالجها Listener (SendDashboardNotification) لإرسال إشعار قاعدة البيانات وPush.
+Notifications:
+إشعارات المستخدمين: تُحفظ في جدول notifications عبر Laravel Notification.
+إشعارات لوحة التحكم: تُرسل للـ DB + FCM بناء على تفضيلات الإشعارات (Notification Preferences).
+
+5) توثيق المسارات (Routes Documentation)
+A) Web Routes (routes/web.php)
+A.1) GET /
+الاسم: غير محدد
+الوسائط: auth
+Controller: Closure
+الوظيفة: عرض صفحة welcome للمستخدم المسجل.
+النداءات الداخلية: غير متوفر في الكود الحالي.
+
+A.2) POST /fcm/token
+الاسم: غير محدد
+الوسائط: auth
+Controller: FcmTokenController@store
+الوظيفة: حفظ توكن FCM للمستخدم الحالي.
+النداءات الداخلية: App\Services\FcmService@saveToken، Model: DeviceToken.
+
+A.3) GET /login
+الاسم: login_view
+الوسائط: لا يوجد
+Controller: Web\AuthController@showLoginForm
+الوظيفة: عرض صفحة تسجيل الدخول للوحة التحكم.
+النداءات الداخلية: غير متوفر في الكود الحالي.
+
+A.4) POST /login
+الاسم: login
+الوسائط: لا يوجد
+Controller: Web\AuthController@login
+الوظيفة: تسجيل الدخول للمديرين.
+النداءات الداخلية: Web\AuthService@login، Model: User، Auth.
+
+A.5) GET /language/{locale}
+الاسم: language.switch
+الوسائط: لا يوجد
+Controller: Web\LanguageController@switch
+الوظيفة: تغيير لغة الواجهة.
+النداءات الداخلية: Web\LanguageService@switch، Session.
+
+A.6) POST /stripe/webhook
+الاسم: stripe.webhook
+الوسائط: بدون CSRF
+Controller: Api\WebhookController@handle
+الوظيفة: استقبال أحداث Stripe وتحديث الطلب/الدفع.
+النداءات الداخلية: Api\OrderService@successPayment / markPaymentFailed، Models: Order, Payment.
+ملف توليد: لا يوجد.
+
+A.7) GET /dashboard
+الاسم: dashboard
+الوسائط: auth:sanctum
+Controller: Web\DashboardController@index
+الوظيفة: لوحة التحكم الرئيسية.
+النداءات الداخلية: Web\DashboardService@index، Web\SettingsService@syncFromDashboard.
+Models: Order, User, Design, Review.
+
+A.8) GET /profile
+الاسم: profile.show
+الوسائط: auth:sanctum
+Controller: Web\ProfileController@show
+الوظيفة: عرض بيانات حساب المدير.
+Models: User مع العلاقات image, roles, permissions.
+
+A.9) GET /settings
+الاسم: settings.index
+الوسائط: auth:sanctum, CheckActiveMiddleware
+Controller: Web\SettingsController@index
+الوظيفة: عرض إعدادات الإشعارات.
+النداءات الداخلية: Web\SettingsService@getNotifyPermissions و getPreferencesFor.
+Models: NotificationPreference, Permission.
+
+A.10) POST /settings/notifications
+الاسم: settings.notifications.update
+الوسائط: auth:sanctum, CheckActiveMiddleware
+Controller: Web\SettingsController@updateNotifications
+الوظيفة: حفظ إعدادات الإشعارات.
+النداءات الداخلية: غير متوفر في الكود الحالي (لا يوجد استدعاء خدمة داخل الميثود).
+
+A.11) POST /logout
+الاسم: logout
+الوسائط: auth:sanctum
+Controller: Web\AuthController@logout
+الوظيفة: تسجيل خروج المدير.
+النداءات الداخلية: Web\AuthService@logout.
+
+A.12) GET /orders
+الاسم: orders.index
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-orders,api
+Controller: Web\OrderController@index
+الوظيفة: قائمة الطلبات.
+النداءات الداخلية: Web\OrderService@index، Models: Order, User, Payment.
+
+A.13) GET /orders/show/{order}
+الاسم: orders.show
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-orders,api
+Controller: Web\OrderController@show
+الوظيفة: تفاصيل الطلب.
+النداءات الداخلية: Web\OrderService@show، Models: Order + علاقات متعددة.
+
+A.14) GET /orders/{order}/invoice
+الاسم: orders.invoice
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-invoices,api
+Controller: Web\OrderController@invoice
+الوظيفة: تنزيل فاتورة PDF.
+النداءات الداخلية: Web\OrderService@invoice -> Global\InvoiceService@orderPdf.
+ملفات: توليد PDF من view orders.invoice.
+
+A.15) POST /orders/invoices/zip
+الاسم: orders.invoices.zip
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-invoices,api
+Controller: Web\OrderController@downloadInvoicesZip
+الوظيفة: تنزيل فواتير كـ ZIP.
+ملاحظة: الميثود غير متوفر في الكود الحالي.
+
+A.16) PATCH /orders/{order}/status
+الاسم: orders.updateStatus
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-orders,api
+Controller: Web\OrderController@updateStatus
+الوظيفة: تحديث حالة الطلب من لوحة التحكم.
+النداءات الداخلية: Web\OrderService@updateStatus.
+الأحداث/الإشعارات: OrderObserver ينفذ عند تغير الحالة.
+
+A.17) GET /orders/failed/{order}
+الاسم: orders.failed
+الوسائط: auth:sanctum, CheckActiveMiddleware
+Controller: Web\OrderController@failed
+الوظيفة: عرض رسالة فشل الدفع.
+النداءات الداخلية: Web\OrderService@failed.
+
+A.18) GET /payments
+الاسم: payments.index
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-invoices,api
+Controller: Web\PaymentController@index
+الوظيفة: عرض قائمة المدفوعات.
+النداءات الداخلية: Web\PaymentService@index، Models: Payment.
+
+A.19) GET /users
+الاسم: users.index
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-users,api
+Controller: Web\UserController@index
+الوظيفة: قائمة المستخدمين.
+النداءات الداخلية: Web\UserService@index، Model: User.
+
+A.20) GET /users/{user}
+الاسم: users.show
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-users,api
+Controller: Web\UserController@show
+الوظيفة: عرض تفاصيل المستخدم.
+النداءات الداخلية: Web\UserService@show، علاقات User/Design/Order/Image.
+
+A.21) PATCH /users/{user}/status
+الاسم: users.updateStatus
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:disable-accounts,api
+Controller: Web\UserController@updateStatus
+الوظيفة: تغيير تفعيل المستخدم.
+النداءات الداخلية: Web\UserService@updateStatus.
+الأحداث/الإشعارات: UserObserver يرسل إشعارات.
+
+A.22) GET /admins
+الاسم: admins.index
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-admins,api
+Controller: Web\AdminController@index
+الوظيفة: قائمة المدراء.
+النداءات الداخلية: Web\AdminService@index.
+
+A.23) GET /admins/create
+الاسم: admins.create
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:add-admins,api
+Controller: Web\AdminController@create
+الوظيفة: عرض نموذج إنشاء مدير.
+النداءات الداخلية: Web\AdminService@create.
+
+A.24) POST /admins/store
+الاسم: admins.store
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:add-admins,api
+Controller: Web\AdminController@store
+الوظيفة: إنشاء مدير جديد.
+النداءات الداخلية: Web\AdminService@store.
+الأحداث: DashboardNotificationRequested.
+
+A.25) GET /admins/{user}
+الاسم: admins.show
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-admins,api
+Controller: Web\AdminController@show
+الوظيفة: عرض تفاصيل مدير.
+النداءات الداخلية: Web\AdminService@show.
+
+A.26) GET /admins/{user}/edit
+الاسم: admins.edit
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-admins,api
+Controller: Web\AdminController@edit
+الوظيفة: نموذج تعديل مدير.
+النداءات الداخلية: Web\AdminService@edit.
+
+A.27) PATCH /admins/{user}
+الاسم: admins.update
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-admins,api
+Controller: Web\AdminController@update
+الوظيفة: تحديث مدير.
+النداءات الداخلية: Web\AdminService@update.
+الأحداث: DashboardNotificationRequested عند تعديل الصلاحيات.
+
+A.28) DELETE /admins/{user}
+الاسم: admins.destroy
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:delete-admins,api
+Controller: Web\AdminController@destroy
+الوظيفة: حذف مدير.
+النداءات الداخلية: Web\AdminService@delete.
+الأحداث: DashboardNotificationRequested.
+
+A.29) GET /designs
+الاسم: designs.index
+الوسائط: auth:sanctum, CheckActiveMiddleware
+Controller: Web\DesignController@index
+الوظيفة: قائمة التصاميم.
+النداءات الداخلية: Web\DesignService@index.
+
+A.30) GET /designs/{design}
+الاسم: designs.show
+الوسائط: auth:sanctum, CheckActiveMiddleware
+Controller: Web\DesignController@show
+الوظيفة: تفاصيل التصميم.
+النداءات الداخلية: Web\DesignService@show.
+
+A.31) PATCH /designs/{design}/status
+الاسم: designs.updateStatus
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:disable-designs,api
+Controller: Web\DesignController@updateStatus
+الوظيفة: تحديث حالة التصميم.
+النداءات الداخلية: Web\DesignService@updateStatus.
+الأحداث: DesignObserver عند التحديث.
+
+A.32) GET /design_options
+الاسم: design_options.index
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-design-options,api
+Controller: Web\DesignOptionController@index
+الوظيفة: قائمة خيارات التصميم.
+النداءات الداخلية: Web\DesignOptionService@index.
+
+A.33) GET /design_options/trashed
+الاسم: design_options.trashed
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-design-options,api
+Controller: Web\DesignOptionController@trashed
+الوظيفة: قائمة الخيارات المحذوفة.
+النداءات الداخلية: Web\DesignOptionService@trashed.
+
+A.34) GET /design_options/create
+الاسم: design_options.create
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-design-options,api
+Controller: Web\DesignOptionController@create
+الوظيفة: نموذج إنشاء خيار تصميم.
+النداءات الداخلية: Web\DesignOptionService@create.
+
+A.35) POST /design_options/store
+الاسم: design_options.store
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-design-options,api
+Controller: Web\DesignOptionController@store
+الوظيفة: إنشاء خيار تصميم.
+النداءات الداخلية: Web\DesignOptionService@store.
+
+A.36) GET /design_options/{designOption}/edit
+الاسم: design_options.edit
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-design-options,api
+Controller: Web\DesignOptionController@edit
+الوظيفة: نموذج تعديل خيار تصميم.
+النداءات الداخلية: Web\DesignOptionService@edit.
+
+A.37) PATCH /design_options/{designOption}
+الاسم: design_options.update
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-design-options,api
+Controller: Web\DesignOptionController@update
+الوظيفة: تحديث خيار تصميم.
+النداءات الداخلية: Web\DesignOptionService@update.
+
+A.38) PATCH /design_options/{designOption}/status
+الاسم: design_options.updateStatus
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-design-options,api
+Controller: Web\DesignOptionController@updateStatus
+الوظيفة: تحديث حالة خيار تصميم.
+النداءات الداخلية: Web\DesignOptionService@updateStatus.
+
+A.39) DELETE /design_options/{designOption}
+الاسم: design_options.destroy
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:delete-design-options,api
+Controller: Web\DesignOptionController@destroy
+الوظيفة: حذف خيار تصميم (Soft Delete).
+النداءات الداخلية: Web\DesignOptionService@destroy.
+
+A.40) PATCH /design_options/{designOption}/restore
+الاسم: design_options.restore
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:delete-design-options,api
+Controller: Web\DesignOptionController@restore
+الوظيفة: استعادة خيار تصميم محذوف.
+النداءات الداخلية: Web\DesignOptionService@restore.
+
+A.41) GET /coupons
+الاسم: coupons.index
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-coupons,api
+Controller: Web\CouponController@index
+الوظيفة: قائمة الكوبونات.
+النداءات الداخلية: Web\CouponService@index.
+
+A.42) GET /coupons/create
+الاسم: coupons.create
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-coupons,api
+Controller: Web\CouponController@create
+الوظيفة: نموذج إنشاء كوبون.
+
+A.43) POST /coupons/store
+الاسم: coupons.store
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-coupons,api
+Controller: Web\CouponController@store
+الوظيفة: إنشاء كوبون.
+النداءات الداخلية: Web\CouponService@store.
+
+A.44) GET /coupons/{coupon}/edit
+الاسم: coupons.edit
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-coupons,api
+Controller: Web\CouponController@edit
+الوظيفة: نموذج تعديل كوبون.
+النداءات الداخلية: Web\CouponService@edit.
+
+A.45) PATCH /coupons/{coupon}
+الاسم: coupons.update
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-coupons,api
+Controller: Web\CouponController@update
+الوظيفة: تحديث كوبون.
+النداءات الداخلية: Web\CouponService@update.
+
+A.46) PATCH /coupons/{coupon}/status
+الاسم: coupons.updateStatus
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-coupons,api
+Controller: Web\CouponController@updateStatus
+الوظيفة: تحديث حالة كوبون.
+النداءات الداخلية: Web\CouponService@updateStatus.
+
+A.47) GET /wallets/charge
+الاسم: wallets.charge
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:add-balance,api
+Controller: Web\WalletController@charge
+الوظيفة: عرض صفحة شحن المحفظة.
+النداءات الداخلية: Web\WalletService@charge.
+
+A.48) POST /wallets/charge
+الاسم: wallets.storeCharge
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:add-balance,api
+Controller: Web\WalletController@storeCharge
+الوظيفة: شحن محفظة مستخدم.
+النداءات الداخلية: Web\WalletService@storeCharge و creditWallet، Models: Wallet, Payment.
+الإشعارات: UserWalletNotification.
+
+A.49) GET /roles
+الاسم: roles.index
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-roles,api
+Controller: Web\RoleController@index
+الوظيفة: قائمة الأدوار.
+النداءات الداخلية: Web\RoleService@index.
+
+A.50) GET /roles/create
+الاسم: roles.create
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:add-roles,api
+Controller: Web\RoleController@create
+الوظيفة: نموذج إنشاء دور.
+النداءات الداخلية: Web\RoleService@create.
+
+A.51) POST /roles/store
+الاسم: roles.store
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:add-roles,api
+Controller: Web\RoleController@store
+الوظيفة: إنشاء دور.
+النداءات الداخلية: Web\RoleService@store.
+
+A.52) GET /roles/{role}
+الاسم: roles.show
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-roles,api
+Controller: Web\RoleController@show
+الوظيفة: عرض تفاصيل دور.
+النداءات الداخلية: Web\RoleService@show.
+
+A.53) GET /roles/{role}/edit
+الاسم: roles.edit
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-roles,api
+Controller: Web\RoleController@edit
+الوظيفة: تعديل دور.
+النداءات الداخلية: Web\RoleService@edit.
+
+A.54) PATCH /roles/{role}
+الاسم: roles.update
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-roles,api
+Controller: Web\RoleController@update
+الوظيفة: تحديث دور وصلاحياته.
+النداءات الداخلية: Web\RoleService@update.
+الأحداث: DashboardNotificationRequested.
+
+A.55) DELETE /roles/{role}
+الاسم: roles.destroy
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:delete-roles,api
+Controller: Web\RoleController@destroy
+الوظيفة: حذف دور.
+النداءات الداخلية: Web\RoleService@destroy.
+
+A.56) GET /reviews
+الاسم: reviews.index
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-orders,api
+Controller: Web\ReviewController@index
+الوظيفة: قائمة التقييمات.
+النداءات الداخلية: Web\ReviewService@index.
+
+A.57) GET /locations/cities
+الاسم: locations.cities
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-orders,api
+Controller: Web\LocationController@cities
+الوظيفة: تقرير توزيع الطلبات حسب المدن.
+النداءات الداخلية: Web\LocationService@cities، Models: City, Address, Order.
+ملفات: عرض مخطط Pie عبر view locations.cities.
+
+A.58) GET /notifications
+الاسم: notifications.index
+الوسائط: auth:sanctum
+Controller: Web\NotificationController@index
+الوظيفة: عرض إشعارات لوحة التحكم للمستخدم الحالي.
+النداءات الداخلية: Model Notification (database).
+
+A.59) POST /notifications/{id}/read
+الاسم: notifications.read
+الوسائط: auth:sanctum
+Controller: Web\NotificationController@markRead
+الوظيفة: تعليم إشعار كمقروء وإعادة توجيه.
+النداءات الداخلية: Model Notification.
+
+A.60) POST /notifications/mark-read
+الاسم: notifications.markReadBulk
+الوسائط: auth:sanctum
+Controller: Web\NotificationController@markReadBulk
+الوظيفة: تعليم مجموعة إشعارات كمقروءة.
+النداءات الداخلية: Model Notification.
+
+B) API Routes (routes/api.php)
+B.1) POST /register
+الاسم: غير محدد
+الوسائط: لا يوجد
+Controller: Api\AuthController@register
+الوظيفة: تسجيل مستخدم جديد.
+النداءات الداخلية: Api\AuthService@register، Models: User, Wallet.
+الأحداث: DashboardNotificationRequested.
+
+B.2) POST /login
+الاسم: غير محدد
+الوسائط: لا يوجد
+Controller: Api\AuthController@login
+الوظيفة: تسجيل دخول المستخدم عبر API.
+النداءات الداخلية: Api\AuthService@login، Auth، Token (Sanctum).
+
+B.3) GET /user
+الاسم: غير محدد
+الوسائط: auth:sanctum
+Controller: Closure
+الوظيفة: إرجاع المستخدم الحالي.
+
+B.4) GET /profile
+الاسم: غير محدد
+الوسائط: auth:sanctum
+Controller: Api\UserController@profile
+الوظيفة: بيانات المستخدم الحالي.
+النداءات الداخلية: Api\UserService@profile.
+
+B.5) POST /profile/photo
+الاسم: غير محدد
+الوسائط: auth:sanctum
+Controller: Api\UserController@updatePhoto
+الوظيفة: رفع صورة الحساب.
+النداءات الداخلية: Api\UserService@updatePhoto، FileService@uploadFile، Model: Image.
+
+B.6) PUT /profile/{user}
+الاسم: غير محدد
+الوسائط: auth:sanctum
+Controller: Api\UserController@update
+الوظيفة: تحديث بيانات المستخدم.
+النداءات الداخلية: Api\UserService@update.
+
+B.7) GET /addresses
+الاسم: غير محدد
+الوسائط: auth:sanctum
+Controller: Api\AddressController@index
+الوظيفة: قائمة عناوين المستخدم.
+النداءات الداخلية: Api\AddressService@index.
+
+B.8) POST /addresses
+الاسم: غير محدد
+الوسائط: auth:sanctum
+Controller: Api\AddressController@store
+الوظيفة: إضافة عنوان.
+النداءات الداخلية: Api\AddressService@store.
+
+B.9) PUT /addresses/{address}
+الاسم: غير محدد
+الوسائط: auth:sanctum
+Controller: Api\AddressController@update
+الوظيفة: تحديث عنوان.
+النداءات الداخلية: Api\AddressService@update.
+
+B.10) DELETE /addresses/{address}
+الاسم: غير محدد
+الوسائط: auth:sanctum
+Controller: Api\AddressController@destroy
+الوظيفة: حذف عنوان.
+النداءات الداخلية: Api\AddressService@delete.
+
+B.11) POST /admins
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:add-admins,api
+Controller: Api\AdminController@store
+الوظيفة: إنشاء مدير.
+ملاحظة: Api\AdminController غير متوفر في الكود الحالي.
+
+B.12) PUT /admins/{user}
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-admins,api
+Controller: Api\AdminController@update
+الوظيفة: تحديث مدير.
+ملاحظة: Api\AdminController غير متوفر في الكود الحالي.
+
+B.13) DELETE /admins/{user}
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:delete-admins,api
+Controller: Api\AdminController@destroy
+الوظيفة: حذف مدير.
+ملاحظة: Api\AdminController غير متوفر في الكود الحالي.
+
+B.14) GET /design-options
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-design-options,api
+Controller: Api\DesignOptionController@index
+الوظيفة: قائمة خيارات التصميم.
+النداءات الداخلية: Api\DesignOptionService@index.
+
+B.15) POST /design-options
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-design-options,api
+Controller: Api\DesignOptionController@store
+الوظيفة: إنشاء خيار تصميم.
+النداءات الداخلية: Api\DesignOptionService@store.
+
+B.16) PUT /design-options/{designOption}
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-design-options,api
+Controller: Api\DesignOptionController@update
+الوظيفة: تحديث خيار تصميم.
+النداءات الداخلية: Api\DesignOptionService@update.
+
+B.17) DELETE /design-options/{designOption}
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:delete-design-options,api
+Controller: Api\DesignOptionController@destroy
+الوظيفة: حذف خيار تصميم.
+النداءات الداخلية: Api\DesignOptionService@delete.
+
+B.18) GET /designs
+الاسم: غير محدد
+الوسائط: بدون auth:sanctum
+Controller: Api\DesignController@index
+الوظيفة: قائمة تصاميم عامة.
+النداءات الداخلية: Api\DesignService@index.
+
+B.19) GET /designs/my-designs
+الاسم: غير محدد
+الوسائط: auth:sanctum (بدون CheckActiveMiddleware)
+Controller: Api\DesignController@myDesigns
+الوظيفة: تصاميم المستخدم الحالي.
+النداءات الداخلية: Api\DesignService@myDesigns.
+
+B.20) POST /designs
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-designs,api
+Controller: Api\DesignController@store
+الوظيفة: إنشاء تصميم.
+النداءات الداخلية: Api\DesignService@store.
+الأحداث: DesignObserver.
+
+B.21) PUT /designs/{design}
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:edit-designs,api
+Controller: Api\DesignController@update
+الوظيفة: تحديث تصميم.
+النداءات الداخلية: Api\DesignService@update.
+
+B.22) DELETE /designs/{design}
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:delete-designs,api
+Controller: Api\DesignController@destroy
+الوظيفة: حذف تصميم.
+النداءات الداخلية: Api\DesignService@destroy.
+
+B.23) GET /cart
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-orders,api
+Controller: Api\CartController@index
+الوظيفة: عرض سلة المستخدم.
+النداءات الداخلية: Api\CartService@index.
+
+B.24) POST /cart/add
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-orders,api
+Controller: Api\CartController@store
+الوظيفة: إضافة منتج للسلة.
+النداءات الداخلية: Api\CartService@store.
+
+B.25) POST /cart/add-coupon
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-orders,api
+Controller: Api\CartController@addCoupon
+الوظيفة: تطبيق كوبون على السلة.
+النداءات الداخلية: Api\CartService@addCoupon، Api\CouponService.
+
+B.26) PUT /cart/edit/{item}
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-orders,api
+Controller: Api\CartController@update
+الوظيفة: تعديل كمية عنصر في السلة.
+النداءات الداخلية: Api\CartService@update.
+
+B.27) DELETE /cart/remove/{item}
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-orders,api
+Controller: Api\CartController@destroy
+الوظيفة: حذف عنصر من السلة.
+النداءات الداخلية: Api\CartService@delete.
+
+B.28) DELETE /cart/remove-coupon
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-orders,api
+Controller: Api\CartController@removeCoupon
+الوظيفة: إزالة كوبون من السلة.
+النداءات الداخلية: Api\CartService@removeCoupon.
+
+B.29) GET /order
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-orders,api
+Controller: Api\OrderController@index
+الوظيفة: قائمة طلبات المستخدم.
+النداءات الداخلية: Api\OrderService@index.
+
+B.30) POST /order
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-orders,api
+Controller: Api\OrderController@store
+الوظيفة: إنشاء طلب جديد.
+النداءات الداخلية: Api\OrderService@store.
+الأحداث: DashboardNotificationRequested.
+الإشعارات: UserInvoiceNotification, UserOrderNotification.
+
+B.31) POST /order/pay/{order}
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-orders,api
+Controller: Api\OrderController@pay
+الوظيفة: دفع الطلب (Stripe أو Wallet أو بعد التسليم).
+النداءات الداخلية: Api\OrderService@pay، Stripe.
+
+B.32) GET /order/{order}/invoice
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:view-invoices,api
+Controller: Api\InvoiceController@invoice
+الوظيفة: إرجاع بيانات الفاتورة للطلب.
+النداءات الداخلية: Api\InvoiceService@invoice.
+
+B.33) PUT /order/{order}
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:create-orders,api
+Controller: Api\OrderController@update
+الوظيفة: إلغاء الطلب.
+النداءات الداخلية: Api\OrderService@update.
+
+B.34) POST /order/{order}/review
+الاسم: غير محدد
+الوسائط: auth:sanctum, CheckActiveMiddleware, permission:add-reviews,api
+Controller: Api\ReviewController@storeForOrder
+الوظيفة: إضافة تقييم لطلب تم تسليمه.
+النداءات الداخلية: Api\ReviewService@store.
+
+B.35) GET /notifications
+الاسم: غير محدد
+الوسائط: auth:sanctum
+Controller: Api\NotificationController@index
+الوظيفة: قائمة إشعارات المستخدم.
+النداءات الداخلية: Api\NotificationService@index.
+
+B.36) GET /notifications/unread
+الاسم: غير محدد
+الوسائط: auth:sanctum
+Controller: Api\NotificationController@unread
+الوظيفة: قائمة الإشعارات غير المقروءة.
+النداءات الداخلية: Api\NotificationService@unread.
+
+B.37) GET /notifications/unread/count
+الاسم: غير محدد
+الوسائط: auth:sanctum
+Controller: Api\NotificationController@unreadCount
+الوظيفة: عدد الإشعارات غير المقروءة.
+النداءات الداخلية: Api\NotificationService@unreadCount.
+
+B.38) PUT /notifications/{notification}/read
+الاسم: غير محدد
+الوسائط: auth:sanctum
+Controller: Api\NotificationController@markRead
+الوظيفة: تعليم إشعار كمقروء.
+النداءات الداخلية: Api\NotificationService@markRead.
+
+B.39) PUT /notifications/read-all
+الاسم: غير محدد
+الوسائط: auth:sanctum
+Controller: Api\NotificationController@markAllRead
+الوظيفة: تعليم جميع الإشعارات كمقروءة.
+النداءات الداخلية: Api\NotificationService@markAllRead.
+
+B.40) GET /order/success-payment/{order}
+الاسم: success_payment
+الوسائط: لا يوجد
+Controller: Api\OrderController@successPayment
+الوظيفة: callback من Stripe عند نجاح الدفع.
+النداءات الداخلية: Api\OrderService@successPayment.
+
+B.41) GET /order/failed-payment
+الاسم: failed_payment
+الوسائط: لا يوجد
+Controller: Api\OrderController@failedPayment
+الوظيفة: callback من Stripe عند فشل الدفع.
+
+6) أهم الـ Models والعلاقات (مختصر)
+User: hasMany addresses, designs, orders, payments, reviews, deviceTokens, notificationPreferences; hasOne cart, wallet; morphOne image.
+Address: belongsTo user, city; hasMany orders.
+City: hasMany addresses (name مترجم).
+Design: belongsTo user; morphMany images; belongsToMany designOptions, measurements; hasMany itemOrders.
+DesignOption: belongsToMany designs; hasMany itemOptionSelected; soft deletes.
+Measurement: belongsToMany designs; hasMany itemCart.
+Cart: belongsTo user, coupon; hasMany itemCart.
+ItemCart: belongsTo cart, design, measurement; hasMany itemOptionSelected.
+ItemOrder: belongsTo order, design, measurement; hasMany itemOptionOrderSelected.
+Order: belongsTo user, address, payment, coupon; hasMany itemOrders; hasOne invoice, review.
+Payment: belongsTo user; hasOne order.
+Invoice: belongsTo order; يحتوي رقم الفاتورة والرابط.
+Review: belongsTo user, order.
+Wallet: belongsTo user.
+NotificationPreference: belongsTo user, permission.
+Image: morphTo لأي موديل.
+DeviceToken: تخزين توكنات FCM للمستخدمين.
+
+7) الإشعارات (Notifications)
+إشعارات المستخدمين (Database):
+UserAccountNotification: تفعيل/تعطيل الحساب.
+UserOrderNotification: تحديث حالة الطلب.
+UserInvoiceNotification: إصدار/جاهزية PDF للفاتورة.
+UserWalletNotification: خصم/إضافة رصيد أو فشل دفع.
+إشعارات لوحة التحكم (Database + Push):
+DashboardNotificationRequested Event يُطلق من عدة خدمات/Observers.
+SendDashboardNotification Listener يرسل إشعار قاعدة بيانات عبر AdminDashboardNotification ويجهز Push عبر FCM.
+Payload موحد غالباً: title, body, data (type/event/ids/url).
+
+8) PDF / Invoice subsystem
+توليد PDF عبر App\Services\Global\InvoiceService@orderPdf باستخدام barryvdh/laravel-dompdf.
+الـ View المستخدم: resources/views/orders/invoice.blade.php.
+التخزين: عبر Api\FileService@uploadFile على قرص public ضمن مسار مثل invoices/order-{num}-invoice.pdf.
+الربط بجدول invoices: الحقول num, order_id, total, pdf_url.
+ملاحظة: InvoiceService في API يقوم بإنشاء/تحديث الفاتورة، وتخزين الرابط.
+
+9) ملاحظات تشغيل المشروع (Run/Setup)
+خطوات عامة:
+1. composer install
+2. إنشاء .env من .env.example
+3. php artisan key:generate
+4. php artisan migrate
+5. php artisan db:seed (إذا كان هناك seeders مطلوبة)
+6. php artisan storage:link (لاستخدام الملفات المرفوعة)
+7. تشغيل Queue Worker إذا كانت الإشعارات تعمل بالـ queue: php artisan queue:work
+إعدادات إضافية:
+Stripe: إعداد مفاتيح Stripe في config أو env.
+FCM: إعداد Firebase وبيانات التوكن في الواجهة.
+غير متوفر في الكود الحالي: Controller API للـ Admin في المسارات المذكورة.

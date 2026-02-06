@@ -10,7 +10,7 @@ class LanguageService
     public function switch($locale)
     {
         return DB::transaction(function () use ($locale) {
-            if (!in_array($locale, ['en', 'ar'], true)) {
+            if (! in_array($locale, ['en', 'ar'], true)) {
                 abort(400, 'Invalid locale');
             }
 
@@ -20,4 +20,3 @@ class LanguageService
         });
     }
 }
-

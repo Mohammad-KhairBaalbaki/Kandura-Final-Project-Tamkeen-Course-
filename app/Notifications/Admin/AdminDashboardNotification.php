@@ -12,7 +12,7 @@ class AdminDashboardNotification extends Notification
     public function __construct(
         public string $title,
         public string $body,
-        public array $data = [],   
+        public array $data = [],
     ) {}
 
     public function via(object $notifiable): array
@@ -24,8 +24,8 @@ class AdminDashboardNotification extends Notification
     {
         return [
             'title' => $this->title,
-            'body'  => $this->body,
-            'data'  => $this->data,
+            'body' => $this->body,
+            'data' => $this->data,
         ];
     }
 }

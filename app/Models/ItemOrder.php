@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 class ItemOrder extends Model
 {
@@ -15,9 +14,8 @@ class ItemOrder extends Model
         'quantity',
         'price',
         'measurement_id',
-        'discount'
+        'discount',
     ];
-
 
     /**
      * Get the item options that have been selected for this item cart
@@ -39,12 +37,10 @@ class ItemOrder extends Model
         return $this->belongsTo(Design::class);
     }
 
-
     public function measurement()
     {
         return $this->belongsTo(Measurement::class);
     }
-
 
     public function getDesignOptionByType($type)
     {
@@ -72,6 +68,7 @@ class ItemOrder extends Model
     {
         return $this->getDesignOptionByType('dome');
     }
+
     public function getFabricAttribute()
     {
         return $this->getDesignOptionByType('fabric');

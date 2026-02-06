@@ -1,21 +1,21 @@
 @extends('layouts.dashboard')
 
-@section('title', __('Edit Role'))
-@section('page-title', __('Edit Role'))
+@section('title', __('roles.edit_role'))
+@section('page-title', __('roles.edit_role'))
 
 @section('content')
 
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <div>
-            <h2 class="text-2xl font-bold text-gray-800">{{ __('Edit Role') }}</h2>
-            <p class="text-sm text-gray-600 mt-1">{{ __('Update role details and permissions') }}</p>
+            <h2 class="text-2xl font-bold text-gray-800">{{ __('roles.edit_role') }}</h2>
+            <p class="text-sm text-gray-600 mt-1">{{ __('roles.edit_role_help') }}</p>
         </div>
         <div class="mt-4 md:mt-0">
             <a href="{{ route('roles.index') }}"
                 class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-sm font-medium">
                 <i class="fas fa-arrow-left mr-2"></i>
-                {{ __('All Roles') }}
+                {{ __('roles.all_roles') }}
             </a>
         </div>
     </div>
@@ -39,7 +39,7 @@
                 <!-- Name -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        {{ __('Role Name') }}
+                        {{ __('roles.role_name') }}
                     </label>
                     <input type="text" name="name" value="{{ old('name', $role->name) }}" required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
@@ -51,7 +51,7 @@
                 <!-- Permissions -->
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        {{ __('Permissions') }}
+                        {{ __('roles.permissions') }}
                     </label>
                     @php
                         $selectedPermissions = old('permissions', $role->permissions->pluck('name')->toArray());
@@ -60,7 +60,7 @@
                     <div class="space-y-4">
                         @if ($groupUsers->isNotEmpty())
                             <div class="rounded-lg border border-gray-200 p-4">
-                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('User Management') }}</h4>
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('roles.user_management') }}</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     @foreach ($groupUsers as $permission)
                                         <label
@@ -77,7 +77,7 @@
 
                         @if ($groupOrders->isNotEmpty())
                             <div class="rounded-lg border border-gray-200 p-4">
-                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('Order Management') }}</h4>
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('roles.order_management') }}</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     @foreach ($groupOrders as $permission)
                                         <label
@@ -94,7 +94,7 @@
 
                         @if ($groupDesigns->isNotEmpty())
                             <div class="rounded-lg border border-gray-200 p-4">
-                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('Design Management') }}</h4>
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('roles.design_management') }}</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     @foreach ($groupDesigns as $permission)
                                         <label
@@ -111,7 +111,7 @@
 
                         @if ($groupDesignOptions->isNotEmpty())
                             <div class="rounded-lg border border-gray-200 p-4">
-                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('Design Options Management') }}
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('roles.design_options_management') }}
                                 </h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     @foreach ($groupDesignOptions as $permission)
@@ -129,7 +129,7 @@
 
                         @if ($groupCoupons->isNotEmpty())
                             <div class="rounded-lg border border-gray-200 p-4">
-                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('Coupon Management') }}</h4>
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('roles.coupon_management') }}</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     @foreach ($groupCoupons as $permission)
                                         <label
@@ -148,7 +148,7 @@
 
                         @if ($groupWallets->isNotEmpty())
                             <div class="rounded-lg border border-gray-200 p-4">
-                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('Wallet Management') }}</h4>
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('roles.wallet_management') }}</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     @foreach ($groupWallets as $permission)
                                         <label
@@ -183,7 +183,7 @@
 
                         @if ($otherPermissions->isNotEmpty())
                             <div class="rounded-lg border border-gray-200 p-4">
-                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('Other Permissions') }}</h4>
+                                <h4 class="text-sm font-semibold text-gray-800 mb-3">{{ __('roles.other_permissions') }}</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     @foreach ($otherPermissions as $permission)
                                         <label
@@ -208,7 +208,7 @@
                     <button type="button" id="reset-permissions"
                         class="mt-3 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-xs font-medium">
                         <i class="fas fa-undo mr-1"></i>
-                        {{ __('Reset Permissions') }}
+                        {{ __('roles.reset_permissions') }}
                     </button>
                 </div>
             </div>
@@ -217,12 +217,12 @@
             <div class="flex items-center justify-end mt-6 space-x-3">
                 <a href="{{ route('roles.index') }}"
                     class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-sm font-medium">
-                    {{ __('Cancel') }}
+                    {{ __('roles.cancel') }}
                 </a>
                 <button type="submit"
                     class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm font-medium">
                     <i class="fas fa-save mr-2"></i>
-                    {{ __('Save') }}
+                    {{ __('roles.save') }}
                 </button>
             </div>
         </form>

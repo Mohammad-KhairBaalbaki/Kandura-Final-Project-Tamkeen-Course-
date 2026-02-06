@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateUserStatusRequest;
 use App\Models\User;
 use App\Services\Web\UserService;
 use Illuminate\Http\Request;
@@ -22,10 +23,12 @@ class UserController extends Controller
     {
         try {
             $data = $this->userService->index($request);
+
             return view('users.index', $data);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -34,27 +37,28 @@ class UserController extends Controller
     {
         try {
             $user = $this->userService->show($user);
+
             return view('users.show', compact('user'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
 
-
-
     // app/Http/Controllers/UserController.php
-    public function updateStatus(Request $request, User $user)
+    public function updateStatus(UpdateUserStatusRequest $request, User $user)
     {
         try {
-            $this->userService->updateStatus($request, $user);
+            $this->userService->updateStatus($request->validated(), $user);
+
             return back()->with('success', 'User status updated');
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
-
 }

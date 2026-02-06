@@ -47,9 +47,8 @@ class WebhookController extends Controller
             }
             Log::info($event->type);
             if ($payment) {
-                // Log::info($payment->details);
-                // $payment->details = json_encode($event->type) . ' ' . $payment->details;
-                // $payment->save();
+                Log::info($payment);
+
             }
             switch ($event->type) {
 
@@ -61,9 +60,6 @@ class WebhookController extends Controller
                     if ($paymentStatus === 'paid') {
                         $orderService->successPayment($order);
 
-                    } else {
-                        // delayed method could be pending
-                        // $orderService->markPaymentPending($order);
                     }
                     break;
 
@@ -77,7 +73,7 @@ class WebhookController extends Controller
                     break;
 
                 case 'checkout.session.expired':
-                    // $orderService->markPaymentExpired($order);
+                    $orderService->markPaymentFailed($order);
                     break;
 
                 // ✅ If you want to support PI events too:
@@ -89,6 +85,7 @@ class WebhookController extends Controller
                 case 'payment_intent.succeeded':
                     $orderService->successPayment($order);
                     break;
+
                 default:
                     return response()->json(['status' => 'ok', 'message' => 'Unknown event type: ' . $event->type]);
 

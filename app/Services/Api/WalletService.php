@@ -2,8 +2,6 @@
 
 namespace App\Services\Api;
 
-use App\Enums\StatusEnum;
-use App\Models\Payment;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Notifications\User\UserWalletNotification;
@@ -25,15 +23,16 @@ class WalletService
         return DB::transaction(function () use ($user, $amount) {
 
             $wallet = $user->wallet;
-            if (!isset($wallet)) {
+            if (! isset($wallet)) {
                 $wallet = Wallet::create([
                     'user_id' => Auth::id(),
-                    'balance' => 0
+                    'balance' => 0,
                 ]);
             }
             if ($wallet->balance < $amount) {
                 return false;
             }
+
             return true;
 
         });
@@ -47,7 +46,7 @@ class WalletService
             $wallet->balance = $wallet->balance - $amount;
             $wallet->save();
 
-            //send notification to user when balance is debited
+            // send notification to user when balance is debited
             $user->notify(new UserWalletNotification(
                 event: 'debited',
                 amount: $amount,
@@ -56,8 +55,4 @@ class WalletService
             ));
         });
     }
-
-
 }
-
-

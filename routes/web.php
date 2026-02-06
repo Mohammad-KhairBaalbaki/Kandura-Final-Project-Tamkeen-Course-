@@ -1,24 +1,24 @@
 <?php
 
+use App\Http\Controllers\Api\WebhookController;
+use App\Http\Controllers\FcmTokenController;
 use App\Http\Controllers\Web\AdminController;
-use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\AuthController;
-use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\CouponController;
+use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\DesignController;
 use App\Http\Controllers\Web\DesignOptionController;
 use App\Http\Controllers\Web\LanguageController;
 use App\Http\Controllers\Web\LocationController;
-use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\NotificationController;
+use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\PaymentController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\ReviewController;
 use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\Web\SettingsController;
+use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\WalletController;
-use App\Http\Controllers\Api\WebhookController;
-use App\Http\Controllers\FcmTokenController;
 use App\Http\Middleware\CheckActiveMiddleware;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
@@ -46,7 +46,7 @@ Route::get('/language/{locale}', [LanguageController::class, 'switch'])->name('l
 // Handle Stripe webhook (no CSRF)
 Route::post('/stripe/webhook', [WebhookController::class, 'handle'])
     ->withoutMiddleware([
-VerifyCsrfToken::class])->name('stripe.webhook');
+        VerifyCsrfToken::class])->name('stripe.webhook');
 
 // Protected routes (auth)
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -65,8 +65,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])
         ->middleware([CheckActiveMiddleware::class])
         ->name('settings.index');
+
     // Update notification preferences
-    Route::post('/settings/notifications', [SettingsController::class, 'updateNotifications'])
+    Route::put('/settings/notifications', [SettingsController::class, 'updateNotifications'])
         ->middleware([CheckActiveMiddleware::class])
         ->name('settings.notifications.update');
 
@@ -78,10 +79,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('orders')->middleware([CheckActiveMiddleware::class])->name('orders.')->group(function () {
 
         // List orders
-        Route::get('/', [OrderController::class,'index'])->name('index')->middleware('permission:view-orders,api');
+        Route::get('/', [OrderController::class, 'index'])->name('index')->middleware('permission:view-orders,api');
 
         // Show order details
-        Route::get('/show/{order}', [OrderController::class,'show'])->name('show')->middleware('permission:view-orders,api');
+        Route::get('/show/{order}', [OrderController::class, 'show'])->name('show')->middleware('permission:view-orders,api');
 
         // Download order invoice PDF
         Route::get('/{order}/invoice', [OrderController::class, 'invoice'])->name('invoice')->middleware('permission:view-invoices,api');
@@ -90,12 +91,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/invoices/zip', [OrderController::class, 'downloadInvoicesZip'])->middleware('permission:view-invoices,api')->name('invoices.zip');
 
         // Update order status
-        Route::patch('/{order}/status', [OrderController::class, 'updateStatus'])
+        Route::put('/{order}/status', [OrderController::class, 'updateStatus'])
             ->name('updateStatus')
             ->middleware('permission:edit-orders,api');
 
         // Show failed payment for order
-        Route::get('/failed/{order}', [OrderController::class, 'failed'])->name('failed');
+        Route::get('/{order}/failed', [OrderController::class, 'failed'])->name('failed');
 
     });
 
@@ -117,7 +118,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ->middleware('permission:view-users,api');
 
         // Update user active status
-        Route::patch('/{user}/status', [UserController::class, 'updateStatus'])
+        Route::put('/{user}/status', [UserController::class, 'updateStatus'])
             ->name('updateStatus')
             ->middleware('permission:disable-accounts,api');
     });
@@ -125,14 +126,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Admins
     Route::prefix('admins')->middleware([CheckActiveMiddleware::class])->name('admins.')->group(function () {
         // List admins
-        Route::get('/', [AdminController::class,'index'])->name('index')
+        Route::get('/', [AdminController::class, 'index'])->name('index')
             ->middleware('permission:view-admins,api');
 
         // Show create admin form
-        Route::get('/create', [AdminController::class,'create'])->name('create')
+        Route::get('/create', [AdminController::class, 'create'])->name('create')
             ->middleware('permission:add-admins,api');
         // Store new admin
-        Route::post('/store', [AdminController::class,'store'])->name('store')
+        Route::post('/store', [AdminController::class, 'store'])->name('store')
             ->middleware('permission:add-admins,api');
         // Show admin details
         Route::get('/{user}', [AdminController::class, 'show'])->name('show')
@@ -141,7 +142,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/{user}/edit', [AdminController::class, 'edit'])->name('edit')
             ->middleware('permission:edit-admins,api');
         // Update admin
-        Route::patch('/{user}', [AdminController::class, 'update'])->name('update')
+        Route::put('/{user}', [AdminController::class, 'update'])->name('update')
             ->middleware('permission:edit-admins,api');
         // Delete admin
         Route::delete('/{user}', [AdminController::class, 'destroy'])->name('destroy')
@@ -157,7 +158,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/{design}', [DesignController::class, 'show'])->name('show');
 
         // Update design status
-        Route::patch('/{design}/status', [DesignController::class, 'updateStatus'])->name('updateStatus')->middleware('permission:disable-designs,api');
+        Route::put('/{design}/status', [DesignController::class, 'updateStatus'])->name('updateStatus')->middleware('permission:disable-designs,api');
     });
 
     // Design Options
@@ -183,11 +184,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ->middleware('permission:edit-design-options,api');
 
         // Update design option
-        Route::patch('/{designOption}', [DesignOptionController::class, 'update'])->name('update')
+        Route::put('/{designOption}', [DesignOptionController::class, 'update'])->name('update')
             ->middleware('permission:edit-design-options,api');
 
         // Update design option status
-        Route::patch('/{designOption}/status', [DesignOptionController::class, 'updateStatus'])->name('updateStatus')
+        Route::put('/{designOption}/status', [DesignOptionController::class, 'updateStatus'])->name('updateStatus')
             ->middleware('permission:edit-design-options,api');
 
         // Soft delete design option
@@ -195,7 +196,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ->middleware('permission:delete-design-options,api');
 
         // Restore deleted design option
-        Route::patch('/{designOption}/restore', [DesignOptionController::class, 'restore'])->name('restore')
+        Route::put('/{designOption}/restore', [DesignOptionController::class, 'restore'])->name('restore')
             ->middleware('permission:delete-design-options,api');
     });
 
@@ -219,11 +220,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ->middleware('permission:edit-coupons,api');
 
         // Update coupon
-        Route::patch('/{coupon}', [CouponController::class, 'update'])->name('update')
+        Route::put('/{coupon}', [CouponController::class, 'update'])->name('update')
             ->middleware('permission:edit-coupons,api');
 
         // Update coupon status
-        Route::patch('/{coupon}/status', [CouponController::class, 'updateStatus'])->name('updateStatus')
+        Route::put('/{coupon}/status', [CouponController::class, 'updateStatus'])->name('updateStatus')
             ->middleware('permission:edit-coupons,api');
     });
 
@@ -262,7 +263,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ->middleware('permission:edit-roles,api');
 
         // Update role
-        Route::patch('/{role}', [RoleController::class, 'update'])->name('update')
+        Route::put('/{role}', [RoleController::class, 'update'])->name('update')
             ->middleware('permission:edit-roles,api');
 
         // Delete role

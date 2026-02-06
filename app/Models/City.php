@@ -13,11 +13,13 @@ class City extends Model
     use HasTranslations;
 
     protected $translatable = ['name'];
+
     protected $fillable = [
-        'name'
+        'name',
     ];
 
-    public function addresses(){
+    public function addresses()
+    {
         return $this->hasMany(Address::class);
     }
 }

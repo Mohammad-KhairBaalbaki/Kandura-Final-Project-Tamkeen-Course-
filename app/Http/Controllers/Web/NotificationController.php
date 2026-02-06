@@ -21,36 +21,55 @@ class NotificationController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
 
     public function markRead(Request $request, string $id)
     {
-        $notification = $request->user()
-            ->notifications()
-            ->where('id', $id)
-            ->firstOrFail();
+        try {
+            $notification = $request->user()
+                ->notifications()
+                ->where('id', $id)
+                ->firstOrFail();
 
-        if (is_null($notification->read_at)) {
-            $notification->markAsRead();
+            if (is_null($notification->read_at)) {
+                $notification->markAsRead();
+            }
+
+            $url = $notification->data['url'] ?? null;
+
+            return $url ? redirect($url) : back();
+        } catch (\Exception $e) {
+            Log::error($e);
+            Log::error($e->getMessage());
+
+            return $this->success(false, 'process failed try again later', 422);
         }
 
-        $url = $notification->data['url'] ?? null;
-        return $url ? redirect($url) : back();
+
     }
 
     public function markReadBulk(Request $request)
     {
-        $ids = $request->input('notification_ids', []);
+        try {
+            $ids = $request->input('notification_ids', []);
 
-        if (!empty($ids)) {
-            $request->user()
-                ->unreadNotifications()
-                ->whereIn('id', $ids)
-                ->update(['read_at' => now()]);
+            if (!empty($ids)) {
+                $request->user()
+                    ->unreadNotifications()
+                    ->whereIn('id', $ids)
+                    ->update(['read_at' => now()]);
+            }
+
+            return back();
+        } catch (\Exception $e) {
+            Log::error($e);
+            Log::error($e->getMessage());
+
+            return $this->success(false, 'process failed try again later', 422);
         }
 
-        return back();
     }
 }

@@ -181,10 +181,6 @@
                             <i class="fas fa-image text-3xl"></i>
                         </div>
                     @endif
-                    <span
-                        class="absolute top-3 left-3 px-3 py-1 text-xs font-semibold rounded-full {{ $statusColors[$design->status] ?? 'bg-gray-100 text-gray-700' }}">
-                        {{ $design->status ?? '-' }}
-                    </span>
                 </div>
 
                 <div class="p-4">

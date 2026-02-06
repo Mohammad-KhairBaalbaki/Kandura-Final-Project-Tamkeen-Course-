@@ -23,7 +23,7 @@ class StoreOrderRequest extends FormRequest
     {
         return [
             'address_id' => 'required|exists:addresses,id',
-            'payment_method'=>'required|in:stripe,wallet,after_delivery',
+            'payment_method' => 'required|in:stripe,wallet,after_delivery',
         ];
     }
 

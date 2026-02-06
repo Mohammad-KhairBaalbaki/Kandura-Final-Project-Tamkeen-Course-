@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Web\StoreCouponRequest;
-use App\Http\Requests\Web\UpdateCouponRequest;
-use App\Http\Requests\Web\UpdateCouponStatusRequest;
+use App\Http\Requests\StoreCouponRequest;
+use App\Http\Requests\UpdateCouponRequest;
+use App\Http\Requests\UpdateCouponStatusRequest;
 use App\Models\Coupon;
 use App\Services\Web\CouponService;
 use Illuminate\Http\Request;
@@ -24,10 +24,12 @@ class CouponController extends Controller
     {
         try {
             $coupons = $this->couponService->index($request);
+
             return view('coupons.index', compact('coupons'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return back()->withErrors([
                 'form' => __('coupons.process_failed'),
             ]);
@@ -41,6 +43,7 @@ class CouponController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return back()->withErrors([
                 'form' => __('coupons.process_failed'),
             ]);
@@ -58,6 +61,7 @@ class CouponController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return back()
                 ->withInput()
                 ->withErrors([
@@ -70,10 +74,12 @@ class CouponController extends Controller
     {
         try {
             $coupon = $this->couponService->edit($coupon);
+
             return view('coupons.edit', compact('coupon'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return back()->withErrors([
                 'form' => $e->getMessage(),
             ]);
@@ -98,6 +104,7 @@ class CouponController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return back()
                 ->withInput()
                 ->withErrors([
@@ -115,6 +122,7 @@ class CouponController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return back()->withErrors([
                 'is_active' => __('coupons.process_failed'),
             ]);

@@ -15,9 +15,9 @@ class InvoiceResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'=>$this->id,
-            'num'=>$this->num,
-            'pdf_url'=>$this->url
+            'id' => $this->id,
+            'num' => $this->num,
+            'pdf_url' => $this->url,
         ];
     }
 }

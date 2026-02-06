@@ -3,25 +3,17 @@
 namespace App\Services\Web;
 
 use App\Events\DashboardNotificationRequested;
-use App\Http\Requests\RegisterRequest;
-use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Services\Global\AdminService as CoreAdminService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
 
 class AdminService
 {
-    protected $adminService;
-
-    public function __construct(CoreAdminService $adminService)
-    {
-        $this->adminService = $adminService;
-    }
 
     public function index(Request $request)
     {
@@ -72,7 +64,7 @@ class AdminService
     public function show(User $user)
     {
         return DB::transaction(function () use ($user) {
-            if (!$user->hasRole('admin')) {
+            if (! $user->hasRole('admin')) {
                 abort(404);
             }
 
@@ -103,7 +95,7 @@ class AdminService
             $user = User::create($data);
             $user->syncRoles($roles);
 
-            //send notification to super admin
+            // send notification to super admin
             event(new DashboardNotificationRequested(
                 'notify.admin.created',
                 'Admin created',
@@ -112,7 +104,7 @@ class AdminService
                     'type' => 'super.admin',
                     'event' => 'created',
                     'admin_id' => $user->id,
-                    'url' => route('admins.show', $user->id)
+                    'url' => route('admins.show', $user->id),
                 ]
             ));
 
@@ -123,7 +115,7 @@ class AdminService
     public function edit(User $user)
     {
         return DB::transaction(function () use ($user) {
-            if (!$user->hasRole('admin')) {
+            if (! $user->hasRole('admin')) {
                 abort(404);
             }
 
@@ -144,13 +136,13 @@ class AdminService
 
             if ($data('new_password')) {
                 $currentUser = Auth::user();
-                if (!$currentUser || !$currentUser->hasRole('super-admin')) {
+                if (! $currentUser || ! $currentUser->hasRole('super-admin')) {
                     throw ValidationException::withMessages([
                         'super_admin_password' => __('admins.not_authorized_edit_admin'),
                     ]);
                 }
 
-                if (!Hash::check($data('super_admin_password'), $currentUser->password)) {
+                if (! Hash::check($data('super_admin_password'), $currentUser->password)) {
                     throw ValidationException::withMessages([
                         'super_admin_password' => __('auth.password'),
                     ]);
@@ -178,11 +170,12 @@ class AdminService
                         'type' => 'super.admin',
                         'event' => 'permissions updated',
                         'admin_id' => $user->id,
-                        'url' => route('admins.show', $user->id)
+                        'url' => route('admins.show', $user->id),
                     ]
                 ));
             }
             $user = User::findOrFail($user->id);
+
             return $user;
         });
     }
@@ -198,12 +191,12 @@ class AdminService
                     'type' => 'super.admin',
                     'event' => 'removed',
                     'admin_id' => $user->id,
-                    'url' => route('admins.index')
+                    'url' => route('admins.index'),
                 ]
             ));
             $user->delete();
+
             return true;
         });
     }
 }
-

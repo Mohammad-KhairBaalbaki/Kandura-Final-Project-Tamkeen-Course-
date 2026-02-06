@@ -50,8 +50,9 @@ class StoreItemInCartRequest extends FormRequest
         return [
             function (Validator $validator) {
                 // If basic validation already failed, don't continue.
-                if ($validator->errors()->isNotEmpty())
+                if ($validator->errors()->isNotEmpty()) {
                     return;
+                }
 
                 $designId = (int) $this->input('design_id');
                 $ids = array_values(array_unique($this->input('design_option_ids', [])));
@@ -66,11 +67,12 @@ class StoreItemInCartRequest extends FormRequest
                     })
                     ->find($designId);
 
-                if (!$design) {
+                if (! $design) {
                     $validator->errors()->add(
                         'design_id',
                         'The selected design is inactive or its owner is inactive.'
                     );
+
                     return;
                 }
 
@@ -79,8 +81,9 @@ class StoreItemInCartRequest extends FormRequest
                     ->where('measurement_id', $measurementId)
                     ->exists();
 
-                if (!$measurementExistsForDesign) {
+                if (! $measurementExistsForDesign) {
                     $validator->errors()->add('measurement_id', 'The selected measurement is not attached to this design.');
+
                     return;
                 }
 
@@ -108,6 +111,7 @@ class StoreItemInCartRequest extends FormRequest
                         'design_option_ids',
                         'One or more design options are not attached to this design.'
                     );
+
                     return;
                 }
 
@@ -117,20 +121,20 @@ class StoreItemInCartRequest extends FormRequest
                 $countsByType = $selected->groupBy('type')->map->count()->all();
 
                 $missingTypes = array_values(array_diff($requiredTypes, array_keys($countsByType)));
-                $duplicateTypes = array_keys(array_filter($countsByType, fn($c) => $c > 1));
+                $duplicateTypes = array_keys(array_filter($countsByType, fn ($c) => $c > 1));
 
-                if (count($ids) !== count($requiredTypes) || !empty($missingTypes) || !empty($duplicateTypes)) {
-                    if (!empty($missingTypes)) {
+                if (count($ids) !== count($requiredTypes) || ! empty($missingTypes) || ! empty($duplicateTypes)) {
+                    if (! empty($missingTypes)) {
                         $validator->errors()->add(
                             'design_option_ids',
-                            'You must send exactly one option for each type. Missing: ' . implode(', ', $missingTypes)
+                            'You must send exactly one option for each type. Missing: '.implode(', ', $missingTypes)
                         );
                     }
 
-                    if (!empty($duplicateTypes)) {
+                    if (! empty($duplicateTypes)) {
                         $validator->errors()->add(
                             'design_option_ids',
-                            'You must send exactly one option per type (duplicates found for: ' . implode(', ', $duplicateTypes) . ').'
+                            'You must send exactly one option per type (duplicates found for: '.implode(', ', $duplicateTypes).').'
                         );
                     }
 
@@ -141,7 +145,7 @@ class StoreItemInCartRequest extends FormRequest
                         );
                     }
                 }
-            }
+            },
         ];
     }
 

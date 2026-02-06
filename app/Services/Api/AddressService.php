@@ -2,7 +2,6 @@
 
 namespace App\Services\Api;
 
-
 use App\Models\Address;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,21 +18,19 @@ class AddressService
 
     public function index(array $params = [])
     {
-        //city_name
-        //search
-        //order_by
-        //order_direction
-        //per_page
+        // city_name
+        // search
+        // order_by
+        // order_direction
+        // per_page
 
         return DB::transaction(function () use ($params) {
 
-
             $query = Address::where('user_id', Auth::id());
-
 
             $willJoin = false;
 
-            if (!empty($params['city_name'])) {
+            if (! empty($params['city_name'])) {
                 $cityName = $params['city_name'];
                 $query->whereHas('city', function ($q) use ($cityName) {
                     $q->where('name->en', 'like', "%{$cityName}%")
@@ -47,7 +44,7 @@ class AddressService
                         ->orWhere('details', 'like', "%{$search}%");
                 });
             }
-            if (!empty($params['city_name'])) {
+            if (! empty($params['city_name'])) {
                 $cityName = $params['city_name'];
                 $query->whereHas('city', function ($q) use ($cityName) {
                     $q->where('name->en', 'like', "%{$cityName}%")
@@ -55,7 +52,7 @@ class AddressService
                 });
             }
 
-            if (!empty($params['order_by'])) {
+            if (! empty($params['order_by'])) {
                 $orderDir = $params['order_direction'] ?? 'desc';
                 // Special-case sorting by city name
                 if ($params['order_by'] === 'city_name') {
@@ -70,14 +67,16 @@ class AddressService
                 }
             }
 
-            if (!$willJoin) {
+            if (! $willJoin) {
                 $query->with('city');
             }
 
             $perPage = $params['per_page'] ?? 5;
+
             return $query->paginate($perPage);
         });
     }
+
     public function store(array $data)
     {
         return DB::transaction(function () use ($data) {
@@ -90,18 +89,22 @@ class AddressService
                 'longitude' => $data['longitude'],
                 'details' => $data['details'],
             ]);
+
             return $address;
         });
     }
+
     public function update(array $data, Address $address)
     {
         return DB::transaction(function () use ($data, $address) {
 
             $address->update($data);
             $address = Address::findOrFail($address->id);
+
             return $address;
         });
     }
+
     public function delete(Address $address)
     {
         return DB::transaction(function () use ($address) {
@@ -110,9 +113,9 @@ class AddressService
                 return false;
             }
             $address->delete();
+
             return true;
         });
 
     }
 }
-

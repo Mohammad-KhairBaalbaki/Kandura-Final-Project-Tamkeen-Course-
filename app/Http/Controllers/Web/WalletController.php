@@ -20,10 +20,12 @@ class WalletController extends Controller
     {
         try {
             $wallets = $this->walletService->charge();
+
             return view('wallets.charge', compact('wallets'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -42,6 +44,7 @@ class WalletController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }

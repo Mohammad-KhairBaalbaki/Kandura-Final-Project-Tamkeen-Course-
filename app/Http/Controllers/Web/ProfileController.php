@@ -12,7 +12,7 @@ class ProfileController extends Controller
     {
         try {
             $user = Auth::user();
-            if (!$user) {
+            if (! $user) {
                 abort(403);
             }
 
@@ -26,6 +26,7 @@ class ProfileController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }

@@ -30,7 +30,7 @@ class UpdateUserRequest extends FormRequest
             'roles' => ['sometimes', 'array'],
             'roles.*' => ['string', 'exists:roles,name'],
             'new_password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'super_admin_password' => ['required_with:new_password','nullable', 'string'],
+            'super_admin_password' => ['required_with:new_password', 'nullable', 'string'],
         ];
     }
 

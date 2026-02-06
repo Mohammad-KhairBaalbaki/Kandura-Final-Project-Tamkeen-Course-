@@ -10,7 +10,7 @@ class LocationService
 {
     public function cities(Request $request): array
     {
-        return DB::transaction(function () use ($request) {
+        return DB::transaction(function () {
             $rows = City::query()
                 ->select('cities.id', 'cities.name', DB::raw('COUNT(orders.id) as orders_count'))
                 ->join('addresses', 'addresses.city_id', '=', 'cities.id')

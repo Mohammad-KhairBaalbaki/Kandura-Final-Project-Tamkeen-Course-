@@ -26,18 +26,18 @@ class UserInvoiceNotification extends Notification
         $label = match ($this->event) {
             'generated' => 'invoice has been generated',
             'pdf_ready' => 'invoice PDF is ready for download',
-            default     => 'invoice updated',
+            default => 'invoice updated',
         };
 
         return [
             'title' => 'invoice',
-            'body'  => "Order #{$this->invoice->num}: {$label}",
-            'data'  => [
-                'type'       => 'invoice',
-                'event'      => $this->event,
-                'order_id'   => $this->invoice->order_id,
+            'body' => "Order #{$this->invoice->num}: {$label}",
+            'data' => [
+                'type' => 'invoice',
+                'event' => $this->event,
+                'order_id' => $this->invoice->order_id,
                 'invoice_id' => $this->invoice->id,
-                'pdf_url'    => $this->invoice->pdf_url,
+                'pdf_url' => $this->invoice->pdf_url,
             ],
         ];
     }

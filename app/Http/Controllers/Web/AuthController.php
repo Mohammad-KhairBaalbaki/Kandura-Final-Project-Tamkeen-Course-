@@ -11,23 +11,27 @@ class AuthController extends Controller
 {
     //
     protected $authService;
+
     public function __construct(AuthService $authService)
     {
         $this->authService = $authService;
     }
+
     public function login(LoginRequest $request)
     {
         try {
             $user = $this->authService->login($request->validated());
-            if (!$user) {
+            if (! $user) {
                 return back()->withErrors([
                     'password' => 'Invalid credentials. Please check your email and password.',
                 ]);
             }
+
             return redirect()->route('dashboard');
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -39,6 +43,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -47,10 +52,12 @@ class AuthController extends Controller
     {
         try {
             $this->authService->logout();
+
             return redirect()->route('login');
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }

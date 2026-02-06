@@ -9,7 +9,7 @@ abstract class Controller
     {
         return response()->json([
             'message' => $message,
-            'data' => $data
+            'data' => $data,
         ], $statusCode);
     }
 }

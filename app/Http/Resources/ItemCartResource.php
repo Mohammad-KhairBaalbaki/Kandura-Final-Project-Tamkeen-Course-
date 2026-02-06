@@ -17,12 +17,12 @@ class ItemCartResource extends JsonResource
         return [
             'id' => $this->id,
             // 'cart' => $this->whenLoaded('cart', CartResource::make($this->cart)),
-            'design' => $this->whenLoaded('design', fn()=>DesignResource::make($this->design)),
-            'options_selected' => $this->whenLoaded('itemsSelected', fn()=>$this->itemsSelected),
+            'design' => $this->whenLoaded('design', fn () => DesignResource::make($this->design)),
+            'options_selected' => $this->whenLoaded('itemsSelected', fn () => $this->itemsSelected),
             'quantity' => $this->quantity,
             'price' => $this->price,
-            'measurement' => $this->whenLoaded('measurement', fn()=>MeasurementResource::make($this->measurement)),
-            'discount' => $this->discount
+            'measurement' => $this->whenLoaded('measurement', fn () => MeasurementResource::make($this->measurement)),
+            'discount' => $this->discount,
         ];
     }
 }

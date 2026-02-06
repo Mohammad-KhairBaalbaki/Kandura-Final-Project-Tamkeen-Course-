@@ -16,15 +16,15 @@ class OrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'num'=> $this->num,
-            'user' => $this->whenLoaded('user', fn()=>UserResource::make($this->user)),
-            'address' => $this->whenLoaded('address', fn()=>AddressResource::make($this->address)),
-            'items_order' => $this->whenLoaded('itemsOrder', fn()=>ItemOrderResource::collection($this->itemsOrder)),
+            'num' => $this->num,
+            'user' => $this->whenLoaded('user', fn () => UserResource::make($this->user)),
+            'address' => $this->whenLoaded('address', fn () => AddressResource::make($this->address)),
+            'items_order' => $this->whenLoaded('itemsOrder', fn () => ItemOrderResource::collection($this->itemsOrder)),
             'status' => $this->status,
             'subtotal' => $this->subtotal,
             'discount' => $this->discount,
-            'coupon' => $this->whenLoaded('coupon', fn()=>CouponResource::make($this->coupon)),
-            'review' => $this->whenLoaded('review', fn()=>ReviewResource::make($this->review)),
+            'coupon' => $this->whenLoaded('coupon', fn () => CouponResource::make($this->coupon)),
+            'review' => $this->whenLoaded('review', fn () => ReviewResource::make($this->review)),
         ];
     }
 }

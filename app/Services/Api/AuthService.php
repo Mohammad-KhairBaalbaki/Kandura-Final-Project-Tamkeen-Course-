@@ -23,7 +23,7 @@ class AuthService
 
             $user = User::create($data);
             $user->assignRole('user');
-            //send notification to admin when user registered
+            // send notification to admin when user registered
             event(new DashboardNotificationRequested(
                 'notify.users.registered',
                 'User Registered',
@@ -32,15 +32,16 @@ class AuthService
                     'type' => 'admin',
                     'event' => 'registered',
                     'user_id' => $user->id,
-                    'url' => route('users.show', $user->id)
+                    'url' => route('users.show', $user->id),
                 ]
             ));
             $user->wallet()->create([
                 'user_id' => $user->id,
-                'balance' => 0
+                'balance' => 0,
             ]);
             $token = $user->createToken('api token')->plainTextToken;
             $user->access_token = $token;
+
             return $user;
         });
     }
@@ -56,16 +57,14 @@ class AuthService
                 // Attempt login with phone
                 $credentials = ['phone' => $data['phone'], 'password' => $data['password']];
             }
-            if (!Auth::attempt($credentials)) {
+            if (! Auth::attempt($credentials)) {
                 return false;
             }
             $user = Auth::user();
             $token = $user->createToken('api token')->plainTextToken;
             $user->access_token = $token;
+
             return $user;
         });
     }
-
 }
-
-

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateRoleRequest;
 use App\Services\Web\RoleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -21,10 +22,12 @@ class RoleController extends Controller
     {
         try {
             $roles = $this->roleService->index();
+
             return view('roles.index', compact('roles'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -42,6 +45,7 @@ class RoleController extends Controller
             $groupWallets = $data['groupWallets'];
             $groupNotifications = $data['groupNotifications'];
             $otherPermissions = $data['otherPermissions'];
+
             return view('roles.create', compact(
                 'permissions',
                 'groupUsers',
@@ -56,6 +60,7 @@ class RoleController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -64,10 +69,12 @@ class RoleController extends Controller
     {
         try {
             $this->roleService->store($request);
+
             return redirect()->route('roles.index');
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return back()->withInput()->withErrors([
                 'form' => 'process failed try again later',
             ]);
@@ -78,10 +85,12 @@ class RoleController extends Controller
     {
         try {
             $role = $this->roleService->show($role);
+
             return view('roles.show', compact('role'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -100,6 +109,7 @@ class RoleController extends Controller
             $groupWallets = $data['groupWallets'];
             $groupNotifications = $data['groupNotifications'];
             $otherPermissions = $data['otherPermissions'];
+
             return view('roles.edit', compact(
                 'role',
                 'permissions',
@@ -115,18 +125,21 @@ class RoleController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
 
-    public function update(Request $request, Role $role)
+    public function update(UpdateRoleRequest $request, Role $role)
     {
         try {
-            $this->roleService->update($request, $role);
+            $this->roleService->update($request->validated(), $role);
+
             return redirect()->route('roles.index');
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return back()->withInput()->withErrors([
                 'form' => 'process failed try again later',
             ]);
@@ -142,10 +155,12 @@ class RoleController extends Controller
                     'form' => 'Cannot delete a role that has users.',
                 ]);
             }
+
             return redirect()->route('roles.index');
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return back()->withErrors([
                 'form' => 'process failed try again later',
             ]);

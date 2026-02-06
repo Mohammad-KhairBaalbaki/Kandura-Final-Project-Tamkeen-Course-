@@ -12,19 +12,19 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
+    use HasApiTokens;
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
     use HasRoles;
-    use HasApiTokens;
-
 
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
-
     protected $guard_name = 'api';
+
     protected $fillable = [
         'name',
         'email',
@@ -110,6 +110,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(NotificationPreference::class);
     }
-
-
 }

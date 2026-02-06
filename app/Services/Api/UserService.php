@@ -30,6 +30,7 @@ class UserService
         return DB::transaction(function () use ($data, $user) {
 
             $user = $user->update($data);
+
             return $user;
         });
     }
@@ -49,12 +50,9 @@ class UserService
             $user->image()->create([
                 'url' => $newUrl,
             ]);
+
             return $user->load('image');
         });
 
     }
-
-
-
 }
-

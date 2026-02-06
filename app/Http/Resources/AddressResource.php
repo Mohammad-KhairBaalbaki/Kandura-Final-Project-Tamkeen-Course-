@@ -16,7 +16,7 @@ class AddressResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'city' => $this->whenLoaded('city', fn()=>CityResource::make($this->city)),
+            'city' => $this->whenLoaded('city', fn () => CityResource::make($this->city)),
             'street' => $this->street,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,

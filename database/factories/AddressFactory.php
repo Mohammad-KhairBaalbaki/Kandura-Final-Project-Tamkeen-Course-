@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\City;
 use App\Models\User;
-use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,11 +20,11 @@ class AddressFactory extends Factory
     {
         return [
             'user_id' => User::inRandomOrder()->first()?->id ?? User::factory(),
-            'city_id'   => City::inRandomOrder()->first()?->id ?? City::factory(),
-            'street'    => $this->faker->streetAddress(),
-            'latitude'  => $this->faker->latitude(),
+            'city_id' => City::inRandomOrder()->first()?->id ?? City::factory(),
+            'street' => $this->faker->streetAddress(),
+            'latitude' => $this->faker->latitude(),
             'longitude' => $this->faker->longitude(),
-            'details'   => $this->faker->optional()->sentence(8),
+            'details' => $this->faker->optional()->sentence(8),
         ];
     }
 }

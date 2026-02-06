@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\AddressController;
-use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\DesignController;

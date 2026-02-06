@@ -20,45 +20,50 @@ class NotificationController extends Controller
     public function index(Request $request)
     {
         try {
-        $paginator = $this->notificationService->index($request->query());
+            $paginator = $this->notificationService->index($request->query());
 
-        $message = ($paginator->total() === 0)
-            ? 'No notifications yet.'
-            : 'Notifications Retrieved Successfully.';
+            $message = ($paginator->total() === 0)
+                ? 'No notifications yet.'
+                : 'Notifications Retrieved Successfully.';
 
-        return $this->success(
-            NotificationResource::collection($paginator),
-            $message,
-            200
-        );
+            return $this->success(
+                NotificationResource::collection($paginator),
+                $message,
+                200
+            );
 
-    } catch (\Exception $e) {
-        Log::error($e);
-        Log::error($e->getMessage());
-        return $this->success(false, 'process failed try again later', 422);
-    }
-    }
-
-    public function markRead(Request $request, string $notification)
-    {
-        try {
-            $n = $this->notificationService->markRead($notification);
-            return $this->success(NotificationResource::make($n), "Notification Marked As Read .", 200);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
 
-    public function markAllRead(Request $request)
+    public function markRead(string $notification)
     {
         try {
-            $updated = $this->notificationService->markAllRead();
-            return $this->success(['marked_count' => $updated], "Notifications Marked As Read .", 200);
+            $n = $this->notificationService->markRead($notification);
+
+            return $this->success(NotificationResource::make($n), 'Notification Marked As Read .', 200);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
+            return $this->success(false, 'process failed try again later', 422);
+        }
+    }
+
+    public function markAllRead()
+    {
+        try {
+            $updated = $this->notificationService->markAllRead();
+
+            return $this->success(['marked_count' => $updated], 'Notifications Marked As Read .', 200);
+        } catch (\Exception $e) {
+            Log::error($e);
+            Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
@@ -67,22 +72,26 @@ class NotificationController extends Controller
     {
         try {
             $notifications = $this->notificationService->unread($request->query());
-            return $this->success(NotificationResource::collection($notifications), "Unread Notifications Retrieved Successfully (Total : " . $notifications->count() . ") .", 200);
+
+            return $this->success(NotificationResource::collection($notifications), 'Unread Notifications Retrieved Successfully (Total : '.$notifications->count().') .', 200);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }
 
-    public function unreadCount(Request $request)
+    public function unreadCount()
     {
         try {
             $count = $this->notificationService->unreadCount();
-            return $this->success(['total' => $count], "Unread Notifications Count Retrieved Successfully .", 200);
+
+            return $this->success(['total' => $count], 'Unread Notifications Count Retrieved Successfully .', 200);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
+
             return $this->success(false, 'process failed try again later', 422);
         }
     }

@@ -10,7 +10,7 @@ class Image extends Model
     //
 
     protected $fillable = [
-        'url'
+        'url',
     ];
 
     public function model()
@@ -18,7 +18,8 @@ class Image extends Model
         return $this->morphTo();
     }
 
-    public function getFullUrlAttribute(){
+    public function getFullUrlAttribute()
+    {
         return Storage::url($this->url);
     }
 }

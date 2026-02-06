@@ -2,9 +2,6 @@
 
 namespace App\Services\Web;
 
-use App\Http\Requests\Web\StoreCouponRequest;
-use App\Http\Requests\Web\UpdateCouponRequest;
-use App\Http\Requests\Web\UpdateCouponStatusRequest;
 use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -18,7 +15,7 @@ class CouponService
             $query = Coupon::query();
 
             if ($request->filled('code')) {
-                $query->where('code', 'like', '%' . $request->code . '%');
+                $query->where('code', 'like', '%'.$request->code.'%');
             }
 
             if ($request->filled('type')) {
@@ -52,16 +49,11 @@ class CouponService
         });
     }
 
-    public function store(StoreCouponRequest $request)
+    public function store(array $data)
     {
-        return DB::transaction(function () use ($request) {
-            $validated = $request->validated();
+        return DB::transaction(function () use ($data) {
 
-            $validated['is_percentage'] = $request->boolean('is_percentage');
-            $validated['is_active'] = $request->boolean('is_active');
-            $validated['order_limit_amount'] = $validated['order_limit_amount'] ?? 0;
-
-            return Coupon::create($validated);
+            return Coupon::create($data);
         });
     }
 
@@ -72,38 +64,28 @@ class CouponService
         });
     }
 
-    public function update(UpdateCouponRequest $request, Coupon $coupon)
+    public function update(array $data, Coupon $coupon)
     {
-        return DB::transaction(function () use ($request, $coupon) {
-            $validated = $request->validated();
+        return DB::transaction(function () use ($data, $coupon) {
 
-            if (($coupon->usages ?? 0) > $validated['general_limit']) {
+            if (($coupon->usages ?? 0) > $data['general_limit']) {
                 return [
                     'error' => 'general_limit_too_low',
                 ];
             }
-
-            $validated['is_percentage'] = $request->boolean('is_percentage');
-            $validated['is_active'] = $request->boolean('is_active');
-            $validated['order_limit_amount'] = $validated['order_limit_amount'] ?? 0;
-
-            $coupon->update($validated);
+            $coupon->update($data);
 
             return $coupon;
         });
     }
 
-    public function updateStatus(UpdateCouponStatusRequest $request, Coupon $coupon)
+    public function updateStatus(array $data, Coupon $coupon)
     {
-        return DB::transaction(function () use ($request, $coupon) {
-            $validated = $request->validated();
+        return DB::transaction(function () use ($data, $coupon) {
 
-            $coupon->update([
-                'is_active' => (bool) $validated['is_active'],
-            ]);
+            $coupon->update($data);
 
             return $coupon;
         });
     }
 }
-
