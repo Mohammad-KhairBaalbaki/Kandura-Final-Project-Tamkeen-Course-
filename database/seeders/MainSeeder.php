@@ -15,15 +15,16 @@ class MainSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             UserSeeder::class,
             CitySeeder::class,
-            AddressSeeder::class,
+            //AddressSeeder::class,
             MeasurementSeeder::class,
             DesignOptionSeeder::class,
             DesignSeeder::class,
             CouponSeeder::class,
             WalletSeeder::class,
+            //CartSeeder::class,
             OrderSeeder::class,
             NotificationPreferenceSeeder::class,
-            DeviceTokenSeeder::class,
+            //DeviceTokenSeeder::class,
         ]);
     }
 }

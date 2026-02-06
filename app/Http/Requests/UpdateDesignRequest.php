@@ -35,7 +35,7 @@ class UpdateDesignRequest extends FormRequest
             'measurements' => 'array',
             'measurements.*' => 'exists:measurements,id',
             'images' => 'array',
-            'images.*' => 'mime:png,jpg,jpeg',
+            'images.*' => 'image|mimes:png,jpg,jpeg',
             'design_options' => 'array',
             'design_options.*' => Rule::exists('design_options', 'id')->whereNull('deleted_at'),
         ];

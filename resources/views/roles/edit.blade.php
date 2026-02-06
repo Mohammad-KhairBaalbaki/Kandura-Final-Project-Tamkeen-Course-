@@ -34,7 +34,7 @@
 
         <form method="POST" action="{{ route('roles.update', $role->id) }}">
             @csrf
-            @method('PATCH')
+            @method('PUT')
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Name -->
                 <div>
@@ -144,7 +144,7 @@
                             </div>
                         @endif
 
-                        
+
 
                         @if ($groupWallets->isNotEmpty())
                             <div class="rounded-lg border border-gray-200 p-4">

@@ -12,14 +12,18 @@ class CitySeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        // City::factory(3)->create();
+        $cities = [
+            ['en' => 'Cairo', 'ar' => 'القاهرة'],
+            ['en' => 'Dubai', 'ar' => 'دبي'],
+            ['en' => 'Abu Dhabi', 'ar' => 'أبو ظبي'],
+            ['en' => 'Sharjah', 'ar' => 'الشارقة'],
+        ];
 
-        City::create([
-            'name' => [
-                'en' => 'Cairo',
-                'ar' => 'مصر',
-            ],
-        ]);
+        foreach ($cities as $city) {
+            City::firstOrCreate(
+                ['name->en' => $city['en']],
+                ['name' => $city]
+            );
+        }
     }
 }

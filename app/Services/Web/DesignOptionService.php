@@ -106,14 +106,6 @@ class DesignOptionService
     {
         return DB::transaction(function () use ($data, $designOption) {
             $user = Auth::user();
-            if (!$user || !$user->hasPermissionTo('edit-design-option')) {
-                return [
-                    'error' => 'not_authorized',
-                ];
-            }
-
-
-
             $updated = $this->designOptionService->update(
                 ['is_active' => (bool) $data['is_active']],
                 $designOption

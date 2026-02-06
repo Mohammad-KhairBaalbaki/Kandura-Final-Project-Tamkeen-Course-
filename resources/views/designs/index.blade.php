@@ -264,7 +264,7 @@
                                 <form method="POST" action="{{ route('designs.updateStatus', $design->id) }}"
                                     onclick="event.stopPropagation()">
                                     @csrf
-                                    @method('PATCH')
+                                    @method('PUT')
 
                                     <button type="submit" name="status" value="active"
                                         class="w-full px-3 py-2 text-sm rounded-lg text-left

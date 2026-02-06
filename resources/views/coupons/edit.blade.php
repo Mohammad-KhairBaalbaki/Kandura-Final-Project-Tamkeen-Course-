@@ -39,7 +39,7 @@
 
         <form method="POST" action="{{ route('coupons.update', $coupon->id) }}">
             @csrf
-            @method('PATCH')
+            @method('PUT')
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Code -->
                 <div>

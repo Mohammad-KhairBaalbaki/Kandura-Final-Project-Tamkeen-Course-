@@ -187,7 +187,7 @@
 
                                         <form method="POST" action="{{ route('users.updateStatus', $user->id) }}">
                                             @csrf
-                                            @method('PATCH')
+                                            @method('PUT')
 
                                             <button name="is_active" value="1"
                                                 class="w-full px-3 py-2 text-sm rounded-lg text-left

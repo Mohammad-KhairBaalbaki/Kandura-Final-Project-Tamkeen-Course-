@@ -7,6 +7,7 @@ use App\Models\Design;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class DesignService
 {
@@ -132,15 +133,21 @@ class DesignService
     public function update(array $data, Design $design)
     {
         return DB::transaction(function () use ($data, $design) {
-
             $design->update($data);
-            if (isset($data['images'])) {
+            if (! empty($data['images']) && is_array($data['images'])) {
+                $design->loadMissing('images');
+                foreach ($design->images as $image) {
+                    if (! empty($image->url)) {
+                        Storage::disk('public')->delete($image->url);
+                    }
+                }
+                $design->images()->delete();
+
                 foreach ($data['images'] as $idx => $file) {
-                    $path = 'designs/'.$design->id.'/'.$idx;
-                    $design->images()->update([
+                    $path = 'design/'.$design->id.'/'.$idx;
+                    $design->images()->create([
                         'url' => FileService::uploadFile($file, $path),
                     ]);
-
                 }
             }
             if (! empty($data['design_options']) && is_array($data['design_options'])) {
@@ -152,7 +159,7 @@ class DesignService
             }
             $design = Design::findOrFail($design->id);
 
-            return $design;
+            return $design->load('images');
         });
     }
 

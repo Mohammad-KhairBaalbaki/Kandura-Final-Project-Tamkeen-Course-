@@ -55,7 +55,7 @@
                         class="hidden fixed z-50 w-32 bg-white rounded-xl shadow-lg border p-2">
                         <form method="POST" action="{{ route('users.updateStatus', $user->id) }}">
                             @csrf
-                            @method('PATCH')
+                            @method('PUT')
 
                             <button name="is_active" value="1"
                                 class="w-full px-3 py-2 text-sm rounded-lg text-left
@@ -142,9 +142,16 @@
             @endphp
             <a href="{{ route('designs.show', $latestDesign->id) }}"
                 class="flex items-center space-x-4 group">
-                <img src="{{ $latestDesign->images->first()->fullUrl }}"
-                    class="w-20 h-20 rounded-lg object-cover border group-hover:opacity-90"
-                    title="{{ $latestDesign->title }}">
+                @if ($latestDesign->images->first())
+                    <img src="{{ $latestDesign->images->first()->fullUrl }}"
+                        class="w-20 h-20 rounded-lg object-cover border group-hover:opacity-90"
+                        title="{{ $latestDesign->title }}">
+                @else
+                    <div
+                        class="w-20 h-20 rounded-lg border bg-gray-100 flex items-center justify-center text-gray-400">
+                        <i class="fas fa-image"></i>
+                    </div>
+                @endif
                 <div>
                     <p class="font-semibold text-gray-800 group-hover:text-purple-700">
                         {{ $latestDesign->name ?? __('users.designs') }}

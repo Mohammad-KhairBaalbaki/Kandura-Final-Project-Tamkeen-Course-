@@ -201,7 +201,7 @@
                                         class="hidden fixed z-50 w-32 bg-white rounded-xl shadow-lg border p-2">
                                         <form method="POST" action="{{ route('coupons.updateStatus', $coupon->id) }}">
                                             @csrf
-                                            @method('PATCH')
+                                            @method('PUT')
 
                                             <button type="submit" name="is_active" value="1"
                                                 class="w-full px-3 py-2 text-sm rounded-lg text-left

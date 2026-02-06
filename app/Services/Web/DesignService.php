@@ -2,6 +2,7 @@
 
 namespace App\Services\Web;
 
+use App\Enums\StatusEnum;
 use App\Models\Design;
 use App\Models\Measurement;
 use Illuminate\Http\Request;
@@ -12,7 +13,13 @@ class DesignService
     public function index(Request $request)
     {
         return DB::transaction(function () use ($request) {
-            $query = Design::with(['images', 'designOptions', 'measurements', 'user.image']);
+            $query = Design::with(['images', 'designOptions', 'measurements', 'user.image'])->where(function ($q) {
+                $q->where('status', StatusEnum::ACTIVE);
+                $q->whereHas('user', function ($query) {
+                    $query->where('is_active', true);
+                });
+
+            });;
 
             if ($request->filled('name')) {
                 $name = $request->name;

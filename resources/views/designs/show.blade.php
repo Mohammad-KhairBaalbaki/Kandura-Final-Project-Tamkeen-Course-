@@ -44,7 +44,7 @@
                     <div id="status-menu" class="hidden fixed z-50 w-36 bg-white rounded-xl shadow-lg border p-2">
                         <form method="POST" action="{{ route('designs.updateStatus', $design->id) }}">
                             @csrf
-                            @method('PATCH')
+                            @method('PUT')
 
                             <button name="status" value="active"
                                 class="w-full px-3 py-2 text-sm rounded-lg text-left

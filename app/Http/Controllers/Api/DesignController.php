@@ -76,7 +76,11 @@ class DesignController extends Controller
     public function update(UpdateDesignRequest $request, Design $design)
     {
         try {
-            $design = $this->designService->update($request->validated(), $design);
+            $data = $request->validated();
+            if ($request->hasFile('images')) {
+                $data['images'] = $request->file('images');
+            }
+            $design = $this->designService->update($data, $design);
             if (! $design) {
                 return $this->success(null, 'UnAuthorized', 401);
             }

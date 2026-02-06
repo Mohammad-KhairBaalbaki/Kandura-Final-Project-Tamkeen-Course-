@@ -33,7 +33,7 @@
         @endif
         <form method="POST" action="{{ route('design_options.update', $designOption->id) }}">
             @csrf
-            @method('PATCH')
+            @method('PUT')
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Type -->
                 <div>

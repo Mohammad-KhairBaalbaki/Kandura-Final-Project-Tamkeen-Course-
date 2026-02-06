@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -117,5 +119,38 @@ class RolesAndPermissionsSeeder extends Seeder
         $user->syncPermissions($userPermissions);
         $admin->syncPermissions(array_merge($adminNotificationPermissions, $adminPermissions));
         $superAdmin->syncPermissions(array_merge($allPermissions, $SuperAdminNotificationPermissions, $adminNotificationPermissions));
+
+        $groupedRoles = [
+            'manage users' => ['view-users', 'disable-accounts'],
+            'manage orders' => ['view-orders', 'view-invoices', 'edit-orders'],
+            'manage designs' => ['disable-designs'],
+            'manage design options' => ['view-design-options', 'create-design-options', 'edit-design-options', 'delete-design-options'],
+            'manage coupons' => ['view-coupons', 'create-coupons', 'edit-coupons'],
+            'manage wallets' => ['add-balance'],
+            
+        ];
+
+        foreach ($groupedRoles as $roleName => $permissions) {
+            $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => $guard]);
+            $role->syncPermissions($permissions);
+
+            $email = str_replace(' ', '_', $roleName).'@example.com';
+            $phoneSuffix = str_pad((string) (abs(crc32($roleName)) % 100000000), 8, '0', STR_PAD_LEFT);
+            $userForRole = User::withTrashed()->firstOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $roleName,
+                    'phone' => '09'.$phoneSuffix,
+                    'password' => Hash::make('12345678'),
+                    'is_active' => true,
+                ]
+            );
+
+            if ($userForRole->trashed()) {
+                $userForRole->restore();
+            }
+
+            $userForRole->assignRole($roleName);
+        }
     }
 }

@@ -118,7 +118,7 @@
                                     <form method="POST" action="{{ route('design_options.restore', $designOption->id) }}"
                                         onsubmit="return confirm('{{ __('design_options.restore_confirm') }}')">
                                         @csrf
-                                        @method('PATCH')
+                                        @method('PUT')
                                         <button type="submit"
                                             class="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition"
                                             title="{{ __('design_options.restore') }}">

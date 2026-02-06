@@ -12,24 +12,10 @@ class MeasurementSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        Measurement::create([
-            'size' => 'XS',
-        ]);
-        Measurement::create([
-            'size' => 'S',
-        ]);
-        Measurement::create([
-            'size' => 'M',
-        ]);
-        Measurement::create([
-            'size' => 'L',
-        ]);
-        Measurement::create([
-            'size' => 'XL',
-        ]);
-        Measurement::create([
-            'size' => 'XXL',
-        ]);
+        $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+        foreach ($sizes as $size) {
+            Measurement::firstOrCreate(['size' => $size]);
+        }
     }
 }

@@ -62,7 +62,7 @@
                         <form method="POST" action="{{ route('orders.updateStatus', $order->id) }}"
                             onclick="event.stopPropagation()">
                             @csrf
-                            @method('PATCH')
+                            @method('PUT')
 
                             <button name="status" value="pending"
                                 class="w-full px-3 py-2 text-sm rounded-lg text-left
@@ -175,8 +175,14 @@
                                 class="flex items-start space-x-4 pb-4 border-b last:border-b-0 hover:bg-gradient-to-r hover:from-purple-50 hover:to-indigo-50 transition-all duration-300 rounded-lg p-3 -m-3 cursor-pointer group hover:shadow-md hover:scale-[1.01] hover:border-purple-200">
                                 <div
                                     class="w-20 h-20 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
-                                    <img src="{{ $item->design->images->first()->fullUrl }}" alt="Design image"
-                                        class="w-full h-full object-cover">
+                                    @if ($item->design?->images?->first())
+                                        <img src="{{ $item->design->images->first()->fullUrl }}" alt="Design image"
+                                            class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center text-white">
+                                            <i class="fas fa-image text-2xl"></i>
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="flex-1">
                                     <h4 class="font-semibold text-gray-800">{{ $item->design->name }}</h4>

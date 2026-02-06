@@ -191,9 +191,16 @@
                             <td class="px-6 py-4 text-center">
                                 @if ($user->designs->count())
                                     <div class="flex justify-center space-x-2">
-                                        <img src="{{ $user->designs->last()->images->first()->fullUrl }}"
-                                            class="w-10 h-10 rounded-lg object-cover border"
-                                            title="{{ $user->designs->last()->title }}">
+                                        @if ($user->designs->last()?->images?->first())
+                                            <img src="{{ $user->designs->last()->images->first()->fullUrl }}"
+                                                class="w-10 h-10 rounded-lg object-cover border"
+                                                title="{{ $user->designs->last()->title }}">
+                                        @else
+                                            <div
+                                                class="w-10 h-10 rounded-lg border bg-gray-100 flex items-center justify-center text-gray-400">
+                                                <i class="fas fa-image"></i>
+                                            </div>
+                                        @endif
                                     </div>
                                 @else
                                     <span class="text-xs text-gray-400">
@@ -220,7 +227,7 @@
 
                                         <form method="POST" action="{{ route('users.updateStatus', $user->id) }}">
                                             @csrf
-                                            @method('PATCH')
+                                            @method('PUT')
 
                                             <button name="is_active" value="1"
                                                 class="w-full px-3 py-2 text-sm rounded-lg text-left
