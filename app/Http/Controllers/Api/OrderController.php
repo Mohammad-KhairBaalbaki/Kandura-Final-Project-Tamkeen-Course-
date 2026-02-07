@@ -94,9 +94,15 @@ class OrderController extends Controller
     public function successPayment(Order $order)
     {
         try {
-            $this->orderService->successPayment($order);
+            $order = $this->orderService->successPayment($order);
 
-            return $this->success(OrderResource::make($order), 'Order Payment Confirmed Successfully .', 200);
+            if (request()->expectsJson()) {
+                return $this->success(OrderResource::make($order), 'Order Payment Confirmed Successfully .', 200);
+            }
+
+            return view('payments.success', [
+                'order' => $order,
+            ]);
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
@@ -105,9 +111,23 @@ class OrderController extends Controller
         }
     }
 
-    public function failedPayment()
+    public function failedPayment(?Order $order = null)
     {
-        return $this->success(false, 'Order Payment failed .', 200);
+        if (! $order && request()->filled('order')) {
+            $order = Order::find(request()->input('order'));
+        }
+
+        if ($order) {
+            $this->orderService->markPaymentFailed($order);
+        }
+
+        if (request()->expectsJson()) {
+            return $this->success(false, 'Order Payment failed .', 200);
+        }
+
+        return view('payments.failed', [
+            'order' => $order,
+        ]);
     }
 
     public function update(Order $order)

@@ -1,5 +1,8 @@
+@php
+    $isRtl = app()->getLocale() === 'ar';
+@endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -19,9 +22,10 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
     </style>
+    @include('partials.rtl')
 </head>
 
-<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 
     <div class="w-full max-w-md">
         <!-- Logo/Brand Section -->

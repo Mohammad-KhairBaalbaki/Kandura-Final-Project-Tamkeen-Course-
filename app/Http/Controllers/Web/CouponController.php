@@ -53,7 +53,7 @@ class CouponController extends Controller
     public function store(StoreCouponRequest $request)
     {
         try {
-            $this->couponService->store($request);
+            $this->couponService->store($request->validated());
 
             return redirect()
                 ->route('coupons.index')
@@ -89,7 +89,7 @@ class CouponController extends Controller
     public function update(UpdateCouponRequest $request, Coupon $coupon)
     {
         try {
-            $result = $this->couponService->update($request, $coupon);
+            $result = $this->couponService->update($request->validated(), $coupon);
             if (is_array($result) && ($result['error'] ?? null) === 'general_limit_too_low') {
                 return back()
                     ->withInput()
@@ -116,7 +116,7 @@ class CouponController extends Controller
     public function updateStatus(UpdateCouponStatusRequest $request, Coupon $coupon)
     {
         try {
-            $this->couponService->updateStatus($request, $coupon);
+            $this->couponService->updateStatus($request->validated(), $coupon);
 
             return back()->with('success', __('coupons.status_updated'));
         } catch (\Exception $e) {

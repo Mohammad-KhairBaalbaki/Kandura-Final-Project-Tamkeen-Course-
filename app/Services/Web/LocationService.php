@@ -2,6 +2,7 @@
 
 namespace App\Services\Web;
 
+use App\Enums\StatusEnum;
 use App\Models\City;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,7 @@ class LocationService
                 ->select('cities.id', 'cities.name', DB::raw('COUNT(orders.id) as orders_count'))
                 ->join('addresses', 'addresses.city_id', '=', 'cities.id')
                 ->join('orders', 'orders.address_id', '=', 'addresses.id')
+                ->whereIn('orders.status', [StatusEnum::DELIVERED, StatusEnum::CONFIRMED])
                 ->groupBy('cities.id', 'cities.name')
                 ->orderByDesc('orders_count')
                 ->get();

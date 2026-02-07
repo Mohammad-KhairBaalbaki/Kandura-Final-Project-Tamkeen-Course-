@@ -1,5 +1,8 @@
+@php
+    $isRtl = app()->getLocale() === 'ar';
+@endphp
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -26,10 +29,25 @@
         .totals td { border: none; }
         .totals .label { color: #6b7280; }
         .grand { font-size: 14px; font-weight: 700; color: #4c1d95; }
+
+        html[dir="rtl"] body {
+            direction: rtl;
+            text-align: right;
+        }
+
+        html[dir="rtl"] .row {
+            direction: rtl;
+        }
+
+        html[dir="rtl"] th,
+        html[dir="rtl"] td {
+            text-align: right;
+        }
     </style>
+    @include('partials.rtl')
 </head>
 
-<body>
+<body dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
     <div class="header">
         <div class="row">
             <div class="col col-50">

@@ -1,14 +1,19 @@
+@php
+    $isRtl = app()->getLocale() === 'ar';
+@endphp
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ __('Account Deactivated') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    @include('partials.rtl')
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 flex items-center justify-center p-6">
+<body class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 flex items-center justify-center p-6"
+    dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
     <div class="w-full max-w-lg bg-white shadow-xl rounded-2xl p-8 border border-gray-100 text-center">
         <div class="mx-auto w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
             <svg class="w-7 h-7 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"

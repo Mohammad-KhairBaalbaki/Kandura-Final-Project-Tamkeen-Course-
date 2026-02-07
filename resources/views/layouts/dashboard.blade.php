@@ -1,5 +1,8 @@
+@php
+    $isRtl = app()->getLocale() === 'ar';
+@endphp
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -22,24 +25,25 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
-        body[dir="rtl"] .rotate-180 {
+        html[dir="rtl"] .rotate-180 {
             transform: rotate(0deg);
         }
 
-        body[dir="ltr"] .rotate-180 {
+        html[dir="ltr"] .rotate-180 {
             transform: rotate(180deg);
         }
     </style>
+    @include('partials.rtl')
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
-<body class="bg-gray-100" x-data="{ sidebarOpen: true, mobileMenuOpen: false }">
+<body class="bg-gray-100" dir="{{ $isRtl ? 'rtl' : 'ltr' }}" x-data="{ sidebarOpen: true, mobileMenuOpen: false }">
 
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex h-screen overflow-hidden {{ $isRtl ? 'flex-row-reverse' : '' }}">
 
         <!-- Sidebar -->
         <aside :class="sidebarOpen ? 'w-64' : 'w-20'"
-            class="bg-white shadow-xl transition-all duration-300 ease-in-out hidden lg:block overflow-y-auto">
+            class="bg-white shadow-xl transition-all duration-300 ease-in-out hidden lg:block overflow-y-auto {{ $isRtl ? 'lg:order-2' : 'lg:order-1' }}">
             <div class="h-full flex flex-col">
 
                 <!-- Logo Section -->
@@ -87,32 +91,11 @@
                     </a>
                     {{-- Admins Management --}}
                     @if (Auth::user()->roles()->first()->name == 'super-admin')
-                        <div x-data="{ open: {{ request()->is('admins*') ? 'true' : 'false' }} }">
-                            <button @click="open = !open"
-                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-purple-50 transition text-gray-700">
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas fa-users text-lg w-5"></i>
-                                    <span x-show="sidebarOpen" x-cloak
-                                        class="font-medium">{{ __('admins.users') }}</span>
-                                </div>
-                                <i x-show="sidebarOpen" :class="open ? 'fa-chevron-down' : 'fa-chevron-right'"
-                                    class="fas text-sm"></i>
-                            </button>
-                            <div x-show="open && sidebarOpen" x-cloak class="ml-8 mt-2 space-y-1">
-
-                                <a href="{{ route('admins.index') }}"
-                                    class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50">
-                                    <i class="fas fa-list w-4"></i>
-                                    <span>{{ __('All Admins') }}</span>
-                                </a>
-
-                                <a href="{{ route('admins.create') }}"
-                                    class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50">
-                                    <i class="fas fa-plus w-4"></i>
-                                    <span>{{ __('Add Admin') }}</span>
-                                </a>
-                            </div>
-                        </div>
+                        <a href="{{ route('admins.index') }}"
+                            class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('admins*') ? 'sidebar-active' : 'text-gray-700' }}">
+                            <i class="fas fa-list w-4"></i>
+                            <span x-show="sidebarOpen" x-cloak class="font-medium">{{ __('admins.users') }}</span>
+                        </a>
                     @endif
 
                     <!-- Designs -->
@@ -156,11 +139,11 @@
 
                     <!-- Locations -->
                     {{-- {{ route('cities.index') }} --}}
-                            <a href="{{ route('locations.cities') }}"
-                                class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('locations*') ? 'sidebar-active' : 'text-gray-700' }}">
-                                <i class="fas fa-city w-4"></i>
-                                <span class="font-medium"`>{{ __('Cities') }}</span>
-                            </a>
+                    <a href="{{ route('locations.cities') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('locations*') ? 'sidebar-active' : 'text-gray-700' }}">
+                        <i class="fas fa-city w-4"></i>
+                        <span class="font-medium"`>{{ __('Cities') }}</span>
+                    </a>
 
                     <!-- Wallets -->
                     {{-- {{ route('reviews.index') }} --}}
@@ -214,10 +197,11 @@
 
         <!-- Mobile Sidebar -->
         <aside x-show="mobileMenuOpen" x-transition:enter="transform transition ease-in-out duration-300"
-            x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0"
-            x-transition:leave="transform transition ease-in-out duration-300"
-            x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" x-cloak
-            class="fixed inset-y-0 left-0 w-64 bg-white shadow-xl z-50 lg:hidden overflow-y-auto">
+            x-transition:enter-start="{{ $isRtl ? 'translate-x-full' : '-translate-x-full' }}"
+            x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-300"
+            x-transition:leave-start="translate-x-0"
+            x-transition:leave-end="{{ $isRtl ? 'translate-x-full' : '-translate-x-full' }}" x-cloak
+            class="fixed inset-y-0 {{ $isRtl ? 'right-0' : 'left-0' }} w-64 bg-white shadow-xl z-50 lg:hidden overflow-y-auto">
             <!-- Same navigation as desktop sidebar -->
             <div class="h-full flex flex-col">
                 <div class="p-4 border-b flex items-center justify-between">
@@ -244,7 +228,7 @@
         </aside>
 
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="flex-1 flex flex-col overflow-hidden {{ $isRtl ? 'lg:order-1' : 'lg:order-2' }}">
 
             <!-- Top Navbar -->
             <header class="bg-white shadow-sm z-10">
@@ -274,7 +258,7 @@
                                 <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                             </button>
                             <div x-show="open" @click.away="open = false" x-cloak
-                                class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border py-2">
+                                class="absolute {{ $isRtl ? 'left-0' : 'right-0' }} mt-2 w-40 bg-white rounded-lg shadow-lg border py-2">
                                 <a href="{{ route('language.switch', 'en') }}"
                                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">
                                     <img src="https://flagcdn.com/w20/gb.png" class="w-5 h-4 mr-2" alt="English">
@@ -306,7 +290,7 @@
                                 @endif
                             </button>
                             <div x-show="open" @click.away="open = false" x-cloak
-                                class="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border">
+                                class="absolute {{ $isRtl ? 'left-0' : 'right-0' }} mt-2 w-96 bg-white rounded-lg shadow-lg border">
                                 <div class="p-4 border-b flex items-center justify-between">
                                     <h3 class="font-semibold text-gray-800">{{ __('notifications.notifications') }}
                                     </h3>
@@ -359,7 +343,7 @@
                                 <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                             </button>
                             <div x-show="open" @click.away="open = false" x-cloak
-                                class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-2">
+                                class="absolute {{ $isRtl ? 'left-0' : 'right-0' }} mt-2 w-48 bg-white rounded-lg shadow-lg border py-2">
                                 <a href="{{ route('profile.show') }}"
                                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">
                                     <i class="fas fa-user w-5"></i>

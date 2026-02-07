@@ -12,18 +12,18 @@ class MainSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            RolesAndPermissionsSeeder::class,
-            UserSeeder::class,
-            CitySeeder::class,
+            // RolesAndPermissionsSeeder::class,
+            // UserSeeder::class,
+            // CitySeeder::class,
             //AddressSeeder::class,
-            MeasurementSeeder::class,
-            DesignOptionSeeder::class,
-            DesignSeeder::class,
+            // MeasurementSeeder::class,
+            // DesignOptionSeeder::class,
+            // DesignSeeder::class,
             CouponSeeder::class,
-            WalletSeeder::class,
+            // WalletSeeder::class,
             //CartSeeder::class,
             OrderSeeder::class,
-            NotificationPreferenceSeeder::class,
+            // NotificationPreferenceSeeder::class,
             //DeviceTokenSeeder::class,
         ]);
     }

@@ -161,5 +161,5 @@ Route::prefix('order')->group(function () {
     // Stripe success callback
     Route::get('/success-payment/{order}', [OrderController::class, 'successPayment'])->name('success_payment');
     // Stripe failed callback
-    Route::get('/failed-payment', [OrderController::class, 'failedPayment'])->name('failed_payment');
+    Route::get('/failed-payment/{order?}', [OrderController::class, 'failedPayment'])->name('failed_payment');
 });

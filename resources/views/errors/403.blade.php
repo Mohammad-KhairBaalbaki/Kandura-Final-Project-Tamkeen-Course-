@@ -1,6 +1,9 @@
 {{-- resources/views/errors/403.blade.php --}}
+@php
+    $isRtl = app()->getLocale() === 'ar';
+@endphp
 <!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="utf-8">
@@ -114,6 +117,14 @@
             justify-content: space-between;
         }
 
+        html[dir="rtl"] .row {
+            flex-direction: row-reverse;
+        }
+
+        html[dir="rtl"] .actions {
+            justify-content: flex-start;
+        }
+
         .left {
             flex: 1 1 420px;
         }
@@ -141,9 +152,10 @@
             opacity: .85;
         }
     </style>
+    @include('partials.rtl')
 </head>
 
-<body>
+<body dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
     <div class="wrap">
         <div class="card">
             <div class="row">
