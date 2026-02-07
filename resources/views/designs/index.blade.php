@@ -113,15 +113,21 @@
                 <label class="block text-xs font-medium text-gray-600 mb-1">
                     {{ __('designs.measurements') }}
                 </label>
-                <select name="measurements[]" multiple
-                    class="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
-                    @foreach ($measurements as $measurement)
-                        <option value="{{ $measurement->id }}"
-                            {{ in_array($measurement->id, (array) request('measurements', []), true) ? 'selected' : '' }}>
-                            {{ $measurement->size }}
-                        </option>
-                    @endforeach
-                </select>
+                @php
+                    $selectedMeasurements = array_map('strval', (array) request('measurements', []));
+                @endphp
+                <div class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus-within:ring-2 focus-within:ring-purple-500 focus-within:border-transparent transition">
+                    <div class="grid grid-cols-2 gap-2">
+                        @foreach ($measurements as $measurement)
+                            <label class="inline-flex items-center gap-2 text-xs text-gray-700">
+                                <input type="checkbox" name="measurements[]" value="{{ $measurement->id }}"
+                                    class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                    {{ in_array((string) $measurement->id, $selectedMeasurements, true) ? 'checked' : '' }}>
+                                <span>{{ $measurement->size }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
             </div>
 
             <!-- Buttons -->
@@ -240,6 +246,21 @@
                                 </span>
                             </div>
                         @endforeach
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="text-[11px] font-semibold text-gray-500 mb-1">
+                            {{ __('designs.measurements') }}
+                        </div>
+                        <div class="flex flex-wrap gap-1">
+                            @forelse ($design->measurements as $measurement)
+                                <span class="px-2 py-0.5 text-[10px] rounded-full bg-gray-100 text-gray-700">
+                                    {{ $measurement->size }}
+                                </span>
+                            @empty
+                                <span class="text-[10px] text-gray-400">-</span>
+                            @endforelse
+                        </div>
                     </div>
 
                     <div class="mt-4">

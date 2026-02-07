@@ -159,7 +159,7 @@
                             <a href="{{ route('locations.cities') }}"
                                 class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-50 transition {{ request()->is('locations*') ? 'sidebar-active' : 'text-gray-700' }}">
                                 <i class="fas fa-city w-4"></i>
-                                <span class="font-medium">{{ __('Cities') }}</span>
+                                <span class="font-medium"`>{{ __('Cities') }}</span>
                             </a>
 
                     <!-- Wallets -->
@@ -282,7 +282,7 @@
                                 </a>
                                 <a href="{{ route('language.switch', 'ar') }}"
                                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">
-                                    <img src="https://flagcdn.com/w20/sa.png" class="w-5 h-4 mr-2" alt="العربية">
+                                    <img src="https://flagcdn.com/w20/sy.png" class="w-5 h-4 mr-2" alt="العربية">
                                     العربية
                                 </a>
                             </div>

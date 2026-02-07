@@ -191,8 +191,7 @@
                                         style="margin-top: 20px ;">
                                         <span>{{ __('orders.size') }}: <span
                                                 class="font-medium">{{ $item->measurement->size ?? 'N/A' }}</span></span>
-                                        <span>{{ __('orders.color') }}: <span class="font-medium"
-                                                style="color: {{ $item->color }};">{{ $item->color ?? 'N/A' }}</span></span>
+                                        <span>{{ __('orders.color') }}: <span class="font-medium">{{ $item->color ?? 'N/A' }}</span></span>
                                         <span>{{ __('orders.dome') }}: <span
                                                 class="font-medium">{{ $item->dome ?? 'N/A' }}</span></span>
                                         <span>{{ __('orders.sleeve') }}: <span

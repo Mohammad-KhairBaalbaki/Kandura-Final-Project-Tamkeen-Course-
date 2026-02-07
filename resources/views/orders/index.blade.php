@@ -203,14 +203,14 @@
                                 <input type="checkbox" name="order_ids[]" value="{{ $order->id }}"
                                     class="h-4 w-4 order-select">
                             </td>
-                            <td class="px-6 py-4 text-center">
+                            <td class="px-6 py-4 text-left">
                                 <a href="{{ route('orders.show', $order->id) }}"
                                     class="text-purple-600 hover:text-purple-700 font-semibold">
                                     #{{ $order->num }}
                                 </a>
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <div class="flex items-center justify-center space-x-3">
+                                <div class="flex items-center justify-left space-x-3">
                                     @if ($order->user?->image && $order->user->image->fullUrl)
                                         <img src="{{ $order->user->image->fullUrl }}"
                                             class="w-10 h-10 rounded-full object-cover border flex-shrink-0"
@@ -222,8 +222,21 @@
                                         </div>
                                     @endif
                                     <div class="text-left">
-                                        <div class="text-sm text-gray-800">
-                                            {{ $order->user->name ?? 'N/A' }}
+                                        <div class="text-sm text-gray-800 flex items-center gap-2">
+                                            @if ($order->user)
+                                                <a href="{{ route('users.show', $order->user->id) }}"
+                                                    class="hover:text-purple-700 font-semibold">
+                                                    {{ $order->user->name }}
+                                                </a>
+                                                @if ($order->user->trashed())
+                                                    <span
+                                                        class="px-2 py-0.5 text-[10px] rounded-full bg-red-100 text-red-700">
+                                                        {{ __('orders.deleted_user') }}
+                                                    </span>
+                                                @endif
+                                            @else
+                                                <span class="text-gray-400">N/A</span>
+                                            @endif
                                         </div>
                                         <div class="text-xs text-gray-500">
                                             {{ $order->user->email ?? '' }}

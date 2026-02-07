@@ -10,6 +10,10 @@ return [
 
     'select_notifications' => 'Select notifications to mark as read',
     'mark_selected_read' => 'Mark Selected as Read',
+    'mark_all_read' => 'Mark All as Read',
+    'unread_count' => ':count unread notifications',
+    'no_unread' => 'No unread notifications',
+    'unread' => 'Unread',
     'select_at_least_one' => 'Please select at least one notification.',
 
     'title' => 'Title',

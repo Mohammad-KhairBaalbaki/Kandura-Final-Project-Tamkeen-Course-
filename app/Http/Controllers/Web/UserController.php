@@ -33,10 +33,10 @@ class UserController extends Controller
         }
     }
 
-    public function show(User $user)
+    public function show($userId)
     {
         try {
-            $user = $this->userService->show($user);
+            $user = $this->userService->show((int) $userId);
 
             return view('users.show', compact('user'));
         } catch (\Exception $e) {

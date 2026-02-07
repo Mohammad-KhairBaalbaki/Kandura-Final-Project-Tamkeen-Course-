@@ -54,6 +54,7 @@ return [
     'coupon_code' => 'كود القسيمة',
     'customer_information' => 'معلومات العميل',
     'view_profile' => 'عرض الملف الشخصي',
+    'deleted_user' => 'محذوف',
     'invoice' => 'فاتورة',
     'payment' => 'الدفع',
     'details' => 'التفاصيل',

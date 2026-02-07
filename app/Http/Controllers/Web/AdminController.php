@@ -48,6 +48,20 @@ class AdminController extends Controller
         }
     }
 
+    public function trashed(Request $request)
+    {
+        try {
+            $users = $this->adminService->trashed($request);
+
+            return view('admins.trashed', compact('users'));
+        } catch (\Exception $e) {
+            Log::error($e);
+            Log::error($e->getMessage());
+
+            return $this->success(false, 'process failed try again later', 422);
+        }
+    }
+
     public function create()
     {
         try {
@@ -112,6 +126,23 @@ class AdminController extends Controller
             return back()
                 ->withInput()
                 ->withErrors(['service' => __('admins.update_failed')]);
+        }
+    }
+
+    public function restore($userId)
+    {
+        try {
+            $restored = $this->adminService->restore((int) $userId);
+            if (! $restored) {
+                return back()->withErrors(['service' => __('admins.restore_failed')]);
+            }
+
+            return redirect()->route('admins.trashed');
+        } catch (\Exception $e) {
+            Log::error($e);
+            Log::error($e->getMessage());
+
+            return $this->success(false, 'process failed try again later', 422);
         }
     }
 

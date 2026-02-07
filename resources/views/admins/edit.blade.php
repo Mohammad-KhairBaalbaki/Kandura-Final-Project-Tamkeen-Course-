@@ -99,14 +99,18 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         {{ __('admins.roles') }}
                     </label>
-                    <select name="roles[]" multiple
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
-                        @foreach ($roles as $role)
-                            <option value="{{ $role }}" {{ in_array($role, $selectedRoles, true) ? 'selected' : '' }}>
-                                {{ $role }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <div class="w-full px-4 py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-purple-500 focus-within:border-transparent transition">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            @foreach ($roles as $role)
+                                <label class="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 hover:bg-white transition">
+                                    <input type="checkbox" name="roles[]" value="{{ $role }}"
+                                        class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                        {{ in_array($role, $selectedRoles, true) ? 'checked' : '' }}>
+                                    <span class="font-medium">{{ $role }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
                     @error('roles')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror

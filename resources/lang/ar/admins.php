@@ -47,6 +47,15 @@ return [
     'no_users_found' => 'لم يتم العثور على مشرفين',
     'try_adjusting_search' => 'جرّب تعديل البحث أو عوامل التصفية',
     'are_you_sure_delete_user' => 'هل أنت متأكد أنك تريد حذف هذا المشرف؟',
+    'deleted_admins' => 'المشرفون المحذوفون',
+    'manage_deleted_admins' => 'إدارة المشرفين المحذوفين',
+    'back_to_admins' => 'العودة إلى المشرفين',
+    'deleted_at' => 'تاريخ الحذف',
+    'restore' => 'استعادة',
+    'restore_confirm' => 'هل أنت متأكد أنك تريد استعادة هذا المشرف؟',
+    'no_deleted_admins' => 'لا يوجد مشرفون محذوفون',
+    'view_deleted' => 'المشرفون المحذوفون',
+    'restore_failed' => 'تعذر استعادة المشرف. يرجى المحاولة مرة أخرى.',
 
     // User info
     'name' => 'الاسم',

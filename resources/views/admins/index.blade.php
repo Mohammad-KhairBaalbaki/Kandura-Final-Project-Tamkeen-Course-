@@ -11,8 +11,12 @@
             <h2 class="text-2xl font-bold text-gray-800">{{ __('admins.all_users') }}</h2>
             <p class="text-sm text-gray-600 mt-1">{{ __('admins.manage_users_permissions') }}</p>
         </div>
-        <div class="mt-4 md:mt-0">
-            {{--  --}}
+        <div class="mt-4 md:mt-0 flex items-center gap-2">
+            <a href="{{ route('admins.trashed') }}"
+                class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium shadow-sm">
+                <i class="fas fa-trash-restore mr-2"></i>
+                {{ __('admins.view_deleted') }}
+            </a>
             <a href="{{ route('admins.create') }}"
                 class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm font-medium shadow-md hover:shadow-lg">
                 <i class="fas fa-plus mr-2"></i>

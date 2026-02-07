@@ -22,7 +22,7 @@ class CouponService
     {
         return DB::transaction(function () use ($coupon) {
 
-            return ! ($coupon->validate_until > now() && $coupon->usages == $coupon->general_limit);
+            return  ($coupon->validate_until > now() && $coupon->usages == $coupon->general_limit);
         });
     }
 

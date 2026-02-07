@@ -17,7 +17,11 @@ class NotificationController extends Controller
                 ->paginate(15)
                 ->withQueryString();
 
-            return view('notifications.index', compact('notifications'));
+            $unreadCount = $request->user()
+                ->unreadNotifications()
+                ->count();
+
+            return view('notifications.index', compact('notifications', 'unreadCount'));
         } catch (\Exception $e) {
             Log::error($e);
             Log::error($e->getMessage());
@@ -54,6 +58,14 @@ class NotificationController extends Controller
     public function markReadBulk(Request $request)
     {
         try {
+            if ($request->boolean('mark_all')) {
+                $request->user()
+                    ->unreadNotifications()
+                    ->update(['read_at' => now()]);
+
+                return back();
+            }
+
             $ids = $request->input('notification_ids', []);
 
             if (!empty($ids)) {

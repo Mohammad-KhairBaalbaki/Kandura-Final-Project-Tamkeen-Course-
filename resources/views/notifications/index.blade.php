@@ -15,12 +15,37 @@
 
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <div class="p-4 border-b flex items-center justify-between">
-            <div class="text-sm text-gray-600">{{ __('notifications.select_notifications') }}</div>
-            <button type="submit" form="notifications-read-form"
-                class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm font-medium">
-                <i class="fas fa-check mr-2"></i>
-                {{ __('notifications.mark_selected_read') }}
-            </button>
+            <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-700 font-medium">
+                    {{ __('notifications.unread') }}
+                </span>
+                @if (($unreadCount ?? 0) > 0)
+                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700">
+                        {{ $unreadCount }}
+                    </span>
+                @else
+                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">
+                        0
+                    </span>
+                    <span class="text-xs text-gray-500">{{ __('notifications.no_unread') }}</span>
+                @endif
+            </div>
+            <div class="flex items-center gap-2">
+                <form method="POST" action="{{ route('notifications.markReadBulk') }}">
+                    @csrf
+                    <input type="hidden" name="mark_all" value="1">
+                    <button type="submit"
+                        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium">
+                        <i class="fas fa-check-double mr-2"></i>
+                        {{ __('notifications.mark_all_read') }}
+                    </button>
+                </form>
+                <button type="submit" form="notifications-read-form"
+                    class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm font-medium">
+                    <i class="fas fa-check mr-2"></i>
+                    {{ __('notifications.mark_selected_read') }}
+                </button>
+            </div>
         </div>
         <div class="overflow-x-auto">
             <form method="POST" action="{{ route('notifications.markReadBulk') }}" id="notifications-read-form">

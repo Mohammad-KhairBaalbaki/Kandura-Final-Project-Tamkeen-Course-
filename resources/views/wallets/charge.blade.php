@@ -83,9 +83,9 @@
             <table class="w-full">
                 <thead class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
                     <tr>
-                        <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                        <th class="px-12 py-4 text-center text-xs font-semibold uppercase tracking-wider">
                             {{ __('wallets.user') }}</th>
-                        <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider">
+                        <th class="px-12 py-4 text-left text-xs font-semibold uppercase tracking-wider">
                             {{ __('wallets.email') }}</th>
                         <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider">
                             {{ __('wallets.phone') }}</th>
@@ -98,8 +98,8 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse($wallets as $wallet)
                         <tr class="hover:bg-purple-50 transition-colors">
-                            <td class="px-6 py-4 text-center">
-                                <div class="flex items-center justify-center space-x-3">
+                            <td class="px-10 py-4 text-center">
+                                <div class="flex items-center justify-left space-x-3">
                                     @if ($wallet->user?->image && $wallet->user->image->fullUrl)
                                         <img src="{{ $wallet->user->image->fullUrl }}"
                                             class="w-10 h-10 rounded-full object-cover border flex-shrink-0"
@@ -113,7 +113,7 @@
                                     <span class="text-sm text-gray-800">{{ $wallet->user->name ?? 'N/A' }}</span>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-center">
+                            <td class="px-10 py-4 text-left">
                                 <span class="text-sm text-gray-800">{{ $wallet->user->email ?? '-' }}</span>
                             </td>
                             <td class="px-6 py-4 text-center">

@@ -84,6 +84,48 @@
         </div>
     </div>
 
+    <!-- Roles & Permissions -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-gray-800">{{ __('Roles & Permissions') }}</h3>
+            <div class="flex items-center gap-3">
+                <span class="text-xs text-gray-500">
+                    {{ $user->roles->count() }} {{ __('Roles') }}
+                </span>
+                <a href="{{ route('admins.edit', $user->id) }}"
+                    class="inline-flex items-center px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-xs font-semibold">
+                    <i class="fas fa-edit mr-1"></i>
+                    {{ __('Edit Roles') }}
+                </a>
+            </div>
+        </div>
+        <div class="space-y-3">
+            @forelse ($user->roles as $role)
+                <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-semibold text-gray-800">{{ $role->name }}</span>
+                        <span class="text-[10px] uppercase tracking-wider text-gray-500">
+                            {{ $role->permissions->count() }} {{ __('Permissions') }}
+                        </span>
+                    </div>
+                    @if ($role->permissions->count())
+                        <div class="flex flex-wrap gap-2">
+                            @foreach ($role->permissions as $permission)
+                                <span class="text-[11px] px-2 py-1 rounded-full bg-white text-gray-700 border border-gray-200">
+                                    {{ $permission->name }}
+                                </span>
+                            @endforeach
+                        </div>
+                    @else
+                        <span class="text-xs text-gray-400">{{ __('No permissions assigned') }}</span>
+                    @endif
+                </div>
+            @empty
+                <div class="text-sm text-gray-500">{{ __('No roles assigned') }}</div>
+            @endforelse
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')

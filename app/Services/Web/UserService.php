@@ -56,9 +56,10 @@ class UserService
         });
     }
 
-    public function show(User $user)
+    public function show(int $userId)
     {
-        return DB::transaction(function () use ($user) {
+        return DB::transaction(function () use ($userId) {
+            $user = User::withTrashed()->findOrFail($userId);
             $user->load([
                 'image',
                 'designs.images',

@@ -67,7 +67,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->name('settings.index');
 
     // Update notification preferences
-    Route::put('/settings/notifications', [SettingsController::class, 'updateNotifications'])
+    Route::post('/settings/notifications', [SettingsController::class, 'updateNotifications'])
         ->middleware([CheckActiveMiddleware::class])
         ->name('settings.notifications.update');
 
@@ -128,6 +128,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         // List admins
         Route::get('/', [AdminController::class, 'index'])->name('index')
             ->middleware('permission:view-admins,api');
+        // List deleted admins
+        Route::get('/trashed', [AdminController::class, 'trashed'])->name('trashed')
+            ->middleware('permission:view-admins,api');
 
         // Show create admin form
         Route::get('/create', [AdminController::class, 'create'])->name('create')
@@ -144,6 +147,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         // Update admin
         Route::put('/{user}', [AdminController::class, 'update'])->name('update')
             ->middleware('permission:edit-admins,api');
+        // Restore admin
+        Route::put('/{user}/restore', [AdminController::class, 'restore'])->name('restore')
+            ->middleware('permission:delete-admins,api');
         // Delete admin
         Route::delete('/{user}', [AdminController::class, 'destroy'])->name('destroy')
             ->middleware('permission:delete-admins,api');

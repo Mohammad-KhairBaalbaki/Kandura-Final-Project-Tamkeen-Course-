@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCouponRequest;
 use App\Http\Requests\StoreItemInCartRequest;
 use App\Http\Requests\UpdateItemInCartRequest;
+use App\Http\Requests\UseCouponRequest;
 use App\Http\Resources\CartResource;
 use App\Http\Resources\ItemCartResource;
 use App\Models\ItemCart;
@@ -57,7 +58,7 @@ class CartController extends Controller
         }
     }
 
-    public function addCoupon(StoreCouponRequest $request)
+    public function addCoupon(UseCouponRequest $request)
     {
         try {
             $data = $this->cartService->addCoupon($request->validated());

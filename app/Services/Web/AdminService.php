@@ -18,11 +18,18 @@ class AdminService
     public function index(Request $request)
     {
         return DB::transaction(function () use ($request) {
-            $query = User::query()->whereHas('roles', function ($q) {
-                $q->where('name', 'admin');
+            $baseQuery = User::whereHas('roles', function ($q) {
+                $q->whereNotIn('name', ['super-admin', 'user']);
             });
 
-            if (isset($request->search)) {
+            $totalUsers = (clone $baseQuery)->count();
+            $activeUsers = (clone $baseQuery)->where('is_active', true)->count();
+            $newUsers = (clone $baseQuery)->whereMonth('created_at', now()->month)->count();
+            $blockedUsers = (clone $baseQuery)->where('is_active', false)->count();
+
+            $query = clone $baseQuery;
+
+            if ($request->filled('search')) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
@@ -38,22 +45,12 @@ class AdminService
             $users = $query->with('image')
                 ->latest()
                 ->paginate(15);
-
             $stats = [
-                'total_users' => User::whereHas('roles', function ($q) {
-                    $q->where('name', 'admin');
-                })->count(),
-                'active_users' => User::whereHas('roles', function ($q) {
-                    $q->where('name', 'admin');
-                })->where('is_active', true)->count(),
-                'new_users' => User::whereHas('roles', function ($q) {
-                    $q->where('name', 'admin');
-                })->whereMonth('created_at', now()->month)->count(),
-                'blocked_users' => User::whereHas('roles', function ($q) {
-                    $q->where('name', 'admin');
-                })->where('is_active', false)->count(),
+                'total_users' => $totalUsers,
+                'active_users' => $activeUsers,
+                'new_users' => $newUsers,
+                'blocked_users' => $blockedUsers,
             ];
-
             return [
                 'users' => $users,
                 'stats' => $stats,
@@ -64,15 +61,34 @@ class AdminService
     public function show(User $user)
     {
         return DB::transaction(function () use ($user) {
-            if (! $user->hasRole('admin')) {
-                abort(404);
-            }
-
             $user->load([
                 'image',
+                'roles.permissions',
             ]);
 
             return $user;
+        });
+    }
+
+    public function trashed(Request $request)
+    {
+        return DB::transaction(function () use ($request) {
+            $query = User::onlyTrashed()
+                ->whereHas('roles', function ($q) {
+                    $q->whereNotIn('name', ['super-admin', 'user']);
+                })
+                ->with('image');
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%");
+                });
+            }
+
+            return $query->latest('deleted_at')->paginate(15)->withQueryString();
         });
     }
 
@@ -115,9 +131,6 @@ class AdminService
     public function edit(User $user)
     {
         return DB::transaction(function () use ($user) {
-            if (! $user->hasRole('admin')) {
-                abort(404);
-            }
 
             $roles = Role::whereNotIn('name', ['user', 'super-admin'])
                 ->orderBy('name')
@@ -136,13 +149,13 @@ class AdminService
 
             if ($data('new_password')) {
                 $currentUser = Auth::user();
-                if (! $currentUser || ! $currentUser->hasRole('super-admin')) {
+                if (!$currentUser || !$currentUser->hasRole('super-admin')) {
                     throw ValidationException::withMessages([
                         'super_admin_password' => __('admins.not_authorized_edit_admin'),
                     ]);
                 }
 
-                if (! Hash::check($data('super_admin_password'), $currentUser->password)) {
+                if (!Hash::check($data('super_admin_password'), $currentUser->password)) {
                     throw ValidationException::withMessages([
                         'super_admin_password' => __('auth.password'),
                     ]);
@@ -197,6 +210,19 @@ class AdminService
             $user->delete();
 
             return true;
+        });
+    }
+
+    public function restore(int $userId): bool
+    {
+        return DB::transaction(function () use ($userId) {
+            $user = User::onlyTrashed()
+                ->whereHas('roles', function ($q) {
+                    $q->whereNotIn('name', ['super-admin', 'user']);
+                })
+                ->findOrFail($userId);
+
+            return (bool) $user->restore();
         });
     }
 }

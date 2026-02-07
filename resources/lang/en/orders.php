@@ -54,6 +54,7 @@ return [
     'coupon_code' => 'Coupon Code',
     'customer_information' => 'Customer Information',
     'view_profile' => 'View Profile',
+    'deleted_user' => 'Deleted',
     'invoice' => 'Invoice',
     'payment' => 'Payment',
     'details' => 'Details',

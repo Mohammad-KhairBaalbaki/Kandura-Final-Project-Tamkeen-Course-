@@ -47,6 +47,15 @@ return [
     'no_users_found' => 'No admins found',
     'try_adjusting_search' => 'Try adjusting your search or filters',
     'are_you_sure_delete_user' => 'Are you sure you want to delete this admin?',
+    'deleted_admins' => 'Deleted Admins',
+    'manage_deleted_admins' => 'Manage deleted admins',
+    'back_to_admins' => 'Back to Admins',
+    'deleted_at' => 'Deleted At',
+    'restore' => 'Restore',
+    'restore_confirm' => 'Are you sure you want to restore this admin?',
+    'no_deleted_admins' => 'No deleted admins found',
+    'view_deleted' => 'Deleted Admins',
+    'restore_failed' => 'Could not restore admin. Please try again.',
 
     // User info
     'name' => 'Name',

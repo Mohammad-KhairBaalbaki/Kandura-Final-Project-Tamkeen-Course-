@@ -13,13 +13,7 @@ class DesignService
     public function index(Request $request)
     {
         return DB::transaction(function () use ($request) {
-            $query = Design::with(['images', 'designOptions', 'measurements', 'user.image'])->where(function ($q) {
-                $q->where('status', StatusEnum::ACTIVE);
-                $q->whereHas('user', function ($query) {
-                    $query->where('is_active', true);
-                });
-
-            });;
+            $query = Design::with(['images', 'designOptions', 'measurements', 'user.image']);
 
             if ($request->filled('name')) {
                 $name = $request->name;

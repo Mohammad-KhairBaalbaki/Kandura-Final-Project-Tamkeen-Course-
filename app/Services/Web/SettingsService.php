@@ -67,9 +67,11 @@ class SettingsService
                 abort(403);
             }
 
-            $permissions = collect($data['permissions'])->unique()->values();
-            $enabledPermissions = collect($validated['enabled_permissions'] ?? [])->unique()->values();
-            $allowed = $this->getNotifyPermissions($user);
+            $submittedPermissions = collect($data['permissions'])->unique()->values();
+            $enabledPermissions = collect($data['enabled_permissions'] ?? [])->unique()->values();
+            $allowed = $this->getNotifyPermissions($user)
+                ->whereIn('id', $submittedPermissions)
+                ->values();
             $allowedIds = $allowed->pluck('id')->values();
 
             $filteredEnabled = $enabledPermissions->filter(fn ($id) => $allowedIds->contains($id))->values();

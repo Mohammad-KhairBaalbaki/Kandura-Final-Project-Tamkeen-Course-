@@ -207,8 +207,8 @@
                                     #{{ $payment->num ?? $payment->id }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-center">
-                                <div class="flex items-center justify-center space-x-3">
+                            <td class="px-10 py-4 text-left">
+                                <div class="flex items-center justify-left space-x-3">
                                     @if ($payment->user?->image && $payment->user->image->fullUrl)
                                         <img src="{{ $payment->user->image->fullUrl }}"
                                             class="w-10 h-10 rounded-full object-cover border flex-shrink-0"
