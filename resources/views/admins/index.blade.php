@@ -177,7 +177,7 @@
                             <!-- Status -->
                             <td class="px-6 py-4 text-center">
                                 <div class="relative inline-block text-left">
-                                    <button type="button" onclick="toggleStatusMenu({{ $user->id }})"
+                                    <button type="button" onclick="toggleStatusMenu(event, {{ $user->id }})"
                                         class="px-4 py-1.5 text-xs font-semibold rounded-full transition
         {{ $user->is_active
             ? 'bg-green-100 text-green-800 hover:bg-green-200'
@@ -187,7 +187,7 @@
                                     </button>
 
                                     <div id="status-menu-{{ $user->id }}"
-                                        class="hidden fixed z-50 w-32 bg-white rounded-xl shadow-lg border p-2">
+                                        class="hidden absolute right-0 top-full z-50 mt-2 w-32 bg-white rounded-xl shadow-lg border p-2">
 
                                         <form method="POST" action="{{ route('users.updateStatus', $user->id) }}">
                                             @csrf
@@ -272,7 +272,9 @@
 
 @push('scripts')
     <script>
-        function toggleStatusMenu(id) {
+        function toggleStatusMenu(event, id) {
+            event.preventDefault();
+            event.stopPropagation();
             const menu = document.getElementById(`status-menu-${id}`);
             const isOpen = !menu.classList.contains('hidden');
 

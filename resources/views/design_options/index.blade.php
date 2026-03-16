@@ -136,7 +136,7 @@
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <div class="relative inline-block text-left">
-                                    <button type="button" onclick="toggleStatusMenu({{ $designOption->id }})"
+                                    <button type="button" onclick="toggleStatusMenu(event, {{ $designOption->id }})"
                                         class="px-4 py-1.5 text-xs font-semibold rounded-full transition
         {{ $designOption->is_active
             ? 'bg-green-100 text-green-800 hover:bg-green-200'
@@ -146,7 +146,7 @@
                                     </button>
 
                                     <div id="status-menu-{{ $designOption->id }}"
-                                        class="hidden fixed z-50 w-32 bg-white rounded-xl shadow-lg border p-2">
+                                        class="hidden absolute right-0 top-full z-50 mt-2 w-32 bg-white rounded-xl shadow-lg border p-2">
                                         <form method="POST" action="{{ route('design_options.updateStatus', $designOption->id) }}">
                                             @csrf
                                             @method('PUT')
@@ -219,18 +219,16 @@
 
 @push('scripts')
     <script>
-        function toggleStatusMenu(id) {
+        function toggleStatusMenu(event, id) {
+            event.preventDefault();
+            event.stopPropagation();
             const menu = document.getElementById(`status-menu-${id}`);
-            const button = event.currentTarget;
             const isOpen = !menu.classList.contains('hidden');
             document
                 .querySelectorAll('[id^="status-menu-"]')
                 .forEach(el => el.classList.add('hidden'));
 
             if (!isOpen) {
-                const rect = button.getBoundingClientRect();
-                menu.style.top = `${rect.bottom + 8}px`;
-                menu.style.left = `${rect.left}px`;
                 menu.classList.remove('hidden');
             }
         }

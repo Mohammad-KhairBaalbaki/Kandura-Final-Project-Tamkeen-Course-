@@ -44,7 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Addresses
     Route::prefix('addresses')->controller(AddressController::class)->group(function () {
-        // List addresses
+        // List my addresses
         Route::get('/', 'index');
         // Create address
         Route::post('/', 'store');

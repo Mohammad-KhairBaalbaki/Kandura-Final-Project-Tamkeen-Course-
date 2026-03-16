@@ -36,17 +36,18 @@ class DashboardService
                 'total_deliverd' => Order::where('status', StatusEnum::DELIVERED)->count(),
             ];
 
-            $latest_orders = Order::with(['user'])
+            $latest_orders = Order::with(['user.image'])
                 ->latest()
                 ->take(5)
                 ->get();
 
-            $latest_reviews = Review::with(['user', 'order'])
+            $latest_reviews = Review::with(['user.image', 'order'])
                 ->latest()
                 ->take(5)
                 ->get();
 
             $top_designs = Design::query()
+                ->with(['images'])
                 ->select(
                     'designs.id',
                     'designs.user_id',

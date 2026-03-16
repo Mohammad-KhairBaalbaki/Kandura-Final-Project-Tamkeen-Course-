@@ -42,7 +42,7 @@
             </div>
             <div class="flex flex-col items-start md:items-end gap-2">
                 <div class="relative inline-block text-left">
-                    <button type="button" onclick="toggleStatusMenuShow()"
+                    <button type="button" onclick="toggleStatusMenuShow(event)"
                         class="px-4 py-1.5 text-xs font-semibold rounded-full transition
                         {{ $user->is_active
                             ? 'bg-green-100 text-green-800 hover:bg-green-200'
@@ -52,7 +52,7 @@
                     </button>
 
                     <div id="status-menu-show"
-                        class="hidden fixed z-50 w-32 bg-white rounded-xl shadow-lg border p-2">
+                        class="hidden absolute right-0 top-full z-50 mt-2 w-32 bg-white rounded-xl shadow-lg border p-2">
                         <form method="POST" action="{{ route('users.updateStatus', $user->id) }}">
                             @csrf
                             @method('PUT')
@@ -130,9 +130,10 @@
 
 @push('scripts')
     <script>
-        function toggleStatusMenuShow() {
+        function toggleStatusMenuShow(event) {
+            event.preventDefault();
+            event.stopPropagation();
             const menu = document.getElementById('status-menu-show');
-            const button = event.currentTarget;
             const isOpen = !menu.classList.contains('hidden');
 
             document
@@ -140,9 +141,6 @@
                 .forEach(el => el.classList.add('hidden'));
 
             if (!isOpen) {
-                const rect = button.getBoundingClientRect();
-                menu.style.top = `${rect.bottom + 8}px`;
-                menu.style.left = `${rect.left}px`;
                 menu.classList.remove('hidden');
             }
         }

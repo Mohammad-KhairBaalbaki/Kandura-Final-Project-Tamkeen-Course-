@@ -34,14 +34,15 @@
                     ];
                 @endphp
                 <div class="relative inline-block text-left">
-                    <button type="button" onclick="toggleStatusMenu()"
+                    <button type="button" onclick="toggleStatusMenu(event)"
                         class="px-4 py-2 text-sm font-semibold rounded-full transition
                         {{ $statusColors[$design->status] ?? 'bg-gray-100 text-gray-800' }}">
                         {{ __(ucfirst($design->status ?? '')) }}
                         <i class="fas fa-chevron-down ml-2 text-[10px]"></i>
                     </button>
 
-                    <div id="status-menu" class="hidden fixed z-50 w-36 bg-white rounded-xl shadow-lg border p-2">
+                    <div id="status-menu"
+                        class="hidden absolute right-0 top-full z-50 mt-2 w-36 bg-white rounded-xl shadow-lg border p-2">
                         <form method="POST" action="{{ route('designs.updateStatus', $design->id) }}">
                             @csrf
                             @method('PUT')
@@ -250,9 +251,10 @@
 
 @push('scripts')
     <script>
-        function toggleStatusMenu() {
+        function toggleStatusMenu(event) {
+            event.preventDefault();
+            event.stopPropagation();
             const menu = document.getElementById('status-menu');
-            const button = event.currentTarget;
             const isOpen = !menu.classList.contains('hidden');
 
             document
@@ -260,9 +262,6 @@
                 .forEach(el => el.classList.add('hidden'));
 
             if (!isOpen) {
-                const rect = button.getBoundingClientRect();
-                menu.style.top = `${rect.bottom + 8}px`;
-                menu.style.left = `${rect.left}px`;
                 menu.classList.remove('hidden');
             }
         }

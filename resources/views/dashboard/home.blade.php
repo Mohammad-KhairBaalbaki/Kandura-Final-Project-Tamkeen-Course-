@@ -124,10 +124,15 @@
                                     </a>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <div
-                                        class="w-8 h-8 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-semibold mx-auto">
-                                        {{ $order->user->name }}
-                                    </div>
+                                    @if (!empty($order->user?->image?->full_url))
+                                        <img src="{{ $order->user->image->full_url }}" alt="{{ $order->user->name }}"
+                                            class="w-8 h-8 rounded-full object-cover mx-auto">
+                                    @else
+                                        <div
+                                            class="w-8 h-8 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-semibold mx-auto">
+                                            {{ strtoupper(substr($order->user->name ?? 'U', 0, 1)) }}
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span
@@ -256,10 +261,15 @@
             <div class="p-6 space-y-4">
                 @forelse($latest_reviews ?? [] as $review)
                     <div class="flex items-start space-x-4 pb-4 border-b last:border-b-0">
-                        <div
-                            class="w-10 h-10 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
-                            {{ strtoupper(substr($review->user->name ?? 'U', 0, 1)) }}
-                        </div>
+                        @if (!empty($review->user?->image?->full_url))
+                            <img src="{{ $review->user->image->full_url }}" alt="{{ $review->user->name }}"
+                                class="w-10 h-10 rounded-full object-cover flex-shrink-0">
+                        @else
+                            <div
+                                class="w-10 h-10 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
+                                {{ strtoupper(substr($review->user->name ?? 'U', 0, 1)) }}
+                            </div>
+                        @endif
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-1">
                                 <h4 class="font-semibold text-gray-800">{{ $review->user->name ?? __('N/A') }}</h4>
@@ -304,10 +314,18 @@
                 @forelse($top_designs ?? [] as $design)
                     <div class="flex items-center justify-between pb-4 border-b last:border-b-0">
                         <div class="flex items-center space-x-4">
-                            <div
-                                class="w-12 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-shopping-cart text-lg w-5"></i>
-                            </div>
+                            @php
+                                $designImage = $design->images->first();
+                            @endphp
+                            @if (!empty($designImage?->full_url))
+                                <img src="{{ $designImage->full_url }}" alt="{{ $design->getTranslation('name', app()->getLocale()) }}"
+                                    class="w-12 h-12 rounded-lg object-cover border border-purple-100">
+                            @else
+                                <div
+                                    class="w-12 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-shopping-cart text-lg w-5"></i>
+                                </div>
+                            @endif
                             <div>
                                 <h4 class="font-semibold text-gray-800">
                                     {{ $design->getTranslation('name', app()->getLocale()) }}
